@@ -8,6 +8,9 @@
 
 #include "Shaders/LoadShaders.h"
 #include "My_Shading.h"
+#include <time.h>
+
+
 GLuint h_ShaderProgram_simple, h_ShaderProgram_TXPS, h_ShaderProgram_SHOW_SM;
 
 // for simple shaders
@@ -20,8 +23,7 @@ GLint loc_ModelViewProjectionMatrix_simple, loc_primitive_color;
 //loc_light_Parameters loc_light[NUMBER_OF_LIGHT_SUPPORTED];
 //loc_Material_Parameters loc_material;
 GLint loc_ModelViewProjectionMatrix_TXPS, loc_ModelViewMatrix_TXPS, loc_ModelViewMatrixInvTrans_TXPS;
-GLint loc_base_texture, loc_original_texture, loc_flag_texture_mapping, loc_flag_texture_diffrence, loc_flag_fog;
-
+GLint loc_base_texture, loc_original_texture, loc_flag_texture_mapping, loc_flag_texture_diffrence, loc_flag_texture_reverse, loc_flag_fog;
 
 
 // include glm/*.hpp only if necessary
@@ -55,260 +57,60 @@ struct _WINDOW_param {
 } WINDOW_param;
 
 // texture stuffs
-#define N_NORMAL_TEXTURES_USED 10
 
-#define TEXTURE_INDEX_ORIGINAL 0
-#define TEXTURE_INDEX_TEST 1
-#define TEXTURE_INDEX_COMPRESS_ASTC4X4 2
-#define TEXTURE_INDEX_COMPRESS_ASTC5X5 3
-#define TEXTURE_INDEX_COMPRESS_ASTC6X6 4
-#define TEXTURE_INDEX_COMPRESS_ASTC8X8 5
-#define TEXTURE_INDEX_COMPRESS_ASTC10X10 6
-#define TEXTURE_INDEX_COMPRESS_ASTC12X12 7
-#define TEXTURE_INDEX_COMPRESS_ASTC12X12_LDR_SRGB 8
-#define TEXTURE_INDEX_COMPRESS_ASTC12X12_LDR_LINEAR 9
 //#define TEXTURE_INDEX_TIGER 1
 //#define TEXTURE_INDEX_SHADOW 2
 
+#include "ImageLoader.h"
 
 GLuint texture_names[N_NORMAL_TEXTURES_USED];
 
 char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 	"ORIGINAL",
 	  "TEST",
-	  "ASTC4X4",
-	  "ASTC5X5",
-	  "ASTC6X6",
-	  "ASTC8X8",
-	  "ASTC10X10",
-	  "ASTC12X12",
-	  "ASTC12X12_LDR_SRGB",
-	  "ASTC12X12_LDR_LINEAR"
+	  "TEST_COMPRESSED_1",
+	  "TEST_COMPRESSED_2",
+	  "TEST_COMPRESSED_3",
+	  "TEST_COMPRESSED_4",
+	  "TEST_COMPRESSED_5",
+	  "TEST_COMPRESSED_6",
+	  "TEST_COMPRESSED_7",
+	  "TEST_COMPRESSED_8",
+	  "TEST_COMPRESSED_9",
+	  "TEST_COMPRESSED_10",
+	  "TEST_COMPRESSED_11",
+	  "TEST_COMPRESSED_12",
+	  "TEST_COMPRESSED_13",
+	  "TEST_COMPRESSED_14",
+	  "TEST_COMPRESSED_15",
+	  "TEST_COMPRESSED_16",
+	  "TEST_COMPRESSED_17",
+	  "TEST_COMPRESSED_18",
+	  "TEST_COMPRESSED_19",
+	  "TEST_COMPRESSED_20",
+	  "TEST_Original_1",
+	  "TEST_Original_2",
+	  "TEST_Original_3",
+	  "TEST_Original_4",
+	  "TEST_Original_5",
+	  "TEST_Original_6",
+	  "TEST_Original_7",
+	  "TEST_Original_8",
+	  "TEST_Original_9",
+	  "TEST_Original_10",
+	  "TEST_Original_11",
+	  "TEST_Original_12",
+	  "TEST_Original_13",
+	  "TEST_Original_14",
+	  "TEST_Original_15",
+	  "TEST_Original_16",
+	  "TEST_Original_17",
+	  "TEST_Original_18",
+	  "TEST_Original_19",
+	  "TEST_Original_20"
 };
 
 
-void My_glTexImage2D_from_file(const char *filename) {
-	FREE_IMAGE_FORMAT tx_file_format;
-	int tx_bits_per_pixel;
-	FIBITMAP *tx_pixmap, *tx_pixmap_32;
-
-	int width, height;
-	GLvoid *data;
-
-	tx_file_format = FreeImage_GetFileType(filename, 0);
-	// assume everything is fine with reading texture from file: no error checking
-	tx_pixmap = FreeImage_Load(tx_file_format, filename);
-	tx_bits_per_pixel = FreeImage_GetBPP(tx_pixmap);
-
-	fprintf(stdout, " * A %d-bit texture was read from %s.\n", tx_bits_per_pixel, filename);
-	if (tx_bits_per_pixel == 32)
-		tx_pixmap_32 = tx_pixmap;
-	else {
-		fprintf(stdout, " * Converting texture from %d bits to 32 bits...\n", tx_bits_per_pixel);
-		tx_pixmap_32 = FreeImage_ConvertTo32Bits(tx_pixmap);
-	}
-
-	width = FreeImage_GetWidth(tx_pixmap_32);
-	height = FreeImage_GetHeight(tx_pixmap_32);
-	data = FreeImage_GetBits(tx_pixmap_32);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
-	fprintf(stdout, " * Loaded %dx%d RGBA texture into graphics memory.\n\n", width, height);
-
-	FreeImage_Unload(tx_pixmap_32);
-	if (tx_bits_per_pixel != 32)
-		FreeImage_Unload(tx_pixmap);
-}
-
-
-struct astc_header
-{
-	uint8_t magic[4];
-	uint8_t blockdim_x;
-	uint8_t blockdim_y;
-	uint8_t blockdim_z;
-	uint8_t xsize[3];			// x-size = xsize[0] + xsize[1] + xsize[2]
-	uint8_t ysize[3];			// x-size, y-size and z-size are given in texels;
-	uint8_t zsize[3];			// block count is inferred
-};
-
-
-int suppress_progress_counter = 0;
-int perform_srgb_transform = 0;
-
-#define MAGIC_FILE_CONSTANT 0x5CA1AB13
-
-void load_astc_file(const char *filename)
-{
-	int x, y, z;
-	FILE *f = fopen(filename, "rb");
-	if (!f)
-	{
-		printf("Failed to open file %s\n", filename);
-		exit(1);
-	}
-	astc_header hdr;
-	size_t hdr_bytes_read = fread(&hdr, 1, sizeof(astc_header), f);
-	if (hdr_bytes_read != sizeof(astc_header))
-	{
-		fclose(f);
-		printf("Failed to read file %s\n", filename);
-		exit(1);
-	}
-
-	uint32_t magicval = hdr.magic[0] + 256 * (uint32_t)(hdr.magic[1]) + 65536 * (uint32_t)(hdr.magic[2]) + 16777216 * (uint32_t)(hdr.magic[3]);
-
-	if (magicval != MAGIC_FILE_CONSTANT)
-	{
-		fclose(f);
-		printf("File %s not recognized\n", filename);
-		exit(1);
-	}
-
-	int xdim = hdr.blockdim_x;
-	int ydim = hdr.blockdim_y;
-	int zdim = hdr.blockdim_z;
-
-	if (xdim < 3 || xdim > 12 || ydim < 3 || ydim > 12 || (zdim < 3 && zdim != 1) || zdim > 12)
-	{
-		fclose(f);
-		printf("File %s not recognized %d %d %d\n", filename, xdim, ydim, zdim);
-		exit(1);
-	}
-
-
-	int xsize = hdr.xsize[0] + 256 * hdr.xsize[1] + 65536 * hdr.xsize[2];
-	int ysize = hdr.ysize[0] + 256 * hdr.ysize[1] + 65536 * hdr.ysize[2];
-	int zsize = hdr.zsize[0] + 256 * hdr.zsize[1] + 65536 * hdr.zsize[2];
-
-
-	int xblocks = (xsize + xdim - 1) / xdim;
-	int yblocks = (ysize + ydim - 1) / ydim;
-	int zblocks = (zsize + zdim - 1) / zdim;
-
-	uint8_t *buffer = (uint8_t *)malloc(xblocks * yblocks * zblocks * 16);
-	if (!buffer)
-	{
-		fclose(f);
-		printf("Ran out of memory\n");
-		exit(1);
-	}
-	size_t bytes_to_read = xblocks * yblocks * zblocks * 16;
-	size_t bytes_read = fread(buffer, 1, bytes_to_read, f);
-	fclose(f);
-	if (bytes_read != bytes_to_read)
-	{
-		printf("Failed to read file %s\n", filename);
-		exit(1);
-	}
-
-	if (xdim == 12 && ydim == 12) {
-		glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_ASTC_12x12_KHR, xsize, ysize, 0, xblocks * yblocks * zblocks * 16, buffer);
-	}
-	else if (xdim == 10 && ydim == 10) {
-		glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_ASTC_10x10_KHR, xsize, ysize, 0, xblocks * yblocks * zblocks * 16, buffer);
-	}
-	else if (xdim == 8 && ydim == 8) {
-		glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_ASTC_8x8_KHR, xsize, ysize, 0, xblocks * yblocks * zblocks * 16, buffer);
-	}
-	else if (xdim == 6 && ydim == 6) {
-		glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_ASTC_6x6_KHR, xsize, ysize, 0, xblocks * yblocks * zblocks * 16, buffer);
-	}
-	else if (xdim == 5 && ydim == 5) {
-		glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_ASTC_5x5_KHR, xsize, ysize, 0, xblocks * yblocks * zblocks * 16, buffer);
-	}
-	else if (xdim == 4 && ydim == 4) {
-		glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_ASTC_4x4_KHR, xsize, ysize, 0, xblocks * yblocks * zblocks * 16, buffer);
-	}
-
-
-
-
-	free(buffer);
-
-}
-
-//GLuint loadDDS(const char * imagepath) {
-//
-//	unsigned char header[124];
-//
-//	FILE *fp;
-//
-//	/* 파일 열기 시도 */
-//	fp = fopen(imagepath, "rb");
-//	if (fp == NULL)
-//		return 0;
-//
-//	/* 파일 타입 체크 */
-//	char filecode[4];
-//	fread(filecode, 1, 4, fp);
-//	if (strncmp(filecode, "DDS ", 4) != 0) {
-//		fclose(fp);
-//		return 0;
-//	}
-//
-//	/* 이미지의 정보를 긁어옵니다.  */
-//	fread(&header, 124, 1, fp);
-//
-//	unsigned int height = *(unsigned int*)&(header[8]);
-//	unsigned int width = *(unsigned int*)&(header[12]);
-//	unsigned int linearSize = *(unsigned int*)&(header[16]);
-//	unsigned int mipMapCount = *(unsigned int*)&(header[24]);
-//	unsigned int fourCC = *(unsigned int*)&(header[80]);
-//
-//	unsigned char * buffer;
-//	unsigned int bufsize;
-//	/* 모든 밉맵을 포함하면 얼마나 크나요? */
-//	bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize;
-//	buffer = (unsigned char*)malloc(bufsize * sizeof(unsigned char));
-//	fread(buffer, 1, bufsize, fp);
-//	/* 파일 포인터 닫기  */
-//	fclose(fp);
-//
-//	unsigned int components = (fourCC == FOURCC_DXT1) ? 3 : 4;
-//	unsigned int format;
-//	switch (fourCC)
-//	{
-//	case FOURCC_DXT1:
-//		format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-//		break;
-//	case FOURCC_DXT3:
-//		format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-//		break;
-//	case FOURCC_DXT5:
-//		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-//		break;
-//	default:
-//		free(buffer);
-//		return 0;
-//	}
-//
-//	// Create one OpenGL texture
-//	GLuint textureID;
-//	glGenTextures(1, &textureID);
-//
-//	// 새롭게 생성된 텍스처를 "Bind"합니다. : 이제 앞으로 모든 Texutre 관련 함수는 이 친구를 건듭니다. 
-//	glBindTexture(GL_TEXTURE_2D, textureID);
-//
-//	unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16;
-//	unsigned int offset = 0;
-//
-//	/* load the mipmaps */
-//	for (unsigned int level = 0; level < mipMapCount && (width || height); ++level)
-//	{
-//		unsigned int size = ((width + 3) / 4)*((height + 3) / 4)*blockSize;
-//		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height,
-//			0, size, buffer + offset);
-//
-//		offset += size;
-//		width /= 2;
-//		height /= 2;
-//	}
-//	free(buffer);
-//
-//	return textureID;
-//
-//}
 
 // for tiger animation
 //int cur_frame_tiger = 0;
@@ -318,6 +120,8 @@ void load_astc_file(const char *filename)
 #include "Objects.h"
 
 #define IMGSIZE 1024.0f
+GLuint texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;
+GLuint texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;
 
 void draw_original_texture() {
 	glm::mat4 ModelMatrix;
@@ -334,9 +138,12 @@ void draw_original_texture() {
 	glUseProgram(h_ShaderProgram_TXPS);
 	//glUniform1i(loc_shadow_texture, ShadowMapping.texture_unit);
 
+	glUniform1i(loc_flag_texture_reverse, false);
 	//set_material_floor();
-	glUniform1i(loc_base_texture, TEXTURE_INDEX_ORIGINAL);
-	glUniform1i(loc_original_texture, TEXTURE_INDEX_TEST);
+	//glUniform1i(loc_base_texture, TEXTURE_INDEX_ORIGINAL);
+	glUniform1i(loc_base_texture, texnum_ori);
+	//glUniform1i(loc_original_texture, TEXTURE_INDEX_TEST);
+	glUniform1i(loc_original_texture, texnum_ori);
 
 	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, -IMGSIZE/2, 0.0f));
 	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(IMGSIZE, IMGSIZE, IMGSIZE));
@@ -355,7 +162,6 @@ void draw_original_texture() {
 
 }
 
-GLuint texnum = 2;
 
 void draw_compressed_texture() {
 	glm::mat4 ModelMatrix;
@@ -365,9 +171,12 @@ void draw_compressed_texture() {
 	glUseProgram(h_ShaderProgram_TXPS);
 	//glUniform1i(loc_shadow_texture, ShadowMapping.texture_unit);
 
+	glUniform1i(loc_flag_texture_reverse, true);
 	//set_material_floor();
-	glUniform1i(loc_base_texture, texnum);
-	glUniform1i(loc_original_texture, TEXTURE_INDEX_ORIGINAL);
+	glUniform1i(loc_base_texture, texnum_comp);
+	printf("%d\n",texnum_comp);
+	//glUniform1i(loc_base_texture, TEXTURE_INDEX_TEST);
+	glUniform1i(loc_original_texture, texnum_ori);
 	//glUniform1i(loc_original_texture, TEXTURE_INDEX_COMPRESS_ASTC12X12);
 
 	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f- IMGSIZE, -IMGSIZE/2, 0.0f));
@@ -411,7 +220,7 @@ void setCamera() {
 
 void keyboard(unsigned char key, int x, int y) {
 	//int i;
-	int dist = 50.0f;
+	float dist = 50.0f;
 	switch (key) {
 
 	case 'a':
@@ -448,11 +257,17 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'm':
 		//printf("log, texnum : %d\n",texnum);
-		texnum++;
-		if (texnum >= N_NORMAL_TEXTURES_USED) {
-			texnum = TEXTURE_INDEX_COMPRESS_ASTC4X4;
+		texnum_comp++;
+		if (texnum_comp >= TEXTURE_INDEX_COMPRESS_TEST20) {
+			texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;
 		}
-		glutSetWindowTitle(titleTex[texnum]);
+
+		texnum_ori++;
+		if (texnum_ori >= TEXTURE_INDEX_ORIGINAL_TEST20) {
+			texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;
+		}
+
+		glutSetWindowTitle(titleTex[texnum_comp]);
 		glutPostRedisplay();
 		break;
 
@@ -534,6 +349,7 @@ void prepare_shader_program(void) {
 	loc_original_texture = glGetUniformLocation(h_ShaderProgram_TXPS, "u_original_texture");
 	loc_flag_texture_mapping = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_mapping");
 	loc_flag_texture_diffrence = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_diffrence");
+	loc_flag_texture_reverse = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_reverse");
 }
 
 void initialize_flags(void) {
@@ -571,9 +387,32 @@ void initialize_OpenGL(void) {
 void prepare_scene(void) {
 	prepare_axes();
 	prepare_quad();
-	prepare_texture_original();
-	prepare_texture_test();
-	prepare_texture_ASTC();
+	prepare_texture_original("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
+	prepare_texture_original("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
+	//loadDDS("Data/4kimg_JPG_DXT3_7.DDS");
+	upload_TEST_Texture_Original();
+	upload_TEST_Texture_DDS(3);
+	upload_TEST_Texture_DDS(5);
+
+	//loadDDSs("Data/4kimg_JPG_DXT3_7.DDS");
+
+	//compress_test("Data/4kimg.jpg","test.img");
+	//oadTexture("test.img");
+	//prepare_texture_ASTC();
+	//loadDDS("Data/4kimg_JPG_DXT3_4.DDS");
+	//texnum=texture_loadDDS("Data/4kimg_JPG_DXT5_3.DDS");
+	//texnum = loadDDSs("Data/uvtemplate - 복사본.DDS");
+
+	//upload_TEST_Texture_Original();
+	//upload_TEST_Texture_ASTC(4);
+	//upload_TEST_Texture_ASTC(5);
+	//upload_TEST_Texture_ASTC(6);
+	//upload_TEST_Texture_ASTC(8);
+	//upload_TEST_Texture_ASTC(10);
+	//upload_TEST_Texture_ASTC(12);
+	//upload_TEST_Texture_ASTC(112);
+
+	//compare_PSNR();
 }
 
 void initialize_renderer(void) {
@@ -623,7 +462,7 @@ int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	// glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitWindowSize(IMGSIZE*2, IMGSIZE);
+	glutInitWindowSize((int)IMGSIZE*2, (int)IMGSIZE);
 	glutInitContextVersion(4, 0);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow(program_name);

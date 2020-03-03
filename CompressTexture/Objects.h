@@ -97,56 +97,260 @@ void prepare_quad(void) { // Draw coordinate axes.
 
 }
 
-void prepare_texture_original() {
-	glActiveTexture(GL_TEXTURE0 + TEXTURE_INDEX_ORIGINAL);
-	glBindTexture(GL_TEXTURE_2D, texture_names[TEXTURE_INDEX_ORIGINAL]);
-
-	My_glTexImage2D_from_file("Data/4kimg.jpg");
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-}
-void prepare_texture_test() {
-	glActiveTexture(GL_TEXTURE0 + TEXTURE_INDEX_TEST);
-	glBindTexture(GL_TEXTURE_2D, texture_names[TEXTURE_INDEX_TEST]);
-
-	My_glTexImage2D_from_file("Data/grass_tex.jpg");
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-}
-
-void create_ACTC_texture(const char* filename, GLuint textureID) {
-
+float prepare_texture_original(const char* filename, GLuint textureID) {
+	float time;
 	glActiveTexture(GL_TEXTURE0 + textureID);
 	glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
 
-	load_astc_file(filename);
+	time = My_glTexImage2D_from_file(filename);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	return time;
+}
+
+float create_ACTC_texture(const char* filename, GLuint textureID) {
+
+	float time;
+	glActiveTexture(GL_TEXTURE0 + textureID);
+	glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
+
+	time = load_astc_file(filename);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-
+	return time;
 }
 
 void prepare_texture_ASTC() {
-	create_ACTC_texture("Data/HDR/4kimg_4x4.astc", TEXTURE_INDEX_COMPRESS_ASTC4X4);
-	create_ACTC_texture("Data/HDR/4kimg_5x5.astc", TEXTURE_INDEX_COMPRESS_ASTC5X5);
-	create_ACTC_texture("Data/HDR/4kimg_6x6.astc", TEXTURE_INDEX_COMPRESS_ASTC6X6);
-	create_ACTC_texture("Data/HDR/4kimg_8x8.astc", TEXTURE_INDEX_COMPRESS_ASTC8X8);
-	create_ACTC_texture("Data/HDR/4kimg_10x10.astc", TEXTURE_INDEX_COMPRESS_ASTC10X10);
-	create_ACTC_texture("Data/HDR/4kimg_12x12.astc", TEXTURE_INDEX_COMPRESS_ASTC12X12);
-	create_ACTC_texture("Data/LDR/4kimg_12x12.astc", TEXTURE_INDEX_COMPRESS_ASTC12X12_LDR_SRGB);
-	create_ACTC_texture("Data/LINEAR/4kimg_12x12.astc", TEXTURE_INDEX_COMPRESS_ASTC12X12_LDR_LINEAR);
+	//create_ACTC_texture("Data/HDR/4kimg_4x4.astc", TEXTURE_INDEX_COMPRESS_ASTC4X4);
+	//create_ACTC_texture("Data/HDR/4kimg_5x5.astc", TEXTURE_INDEX_COMPRESS_ASTC5X5);
+	//create_ACTC_texture("Data/HDR/4kimg_6x6.astc", TEXTURE_INDEX_COMPRESS_ASTC6X6);
+	//create_ACTC_texture("Data/HDR/4kimg_8x8.astc", TEXTURE_INDEX_COMPRESS_ASTC8X8);
+	//create_ACTC_texture("Data/HDR/4kimg_10x10.astc", TEXTURE_INDEX_COMPRESS_ASTC10X10);
+	//create_ACTC_texture("Data/HDR/4kimg_12x12.astc", TEXTURE_INDEX_COMPRESS_ASTC12X12);
+	//create_ACTC_texture("Data/LDR/4kimg_12x12.astc", TEXTURE_INDEX_COMPRESS_ASTC12X12_LDR_SRGB);
+	//create_ACTC_texture("Data/LINEAR/4kimg_12x12.astc", TEXTURE_INDEX_COMPRESS_ASTC12X12_LDR_LINEAR);
+
+	//HDR 과 LDR(Linear colorspace)는 동일함. LDR(sRGB colorspace)는 약간 다름. HDR은 기본적으로 linear colorspace로 추정.
 
 }
 
+void upload_TEST_Texture_Original() {
+	char name[100];
+	float time = 0.0f;
+
+	for (int i = 1; i <= 20; i++) {
+		sprintf(name, "Data/testImg/jpg20/img%d.jpg", i);
+		time += prepare_texture_original(name, TEXTURE_INDEX_ORIGINAL_TEST1 - 1 + i);
+	}
+
+	printf("upload time for original : %f\n", time);
+
+}
+
+void upload_TEST_Texture_ASTC(int compressLevel) {
+	char name[100];
+	float time = 0.0f;
+
+	for (int i = 1; i <= 20; i++) {
+		sprintf(name, "Data/testImg/%dx%d/img%d.astc", compressLevel, compressLevel,i);
+		time += create_ACTC_texture(name, TEXTURE_INDEX_COMPRESS_TEST1-1+i);
+	}
+
+	printf("upload time for ASTC %dx%d compress : %f\n", compressLevel, compressLevel,time);
+	
+}
+
+
+
+float create_DDS_Texture(const char* filename, GLuint textureID) {
+
+	float time;
+	glActiveTexture(GL_TEXTURE0 + textureID);
+	glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
+
+	time = loadDDS(filename);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	return time;
+}
+
+
+void upload_TEST_Texture_DDS(int compressLevel) {//DXT 1, 3, 5
+	char name[100];
+	float time = 0.0f;
+
+	for (int i = 1; i <= 20; i++) {
+		sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_DXT%d.DDS", i,compressLevel);
+		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
+	}
+
+	printf("upload time for DXT%d compress : %f\n", compressLevel, time);
+
+}
+
+void compare_PSNR() {
+	char name_ori[20][100];
+	char name[100];
+
+	double score;
+	float time = 0.0f;
+
+	for (int i = 1; i <= 20; i++) {
+		sprintf(name_ori[i], "Data/testImg/jpg20/img%d.jpg", i);
+	}
+
+	//DXT
+	for (int compressLevel = 3; compressLevel <= 5; compressLevel += 2) {
+		for (int i = 1; i <= 20; i++) {
+			sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_DXT%d.DDS", i, compressLevel);
+			score = getPSNR(name_ori[i], name);
+			printf("image %d, DXT %d PSNR Score = %lf\n", i, compressLevel, score);
+		}		
+	}
+
+	////ASTC
+	//int size[] = {4,5,6,8,10,12};
+	//for (int j = 0; j < 6; j ++) {
+	//	int compressLevel = size[j];
+	//	for (int i = 1; i <= 20; i++) {
+	//		sprintf(name, "Data/testImg/%dx%d/img%d.astc", compressLevel, compressLevel, i);
+	//		score = getPSNR(name_ori[i], name);
+	//		printf("image %d, ASTC(hdr) %dx%d PSNR Score = %lf\n", i, compressLevel, compressLevel ,score);
+	//	}
+	//}
+
+}
+
+
+void compress_enum() {
+	//지원하는 포맷 리스트.
+	GLint * compressed_format;
+	GLint num_compressed_format;
+	glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS_ARB, &num_compressed_format);
+	compressed_format = (GLint*)malloc(num_compressed_format * sizeof(GLint));
+	glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS_ARB, compressed_format);
+}
+
+void SaveTexture(const char* filename, int width, int height, GLint compressed_size, unsigned char * img, int format ,int depth) {
+
+	FILE* fp = fopen(filename,"wb");
+
+	fwrite(&width, sizeof(int), 1, fp);
+	fwrite(&height, sizeof(int), 1, fp);
+	fwrite(&compressed_size, sizeof(int), 1, fp);
+	fwrite(&format, sizeof(int), 1, fp);
+
+	fwrite(img,sizeof(unsigned char *), compressed_size,fp);
+
+	fclose(fp);
+
+}
+
+
+void LoadTexture(const char* filename) {
+	int width, height;
+	GLint compressed_size;
+	unsigned char * img;
+	int format;
+
+	FILE* fp = fopen(filename, "rb");
+
+	fread(&width, sizeof(int), 1, fp);
+	fread(&height, sizeof(int), 1, fp);
+	fread(&compressed_size, sizeof(int), 1, fp);
+	fread(&format, sizeof(int), 1, fp);
+
+
+	img = (unsigned char *)malloc(compressed_size * sizeof(unsigned char));
+
+	fread(img, sizeof(unsigned char), compressed_size, fp);
+	
+	fclose(fp);
+
+	glActiveTexture(GL_TEXTURE0 + TEXTURE_INDEX_TEST);
+	glBindTexture(GL_TEXTURE_2D, texture_names[TEXTURE_INDEX_TEST]);
+	glCompressedTexImage2D(GL_TEXTURE_2D, 0, format, width, height,	0, compressed_size, img);
+
+}
+
+
+float compress_test(const char *filename, const char* outfilename) {
+	//glGetIntegerv()
+	FREE_IMAGE_FORMAT tx_file_format;
+	int tx_bits_per_pixel;
+	FIBITMAP *tx_pixmap, *tx_pixmap_32;
+
+	int width, height;
+	GLvoid *data;
+
+	tx_file_format = FreeImage_GetFileType(filename, 0);
+	// assume everything is fine with reading texture from file: no error checking
+	tx_pixmap = FreeImage_Load(tx_file_format, filename);
+	tx_bits_per_pixel = FreeImage_GetBPP(tx_pixmap);
+
+	if (tx_bits_per_pixel == 32)
+		tx_pixmap_32 = tx_pixmap;
+	else {
+		tx_pixmap_32 = FreeImage_ConvertTo32Bits(tx_pixmap);
+	}
+
+	width = FreeImage_GetWidth(tx_pixmap_32);
+	height = FreeImage_GetHeight(tx_pixmap_32);
+	data = FreeImage_GetBits(tx_pixmap_32);
+
+	float compute_time;
+
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+
+	GLint compressed_decal_map;
+	GLint compressed;
+	GLint internalformat;
+	GLint compressed_size;
+	unsigned char * img;
+	//glActiveTexture(GL_TEXTURE0 + TEXTURE_INDEX_TEST);
+	glBindTexture(GL_TEXTURE_2D, texture_names[TEXTURE_INDEX_TEST]);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, &compressed);
+	/* if the compression has been successful */
+	if (compressed == GL_TRUE)
+	{
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalformat);
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &compressed_size);
+		img = (unsigned char *)malloc(compressed_size * sizeof(unsigned char));
+		glGetCompressedTexImageARB(GL_TEXTURE_2D, 0, img);
+		SaveTexture(outfilename,width, height, compressed_size, img, internalformat, 0);
+		free(img);
+	}
+	else {
+
+		glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &compressed_size);
+		img = (unsigned char *)malloc(compressed_size * sizeof(unsigned char));
+		glGetCompressedTexImage(GL_TEXTURE_2D, 0, img);
+		SaveTexture(outfilename,width, height, compressed_size, img, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, 0);
+	}
+
+
+	FreeImage_Unload(tx_pixmap_32);
+	if (tx_bits_per_pixel != 32)
+		FreeImage_Unload(tx_pixmap);
+
+
+	return 0.0f;
+}
 
 void draw_quad(void) {
 	glFrontFace(GL_CCW);
