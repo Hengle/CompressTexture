@@ -211,12 +211,14 @@ void compare_PSNR() {
 	}
 
 	//DXT
-	for (int compressLevel = 3; compressLevel <= 5; compressLevel += 2) {
-		for (int i = 1; i <= 20; i++) {
+	for (int i = 1; i <= 20; i++) {
+		printf("image %2d, PSNR Score => ", i);
+		for (int compressLevel = 1; compressLevel <= 5; compressLevel += 2) {
 			sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_DXT%d.DDS", i, compressLevel);
 			score = getPSNR(name_ori[i], name);
-			printf("image %d, DXT %d PSNR Score = %lf\n", i, compressLevel, score);
-		}		
+			printf("DXT %d =>\t%lf\t", compressLevel, score);
+		}
+		printf("\n");
 	}
 
 	////ASTC
