@@ -368,7 +368,7 @@ float load_astc_file(const char *filename)
 #define FOURCC_DXT1 0x31545844 // Equivalent to "DXT1" in ASCII
 #define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
 #define FOURCC_DXT5 0x35545844 // Equivalent to "DXT5" in ASCII
-
+#define FOURCC_BPTC 0x30315844
 float loadDDS(const char * imagepath) {
 
 	unsigned char header[124];
@@ -399,13 +399,20 @@ float loadDDS(const char * imagepath) {
 	unsigned int mipMapCount = *(unsigned int*)&(header[24]);
 	unsigned int fourCC = *(unsigned int*)&(header[80]);
 
-
 	unsigned char * buffer;
 	unsigned int bufsize;
-	/* how big is it going to be including all mipmaps? */
-	bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize;
-	buffer = (unsigned char*)malloc(bufsize * sizeof(unsigned char));
-	fread(buffer, 1, bufsize, fp);
+	if (fourCC == FOURCC_BPTC) {//in BC7 header, linearSize is small(8192), width/height is 2048.
+		linearSize = height * width;
+		bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize;
+		buffer = (unsigned char*)malloc(bufsize * sizeof(unsigned char));
+		fread(buffer, 1, bufsize, fp);
+	}
+	else {
+		/* how big is it going to be including all mipmaps? */
+		bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize;
+		buffer = (unsigned char*)malloc(bufsize * sizeof(unsigned char));
+		fread(buffer, 1, bufsize, fp);
+	}
 	/* close the file pointer */
 	fclose(fp);
 
@@ -422,20 +429,17 @@ float loadDDS(const char * imagepath) {
 	case FOURCC_DXT5:
 		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 		break;
+	case FOURCC_BPTC:
+		format = GL_COMPRESSED_RGBA_BPTC_UNORM;
+		//format = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;	
+		//format = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT;
+		//format = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
+		break;
 	default:
 		free(buffer);
 		return 0;
 	}
 
-	// Create one OpenGL texture
-	//GLuint textureID;
-	//glGenTextures(1, &textureID);
-
-	// "Bind" the newly created texture : all future texture functions will modify this texture
-	//glBindTexture(GL_TEXTURE_2D, textureID);
-
-	//glActiveTexture(TEXTURE_INDEX_TEST);
-	//glBindTexture(GL_TEXTURE_2D, textureID);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16;
@@ -449,8 +453,7 @@ float loadDDS(const char * imagepath) {
 	for (unsigned int level = 0; level < mipMapCount && (width || height); ++level)
 	{
 		unsigned int size = ((width + 3) / 4)*((height + 3) / 4)*blockSize;
-		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height,
-			0, size, buffer + offset);
+		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height, 0, size, buffer + offset);
 
 		offset += size;
 		width /= 2;
@@ -467,8 +470,7 @@ float loadDDS(const char * imagepath) {
 	free(buffer);
 
 	return compute_time;
-
-
+	
 }
 
 //두 이미지의 유사성 비교, 높을수록 좋은 것.

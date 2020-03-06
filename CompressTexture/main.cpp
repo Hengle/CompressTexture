@@ -458,10 +458,12 @@ void prepare_scene(void) {
 	prepare_texture_original("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
 	prepare_texture_original("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
 	//loadDDS("Data/4kimg_JPG_DXT3_7.DDS");
+	upload_TEST_Texture_BPTC();
 	upload_TEST_Texture_Original();
-	upload_TEST_Texture_DDS(1);
-	upload_TEST_Texture_DDS(3);
-	upload_TEST_Texture_DDS(5);
+
+	//upload_TEST_Texture_DDS(1);
+	//upload_TEST_Texture_DDS(3);
+	//upload_TEST_Texture_DDS(5);
 
 	//loadDDSs("Data/4kimg_JPG_DXT3_7.DDS");
 
@@ -472,15 +474,15 @@ void prepare_scene(void) {
 	//texnum=texture_loadDDS("Data/4kimg_JPG_DXT5_3.DDS");
 	//texnum = loadDDSs("Data/uvtemplate - บนป็บป.DDS");
 
-	upload_TEST_Texture_ASTC(4);
+	//upload_TEST_Texture_ASTC(4);
 	//upload_TEST_Texture_ASTC(5);
 	//upload_TEST_Texture_ASTC(6);
 	//upload_TEST_Texture_ASTC(8);
 	//upload_TEST_Texture_ASTC(10);
-	upload_TEST_Texture_ASTC(12);
+	//upload_TEST_Texture_ASTC(12);
 	//upload_TEST_Texture_ASTC(112);
 
-	compare_PSNR();
+	//compare_PSNR();
 }
 
 void initialize_renderer(void) {

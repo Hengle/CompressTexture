@@ -199,6 +199,23 @@ void upload_TEST_Texture_DDS(int compressLevel) {//DXT 1, 3, 5
 
 }
 
+
+void upload_TEST_Texture_BPTC() {
+	char name[100];
+	float time = 0.0f;
+
+	for (int i = 1; i <= 20; i++) {
+		sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_DXT%d.DDS", i, 5);
+		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
+
+		sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_BC7.DDS", i);
+		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
+	}
+
+	printf("upload time for BPTC compress : %f\n", time);
+
+}
+
 void compare_PSNR() {
 	char name_ori[20][100];
 	char name[100];
