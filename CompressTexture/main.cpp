@@ -123,6 +123,8 @@ char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 GLuint texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;
 GLuint texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;
 
+int draw_mode = 0;
+
 void draw_original_texture() {
 	glm::mat4 ModelMatrix;
 
@@ -165,8 +167,7 @@ void draw_original_texture() {
 
 void draw_compressed_texture() {
 	glm::mat4 ModelMatrix;
-
-
+	
 
 	glUseProgram(h_ShaderProgram_TXPS);
 	//glUniform1i(loc_shadow_texture, ShadowMapping.texture_unit);
@@ -174,7 +175,6 @@ void draw_compressed_texture() {
 	glUniform1i(loc_flag_texture_reverse, true);
 	//set_material_floor();
 	glUniform1i(loc_base_texture, texnum_comp);
-	printf("%d\n",texnum_comp);
 	//glUniform1i(loc_base_texture, TEXTURE_INDEX_TEST);
 	glUniform1i(loc_original_texture, texnum_ori);
 	//glUniform1i(loc_original_texture, TEXTURE_INDEX_COMPRESS_ASTC12X12);
@@ -196,16 +196,70 @@ void draw_compressed_texture() {
 
 }
 
+//#define TIMETEST 0
+int timer_cnt = 0;
+float dislaytime = 0.0f;
+
+__int64 start_main, freq_main, end_main;
+#define CHECK_TIME_START QueryPerformanceFrequency((LARGE_INTEGER*)&freq_main); QueryPerformanceCounter((LARGE_INTEGER*)&start_main)
+#define CHECK_TIME_END(a) QueryPerformanceCounter((LARGE_INTEGER*)&end_main); a = (float)((float)(end_main - start_main) / (freq_main / 1000.0f))
 // callbacks
 void display(void) {
+#ifdef TIMETEST
+	float computetime;
 
+	timer_cnt++;
 
+	CHECK_TIME_START;
 	glClearColor(1, 0, 0, 0);
 	glViewport(0, 0, WINDOW_param.width, WINDOW_param.height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (draw_mode != 2)
+		draw_original_texture();
+	if (draw_mode != 1)
+		draw_compressed_texture();
+	CHECK_TIME_END(computetime);
 
-	draw_original_texture();
-	draw_compressed_texture();
+	dislaytime += computetime;
+
+	if (timer_cnt == 1000) {
+		printf("1000frame time for ");
+		switch (draw_mode) {
+		case 0: printf("draw all image"); break;
+		case 1: printf("draw original image"); break;
+		case 2: printf("draw compressed image"); break;
+		}
+		printf(" : %f\n", dislaytime);
+		timer_cnt = 0; dislaytime = 0.0f;
+		if (draw_mode == 1) {
+
+			draw_mode = 2;
+		}
+		else if (draw_mode == 2) {
+			draw_mode = 1;
+			texnum_comp++;
+			if (texnum_comp >= TEXTURE_INDEX_COMPRESS_TEST20) {
+				texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;
+			}
+
+			texnum_ori++;
+			if (texnum_ori >= TEXTURE_INDEX_ORIGINAL_TEST20) {
+				texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;
+			}
+		}
+	}
+#else
+	
+	glClearColor(1, 0, 0, 0);
+	glViewport(0, 0, WINDOW_param.width, WINDOW_param.height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (draw_mode != 2)
+		draw_original_texture();
+	if (draw_mode != 1)
+		draw_compressed_texture();
+	
+#endif
+	
 
 	glutSwapBuffers();
 }
@@ -253,6 +307,19 @@ void keyboard(unsigned char key, int x, int y) {
 		glUseProgram(h_ShaderProgram_TXPS);
 		glUniform1i(loc_flag_texture_diffrence, flag.texture_diffrence);
 		glUseProgram(0);
+		glutPostRedisplay();
+		break;
+	case 'n':
+		timer_cnt = 0;
+		draw_mode++;
+		draw_mode %= 3;
+		switch (draw_mode) {
+		case 0: printf("draw all image\n"); break;
+		case 1: printf("draw original image\n"); break;
+		case 2: printf("draw compressed image\n"); break;
+		}		
+
+		glutSetWindowTitle(titleTex[texnum_comp]);
 		glutPostRedisplay();
 		break;
 	case 'm':
@@ -317,6 +384,7 @@ void register_callbacks(void) {
 	glutReshapeFunc(reshape);
 	//glutTimerFunc(rotation_speed_tiger, timer_scene, 1);
 	glutCloseFunc(cleanup);
+	glutIdleFunc(display);
 }
 
 void prepare_shader_program(void) {
