@@ -458,12 +458,32 @@ void prepare_scene(void) {
 	prepare_texture_original("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
 	prepare_texture_original("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
 	//loadDDS("Data/4kimg_JPG_DXT3_7.DDS");
-	upload_TEST_Texture_BPTC();
-	upload_TEST_Texture_Original();
+
+	GL_COMPRESSED_RGB8_ETC2;
+//EAC, ETC, ETC1
 
 	//upload_TEST_Texture_DDS(1);
 	//upload_TEST_Texture_DDS(3);
 	//upload_TEST_Texture_DDS(5);
+	upload_TEST_Texture_Original();
+	upload_TEST_Texture_BPTC();
+	
+	int res;
+
+	glActiveTexture(GL_TEXTURE0 + TEXTURE_INDEX_COMPRESS_TEST1);
+	glBindTexture(GL_TEXTURE_2D, texture_names[TEXTURE_INDEX_COMPRESS_TEST1]);
+	res = loadKTX("Data/testImg/jpg20/results/img1_JPG_BC7.KTX", texture_names[TEXTURE_INDEX_ORIGINAL_TEST1]);
+	//res = loadKTX("Data/testImg/jpg20/results/img1_JPG_DXT5.KTX",texture_names[TEXTURE_INDEX_COMPRESS_TEST1]);
+	printf("res = %d\n",res);
+
+	//GLint params1, params2;
+
+	//glGetIntegerv(GL_MAJOR_VERSION, &params1);
+	//glGetIntegerv(GL_MINOR_VERSION, &params2);
+
+	//printf("-------------version : %d . %d\n", params1, params2);
+	//fprintf(stdout, " - OpenGL version supported: %s\n", glGetString(GL_VERSION));
+
 
 	//loadDDSs("Data/4kimg_JPG_DXT3_7.DDS");
 
@@ -533,7 +553,7 @@ int main(int argc, char *argv[]) {
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	// glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize((int)IMGSIZE*2, (int)IMGSIZE);
-	glutInitContextVersion(4, 0);
+	glutInitContextVersion(4, 5);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow(program_name);
 

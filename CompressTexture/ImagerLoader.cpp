@@ -154,216 +154,6 @@ float load_astc_file(const char *filename)
 	free(buffer);
 	return compute_time;
 }
-//const unsigned long FOURCC_DXT1 = 0x31545844; //(MAKEFOURCC('D','X','T','1'))
-//const unsigned long FOURCC_DXT3 = 0x33545844; //(MAKEFOURCC('D','X','T','3'))
-//const unsigned long FOURCC_DXT5 = 0x35545844; //(MAKEFOURCC('D','X','T','5'))
-//
-//GLuint loadDDS(const char * imagepath) {
-//
-//	unsigned char header[124];
-//
-//	FILE *fp;
-//
-//	/* 파일 열기 시도 */
-//	fp = fopen(imagepath, "rb");
-//	if (fp == NULL)
-//		return 0;
-//
-//	/* 파일 타입 체크 */
-//	char filecode[4];
-//	fread(filecode, 1, 4, fp);
-//	if (strncmp(filecode, "DDS ", 4) != 0) {
-//		fclose(fp);
-//		return 0;
-//	}
-//
-//	/* 이미지의 정보를 긁어옵니다.  */
-//	fread(&header, 124, 1, fp);
-//
-//	unsigned int height = *(unsigned int*)&(header[8]);
-//	unsigned int width = *(unsigned int*)&(header[12]);
-//	unsigned int linearSize = *(unsigned int*)&(header[16]);
-//	unsigned int mipMapCount = *(unsigned int*)&(header[24]);
-//	unsigned int fourCC = *(unsigned int*)&(header[80]);
-//
-//	unsigned char * buffer;
-//	unsigned int bufsize;
-//	/* 모든 밉맵을 포함하면 얼마나 크나요? */
-//	bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize;
-//	buffer = (unsigned char*)malloc(bufsize * sizeof(unsigned char));
-//	fread(buffer, 1, bufsize, fp);
-//	/* 파일 포인터 닫기  */
-//	fclose(fp);
-//
-//	unsigned int components = (fourCC == FOURCC_DXT1) ? 3 : 4;
-//	unsigned int format;
-//	switch (fourCC)
-//	{
-//	case FOURCC_DXT1:
-//		format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-//		break;
-//	case FOURCC_DXT3:
-//		format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-//		break;
-//	case FOURCC_DXT5:
-//		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-//		break;
-//	default:
-//		free(buffer);
-//		return 0;
-//	}
-//
-//	// Create one OpenGL texture
-//	GLuint textureID;
-//	//glGenTextures(1, &textureID);
-//	//texture_names[TEXTURE_INDEX_COMPRESS_ASTC4X4]
-//	// 새롭게 생성된 텍스처를 "Bind"합니다. : 이제 앞으로 모든 Texutre 관련 함수는 이 친구를 건듭니다. 
-//	//glBindTexture(GL_TEXTURE_2D, textureID);
-//
-//	textureID = texture_names[TEXTURE_INDEX_COMPRESS_ASTC4X4];
-//	glBindTexture(GL_TEXTURE_2D, texture_names[TEXTURE_INDEX_COMPRESS_ASTC4X4]);
-//
-//	unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16;
-//	unsigned int offset = 0;
-//
-//	/* load the mipmaps */
-//	for (unsigned int level = 0; level < mipMapCount && (width || height); ++level)
-//	{
-//		unsigned int size = ((width + 3) / 4)*((height + 3) / 4)*blockSize;
-//		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height,
-//			0, size, buffer + offset);
-//
-//		offset += size;
-//		width /= 2;
-//		height /= 2;
-//	}
-//	free(buffer);
-//
-//	return textureID;
-//
-//}
-//
-//GLuint texture_loadDDS(const char* path) {
-//	// lay out variables to be used
-//	unsigned char* header;
-//
-//	unsigned int width;
-//	unsigned int height;
-//	unsigned int mipMapCount;
-//
-//	unsigned int blockSize;
-//	unsigned int format;
-//
-//	unsigned int w;
-//	unsigned int h;
-//
-//	unsigned char* buffer = 0;
-//
-//	GLuint tid = 0;
-//
-//	// open the DDS file for binary reading and get file size
-//	FILE* f;
-//	if ((f = fopen(path, "rb")) == 0)
-//		return 0;
-//	fseek(f, 0, SEEK_END);
-//	long file_size = ftell(f);
-//	fseek(f, 0, SEEK_SET);
-//
-//	// allocate new unsigned char space with 4 (file code) + 124 (header size) bytes
-//	// read in 128 bytes from the file
-//	header = (unsigned char*)malloc(128);
-//	fread(header, 1, 128, f);
-//
-//	// compare the `DDS ` signature
-//	if (memcmp(header, "DDS ", 4) != 0)
-//		return -1;
-//
-//	// extract height, width, and amount of mipmaps - yes it is stored height then width
-//	height = (header[12]) | (header[13] << 8) | (header[14] << 16) | (header[15] << 24);
-//	width = (header[16]) | (header[17] << 8) | (header[18] << 16) | (header[19] << 24);
-//	mipMapCount = (header[28]) | (header[29] << 8) | (header[30] << 16) | (header[31] << 24);
-//
-//	// figure out what format to use for what fourCC file type it is
-//	// block size is about physical chunk storage of compressed data in file (important)
-//	if (header[84] == 'D') {
-//		switch (header[87]) {
-//		case '1': // DXT1
-//			format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-//			blockSize = 8;
-//			break;
-//		case '3': // DXT3
-//			format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-//			blockSize = 16;
-//			break;
-//		case '5': // DXT5
-//			format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-//			blockSize = 16;
-//			break;
-//		case '0': // DX10
-//			// unsupported, else will error
-//			// as it adds sizeof(struct DDS_HEADER_DXT10) between pixels
-//			// so, buffer = malloc((file_size - 128) - sizeof(struct DDS_HEADER_DXT10));
-//		default: return -1;
-//		}
-//	}
-//	else // BC4U/BC4S/ATI2/BC55/R8G8_B8G8/G8R8_G8B8/UYVY-packed/YUY2-packed unsupported
-//		return -1;
-//
-//	// allocate new unsigned char space with file_size - (file_code + header_size) magnitude
-//	// read rest of file
-//	buffer = (unsigned char*)malloc(file_size - 128);
-//	if (buffer == 0)
-//		//goto exit;
-//		return -1;
-//	fread(buffer, 1, file_size, f);
-//
-//	// prepare new incomplete texture
-//	glGenTextures(1, &tid);
-//	if (tid == 0)
-//		return -1;
-//
-//	// bind the texture
-//	// make it complete by specifying all needed parameters and ensuring all mipmaps are filled
-//	glBindTexture(GL_TEXTURE_2D, tid);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipMapCount - 1); // opengl likes array length of mipmaps
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // don't forget to enable mipmaping
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//
-//	// prepare some variables
-//	unsigned int offset = 0;
-//	unsigned int size = 0;
-//	w = width;
-//	h = height;
-//
-//	// loop through sending block at a time with the magic formula
-//	// upload to opengl properly, note the offset transverses the pointer
-//	// assumes each mipmap is 1/2 the size of the previous mipmap
-//	for (unsigned int i = 0; i < mipMapCount; i++) {
-//		if (w == 0 || h == 0) { // discard any odd mipmaps 0x1 0x2 resolutions
-//			mipMapCount--;
-//			continue;
-//		}
-//		size = ((w + 3) / 4) * ((h + 3) / 4) * blockSize;
-//		glCompressedTexImage2D(GL_TEXTURE_2D, i, format, w, h, 0, size, buffer + offset);
-//		offset += size;
-//		w /= 2;
-//		h /= 2;
-//	}
-//	// discard any odd mipmaps, ensure a complete texture
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipMapCount - 1);
-//	// unbind
-//	glBindTexture(GL_TEXTURE_2D, 0);
-//
-//	// easy macro to get out quick and uniform (minus like 15 lines of bulk)
-//exit:
-//	free(buffer);
-//	free(header);
-//	fclose(f);
-//	return tid;
-//}
 
 #define FOURCC_DXT1 0x31545844 // Equivalent to "DXT1" in ASCII
 #define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
@@ -472,6 +262,316 @@ float loadDDS(const char * imagepath) {
 	return compute_time;
 	
 }
+
+struct KTXheader
+{
+	unsigned char       identifier[12];
+	unsigned int        endianness;
+	unsigned int        gltype;
+	unsigned int        gltypesize;
+	unsigned int        glformat;
+	unsigned int        glinternalformat;
+	unsigned int        glbaseinternalformat;
+	unsigned int        pixelwidth;
+	unsigned int        pixelheight;
+	unsigned int        pixeldepth;
+	unsigned int        arrayelements;
+	unsigned int        faces;
+	unsigned int        miplevels;
+	unsigned int        keypairbytes;
+};
+
+static const unsigned char identifier[] =
+{
+	0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A
+};
+
+static const unsigned int swap32(const unsigned int u32)
+{
+	union
+	{
+		unsigned int u32;
+		unsigned char u8[4];
+	} a, b;
+
+	a.u32 = u32;
+	b.u8[0] = a.u8[3];
+	b.u8[1] = a.u8[2];
+	b.u8[2] = a.u8[1];
+	b.u8[3] = a.u8[0];
+
+	return b.u32;
+}
+
+static const unsigned short swap16(const unsigned short u16)
+{
+	union
+	{
+		unsigned short u16;
+		unsigned char u8[2];
+	} a, b;
+
+	a.u16 = u16;
+	b.u8[0] = a.u8[1];
+	b.u8[1] = a.u8[0];
+
+	return b.u16;
+}
+
+static unsigned int calculate_stride(const KTXheader& h, unsigned int width, unsigned int pad = 4)
+{
+	unsigned int channels = 0;
+
+	switch (h.glbaseinternalformat)
+	{
+	case GL_RED:    channels = 1;
+		break;
+	case GL_RG:     channels = 2;
+		break;
+	case GL_BGR:
+	case GL_RGB:    channels = 3;
+		break;
+	case GL_BGRA:
+	case GL_RGBA:   channels = 4;
+		break;
+	}
+
+	unsigned int stride = h.gltypesize * channels * width;
+
+	stride = (stride + (pad - 1)) & ~(pad - 1);
+
+	return stride;
+}
+
+static unsigned int calculate_face_size(const KTXheader& h)
+{
+	unsigned int stride = calculate_stride(h, h.pixelwidth);
+
+	return stride * h.pixelheight;
+}
+
+
+unsigned int loadKTX(const char * filename, unsigned int tex)
+{
+	FILE * fp;
+	GLuint temp = 0;
+	GLuint retval = 0;
+	KTXheader h;
+	size_t data_start, data_end;
+	unsigned char * data;
+	GLenum target = GL_NONE;
+
+	fp = fopen(filename, "rb");
+
+	if (!fp)
+		return 0;
+
+	if (fread(&h, sizeof(h), 1, fp) != 1)
+		goto fail_read;
+
+	if (memcmp(h.identifier, identifier, sizeof(identifier)) != 0)
+		goto fail_header;
+
+	if (h.endianness == 0x04030201)
+	{
+		// No swap needed
+	}
+	else if (h.endianness == 0x01020304)
+	{
+		// Swap needed
+		h.endianness = swap32(h.endianness);
+		h.gltype = swap32(h.gltype);
+		h.gltypesize = swap32(h.gltypesize);
+		h.glformat = swap32(h.glformat);
+		h.glinternalformat = swap32(h.glinternalformat);
+		h.glbaseinternalformat = swap32(h.glbaseinternalformat);
+		h.pixelwidth = swap32(h.pixelwidth);
+		h.pixelheight = swap32(h.pixelheight);
+		h.pixeldepth = swap32(h.pixeldepth);
+		h.arrayelements = swap32(h.arrayelements);
+		h.faces = swap32(h.faces);
+		h.miplevels = swap32(h.miplevels);
+		h.keypairbytes = swap32(h.keypairbytes);
+	}
+	else
+	{
+		goto fail_header;
+	}
+
+	// Guess target (texture type)
+	if (h.pixelheight == 0)
+	{
+		if (h.arrayelements == 0)
+		{
+			target = GL_TEXTURE_1D;
+		}
+		else
+		{
+			target = GL_TEXTURE_1D_ARRAY;
+		}
+	}
+	else if (h.pixeldepth == 0)
+	{
+		if (h.arrayelements == 0)
+		{
+			//if (h.faces == 0)
+				if (h.faces == 1)
+			{
+				target = GL_TEXTURE_2D;
+			}
+			else
+			{
+				target = GL_TEXTURE_CUBE_MAP;
+			}
+		}
+		else
+		{
+			if (h.faces == 0)
+			{
+				target = GL_TEXTURE_2D_ARRAY;
+			}
+			else
+			{
+				target = GL_TEXTURE_CUBE_MAP_ARRAY;
+			}
+		}
+	}
+	else
+	{
+		target = GL_TEXTURE_3D;
+	}
+
+	// Check for insanity...
+	if (target == GL_NONE ||                                    // Couldn't figure out target
+		(h.pixelwidth == 0) ||                                  // Texture has no width???
+		(h.pixelheight == 0 && h.pixeldepth != 0))              // Texture has depth but no height???
+	{
+		goto fail_header;
+	}
+
+	temp = tex;
+	if (tex == 0)
+	{
+		glGenTextures(1, &tex);
+	}
+
+	//glBindTexture(target, tex);
+
+	data_start = ftell(fp) + h.keypairbytes;
+	fseek(fp, 0, SEEK_END);
+	data_end = ftell(fp);
+	fseek(fp, data_start, SEEK_SET);
+
+	data = new unsigned char[data_end - data_start];
+	memset(data, 0, data_end - data_start);
+
+	fread(data, 1, data_end - data_start, fp);
+
+	if (h.miplevels == 0)
+	{
+		h.miplevels = 1;
+	}
+
+	switch (target)
+	{
+	case GL_TEXTURE_1D:
+		glTexStorage1D(GL_TEXTURE_1D, h.miplevels, h.glinternalformat, h.pixelwidth);
+		glTexSubImage1D(GL_TEXTURE_1D, 0, 0, h.pixelwidth, h.glformat, h.glinternalformat, data);
+		break;
+	case GL_TEXTURE_2D:
+		glTexImage2D(GL_TEXTURE_2D, 0, h.glinternalformat, h.pixelwidth, h.pixelheight, 0, h.glformat, h.gltype, data);
+		if (h.gltype == GL_NONE)
+		{
+			glCompressedTexImage2D(GL_TEXTURE_2D, 0, h.glinternalformat, h.pixelwidth, h.pixelheight, 0, 2048*2048, data);
+		}
+		else
+		{
+			glTexStorage2D(GL_TEXTURE_2D, h.miplevels, h.glinternalformat, h.pixelwidth, h.pixelheight);
+			{
+				unsigned char * ptr = data;
+				unsigned int height = h.pixelheight;
+				unsigned int width = h.pixelwidth;
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+				for (unsigned int i = 0; i < h.miplevels; i++)
+				{
+					glTexSubImage2D(GL_TEXTURE_2D, i, 0, 0, width, height, h.glformat, h.gltype, ptr);
+					ptr += height * calculate_stride(h, width, 1);
+					height >>= 1;
+					width >>= 1;
+					if (!height)
+						height = 1;
+					if (!width)
+						width = 1;
+				}
+			}
+		}
+		break;
+	case GL_TEXTURE_3D:
+		glTexStorage3D(GL_TEXTURE_3D, h.miplevels, h.glinternalformat, h.pixelwidth, h.pixelheight, h.pixeldepth);
+		glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, h.pixelwidth, h.pixelheight, h.pixeldepth, h.glformat, h.gltype, data);
+		break;
+	case GL_TEXTURE_1D_ARRAY:
+		glTexStorage2D(GL_TEXTURE_1D_ARRAY, h.miplevels, h.glinternalformat, h.pixelwidth, h.arrayelements);
+		glTexSubImage2D(GL_TEXTURE_1D_ARRAY, 0, 0, 0, h.pixelwidth, h.arrayelements, h.glformat, h.gltype, data);
+		break;
+	case GL_TEXTURE_2D_ARRAY:
+		glTexStorage3D(GL_TEXTURE_2D_ARRAY, h.miplevels, h.glinternalformat, h.pixelwidth, h.pixelheight, h.arrayelements);
+		glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, h.pixelwidth, h.pixelheight, h.arrayelements, h.glformat, h.gltype, data);
+		break;
+	case GL_TEXTURE_CUBE_MAP:
+		glTexStorage2D(GL_TEXTURE_CUBE_MAP, h.miplevels, h.glinternalformat, h.pixelwidth, h.pixelheight);
+		// glTexSubImage3D(GL_TEXTURE_CUBE_MAP, 0, 0, 0, 0, h.pixelwidth, h.pixelheight, h.faces, h.glformat, h.gltype, data);
+		{
+			unsigned int face_size = calculate_face_size(h);
+			for (unsigned int i = 0; i < h.faces; i++)
+			{
+				glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, 0, 0, h.pixelwidth, h.pixelheight, h.glformat, h.gltype, data + face_size * i);
+			}
+		}
+		break;
+	case GL_TEXTURE_CUBE_MAP_ARRAY:
+		glTexStorage3D(GL_TEXTURE_CUBE_MAP_ARRAY, h.miplevels, h.glinternalformat, h.pixelwidth, h.pixelheight, h.arrayelements);
+		glTexSubImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 0, 0, 0, 0, h.pixelwidth, h.pixelheight, h.faces * h.arrayelements, h.glformat, h.gltype, data);
+		break;
+	default:                                               // Should never happen
+		goto fail_target;
+	}
+
+	if (h.miplevels == 1)
+	{
+		glGenerateMipmap(target);
+	}
+
+	retval = tex;
+
+fail_target:
+	delete[] data;
+
+fail_header:;
+fail_read:;
+	fclose(fp);
+
+	return retval;
+}
+
+bool saveKTX(const char * filename, unsigned int target, unsigned int tex)
+{
+	KTXheader h;
+
+	memset(&h, 0, sizeof(h));
+	memcpy(h.identifier, identifier, sizeof(identifier));
+	h.endianness = 0x04030201;
+
+	glBindTexture(target, tex);
+
+	glGetTexLevelParameteriv(target, 0, GL_TEXTURE_WIDTH, (GLint *)&h.pixelwidth);
+	glGetTexLevelParameteriv(target, 0, GL_TEXTURE_HEIGHT, (GLint *)&h.pixelheight);
+	glGetTexLevelParameteriv(target, 0, GL_TEXTURE_DEPTH, (GLint *)&h.pixeldepth);
+
+	return true;
+}
+
+
 
 //두 이미지의 유사성 비교, 높을수록 좋은 것.
 double getPSNR(const char* fileName1, const char* fileName2)

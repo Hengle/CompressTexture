@@ -1,4 +1,4 @@
-#version 330
+#version 450
 
 uniform mat4 u_ModelViewProjectionMatrix;
 uniform vec3 u_primitive_color;

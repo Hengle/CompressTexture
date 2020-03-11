@@ -1,4 +1,4 @@
-#version 330
+#version 450
 
 #define NUMBER_OF_LIGHT_COUNT 4 
 

@@ -205,8 +205,8 @@ void upload_TEST_Texture_BPTC() {
 	float time = 0.0f;
 
 	for (int i = 1; i <= 20; i++) {
-		sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_DXT%d.DDS", i, 5);
-		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
+		//sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_DXT%d.DDS", i, 5);
+		//time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
 
 		sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_BC7.DDS", i);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
@@ -227,14 +227,20 @@ void compare_PSNR() {
 		sprintf(name_ori[i], "Data/testImg/jpg20/img%d.jpg", i);
 	}
 
-	//DXT
 	for (int i = 1; i <= 20; i++) {
 		printf("image %2d, PSNR Score => ", i);
+		//DXT
 		for (int compressLevel = 1; compressLevel <= 5; compressLevel += 2) {
 			sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_DXT%d.DDS", i, compressLevel);
 			score = getPSNR(name_ori[i], name);
-			printf("DXT %d =>\t%lf\t", compressLevel, score);
+			printf("DXT %d - %lf ", compressLevel, score);
 		}
+
+		//BC7
+		sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_BC7.DDS", i);
+		score = getPSNR(name_ori[i], name);
+		printf("BPTC - %lf ", score);
+
 		printf("\n");
 	}
 
