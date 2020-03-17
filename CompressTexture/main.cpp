@@ -11,20 +11,14 @@
 #include <time.h>
 
 
-GLuint h_ShaderProgram_simple, h_ShaderProgram_TXPS, h_ShaderProgram_SHOW_SM;
+GLuint h_ShaderProgram_simple, h_ShaderProgram_TXPS;
 
 // for simple shaders
 GLint loc_ModelViewProjectionMatrix_simple, loc_primitive_color;
 
 // for Phong Shading shaders
-#define NUMBER_OF_LIGHT_SUPPORTED 4 
-#define NUMBER_OF_LIGHT_COUNT 4
-//GLint loc_global_ambient_color;
-//loc_light_Parameters loc_light[NUMBER_OF_LIGHT_SUPPORTED];
-//loc_Material_Parameters loc_material;
 GLint loc_ModelViewProjectionMatrix_TXPS, loc_ModelViewMatrix_TXPS, loc_ModelViewMatrixInvTrans_TXPS;
 GLint loc_base_texture, loc_original_texture, loc_flag_texture_mapping, loc_flag_texture_diffrence, loc_flag_texture_reverse, loc_flag_fog;
-
 
 // include glm/*.hpp only if necessary
 //#include <glm/glm.hpp> 
@@ -119,7 +113,7 @@ char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 
 #include "Objects.h"
 
-#define IMGSIZE 1024.0f
+#define IMGSIZE 600.0f
 GLuint texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;
 GLuint texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;
 
@@ -476,6 +470,7 @@ void prepare_scene(void) {
 	//res = loadKTX("Data/testImg/jpg20/results/img1_JPG_DXT5.KTX",texture_names[TEXTURE_INDEX_COMPRESS_TEST1]);
 	printf("res = %d\n",res);
 
+
 	//GLint params1, params2;
 
 	//glGetIntegerv(GL_MAJOR_VERSION, &params1);
@@ -553,7 +548,7 @@ int main(int argc, char *argv[]) {
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	// glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize((int)IMGSIZE*2, (int)IMGSIZE);
-	glutInitContextVersion(4, 5);
+	glutInitContextVersion(4, 0);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow(program_name);
 
