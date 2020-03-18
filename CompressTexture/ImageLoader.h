@@ -66,5 +66,6 @@
 float My_glTexImage2D_from_file(const char *filename);
 float load_astc_file(const char *filename);
 float loadDDS(const char * imagepath);
+float loadBC7(const char * imagepath);
 unsigned int loadKTX(const char * filename, unsigned int tex);
 double getPSNR(const char* fileName1, const char* fileName2);

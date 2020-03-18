@@ -208,7 +208,7 @@ void upload_TEST_Texture_BPTC() {
 		//sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_DXT%d.DDS", i, 5);
 		//time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
 
-		sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_BC7.DDS", i);
+		sprintf(name, "Data/testImg/jpg20/results/bc7/img%d.DDS", i);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
 	}
 

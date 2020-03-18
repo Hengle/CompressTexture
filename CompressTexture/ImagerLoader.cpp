@@ -192,6 +192,10 @@ float loadDDS(const char * imagepath) {
 	unsigned char * buffer;
 	unsigned int bufsize;
 	if (fourCC == FOURCC_BPTC) {//in BC7 header, linearSize is small(8192), width/height is 2048.
+		//if BC7 format, header is extend 20. 144 byte header.
+		unsigned char exHeader[20];
+		fread(&exHeader, 20, 1, fp);
+
 		linearSize = height * width;
 		bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize;
 		buffer = (unsigned char*)malloc(bufsize * sizeof(unsigned char));
@@ -221,9 +225,6 @@ float loadDDS(const char * imagepath) {
 		break;
 	case FOURCC_BPTC:
 		format = GL_COMPRESSED_RGBA_BPTC_UNORM;
-		//format = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;	
-		//format = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT;
-		//format = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
 		break;
 	default:
 		free(buffer);
@@ -262,6 +263,7 @@ float loadDDS(const char * imagepath) {
 	return compute_time;
 	
 }
+
 
 struct KTXheader
 {
