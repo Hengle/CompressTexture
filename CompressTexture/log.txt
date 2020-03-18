@@ -1,0 +1,106 @@
+upload time for original : 117.790405
+upload time for original : 118.384895
+upload time for original : 113.286407
+upload time for original : 111.299484
+upload time for original : 118.429695
+upload time for original : 118.097092
+upload time for original : 118.497612
+upload time for original : 111.868492
+upload time for original : 116.793198
+upload time for original : 116.643402
+upload time for DXT1 compress : 15.589599
+upload time for DXT1 compress : 15.405900
+upload time for DXT1 compress : 16.600601
+upload time for DXT1 compress : 14.894601
+upload time for DXT1 compress : 16.663700
+upload time for DXT1 compress : 17.694201
+upload time for DXT1 compress : 17.448801
+upload time for DXT1 compress : 15.706400
+upload time for DXT1 compress : 16.759197
+upload time for DXT1 compress : 16.321598
+upload time for DXT3 compress : 25.496801
+upload time for DXT3 compress : 26.532999
+upload time for DXT3 compress : 26.594799
+upload time for DXT3 compress : 26.561300
+upload time for DXT3 compress : 27.366400
+upload time for DXT3 compress : 26.041800
+upload time for DXT3 compress : 26.000900
+upload time for DXT3 compress : 26.118301
+upload time for DXT3 compress : 26.588400
+upload time for DXT3 compress : 26.281099
+upload time for DXT5 compress : 26.808695
+upload time for DXT5 compress : 26.575600
+upload time for DXT5 compress : 26.848497
+upload time for DXT5 compress : 25.575201
+upload time for DXT5 compress : 26.066704
+upload time for DXT5 compress : 26.755699
+upload time for DXT5 compress : 26.580900
+upload time for DXT5 compress : 26.108002
+upload time for DXT5 compress : 25.586399
+upload time for DXT5 compress : 25.818800
+upload time for BPTC compress : 25.947304
+upload time for BPTC compress : 26.931198
+upload time for BPTC compress : 26.545403
+upload time for BPTC compress : 25.817202
+upload time for BPTC compress : 29.172499
+upload time for BPTC compress : 24.876099
+upload time for BPTC compress : 26.328402
+upload time for BPTC compress : 25.484501
+upload time for BPTC compress : 26.649902
+upload time for BPTC compress : 25.091700
+upload time for ASTC 4x4 compress : 4614.421875
+upload time for ASTC 4x4 compress : 4572.724609
+upload time for ASTC 4x4 compress : 4595.429199
+upload time for ASTC 4x4 compress : 4563.869629
+upload time for ASTC 4x4 compress : 4559.938965
+upload time for ASTC 4x4 compress : 4569.519531
+upload time for ASTC 4x4 compress : 4558.958008
+upload time for ASTC 4x4 compress : 4551.249023
+upload time for ASTC 4x4 compress : 4567.031250
+upload time for ASTC 4x4 compress : 4571.714355
+upload time for ASTC 12x12 compress : 3668.478271
+upload time for ASTC 12x12 compress : 3635.420166
+upload time for ASTC 12x12 compress : 3650.706055
+upload time for ASTC 12x12 compress : 3661.284668
+upload time for ASTC 12x12 compress : 3637.975586
+upload time for ASTC 12x12 compress : 3660.229248
+upload time for ASTC 12x12 compress : 3656.949219
+upload time for ASTC 12x12 compress : 3649.779785
+upload time for ASTC 12x12 compress : 3647.998291
+upload time for ASTC 12x12 compress : 3663.986328
+upload time for original : 116.981285
+upload time for DXT1 compress : 16.099901
+upload time for original : 111.215607
+upload time for DXT1 compress : 14.280698
+upload time for original : 117.313705
+upload time for DXT1 compress : 16.544098
+upload time for original : 116.259895
+upload time for DXT1 compress : 16.284800
+upload time for original : 115.896202
+upload time for DXT1 compress : 16.480301
+upload time for original : 117.996201
+upload time for DXT1 compress : 15.798801
+upload time for original : 116.575394
+upload time for DXT1 compress : 15.539800
+upload time for original : 116.280098
+upload time for DXT1 compress : 15.890100
+upload time for original : 116.729805
+upload time for DXT1 compress : 13.952000
+upload time for original : 115.501907
+upload time for DXT1 compress : 16.116798
+upload time for original : 111.115402
+upload time for DXT1 compress : 15.321499
+upload time for original : 116.548706
+upload time for DXT1 compress : 15.239302
+upload time for original : 109.180496
+upload time for DXT1 compress : 16.523199
+upload time for DXT3 compress : 26.947599
+upload time for DXT5 compress : 15.789299
+upload time for BPTC compress : 16.671299
+upload time for ASTC 4x4 compress : 4607.973633
+upload time for ASTC 12x12 compress : 3650.482178
+upload time for original : 112.609993
+upload time for DXT1 compress : 15.895202
+upload time for DXT3 compress : 29.252701
+upload time for DXT5 compress : 16.620300
+upload time for BPTC compress : 17.053999

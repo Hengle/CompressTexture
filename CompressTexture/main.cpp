@@ -11,17 +11,11 @@
 #include <time.h>
 
 
-GLuint h_ShaderProgram_simple, h_ShaderProgram_TXPS, h_ShaderProgram_SHOW_SM;
+GLuint h_ShaderProgram_TXPS;
 
 // for simple shaders
 GLint loc_ModelViewProjectionMatrix_simple, loc_primitive_color;
 
-// for Phong Shading shaders
-#define NUMBER_OF_LIGHT_SUPPORTED 4 
-#define NUMBER_OF_LIGHT_COUNT 4
-//GLint loc_global_ambient_color;
-//loc_light_Parameters loc_light[NUMBER_OF_LIGHT_SUPPORTED];
-//loc_Material_Parameters loc_material;
 GLint loc_ModelViewProjectionMatrix_TXPS, loc_ModelViewMatrix_TXPS, loc_ModelViewMatrixInvTrans_TXPS;
 GLint loc_base_texture, loc_original_texture, loc_flag_texture_mapping, loc_flag_texture_diffrence, loc_flag_texture_reverse, loc_flag_fog;
 
@@ -42,9 +36,6 @@ glm::mat4 ViewMatrix, ProjectionMatrix;
 #define LOC_NORMAL 1
 #define LOC_TEXCOORD 2
 
-// lights in scene
-//Light_Parameters light[NUMBER_OF_LIGHT_SUPPORTED];
-float light0_position_WC[2][4], light0_lerp_t; // for light animation
 
 struct _flag {
 	int texture_mapping;
@@ -56,10 +47,6 @@ struct _WINDOW_param {
 	int width, height;
 } WINDOW_param;
 
-// texture stuffs
-
-//#define TEXTURE_INDEX_TIGER 1
-//#define TEXTURE_INDEX_SHADOW 2
 
 #include "ImageLoader.h"
 
@@ -110,102 +97,74 @@ char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 	  "TEST_Original_20"
 };
 
-
-
-// for tiger animation
-//int cur_frame_tiger = 0;
-//float rotation_angle_tiger = 0.0f;
-//int rotation_speed_tiger = 100;
-
 #include "Objects.h"
 
 #define IMGSIZE 1024.0f
-GLuint texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;
-GLuint texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;
+GLuint texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;		//original (unpack) texture name
+GLuint texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;		//compressed texture name
 
 int draw_mode = 0;
 
 void draw_original_texture() {
 	glm::mat4 ModelMatrix;
-
-
-	//glUseProgram(h_ShaderProgram_simple);
-	//ModelViewMatrix = glm::scale(ViewMatrix, glm::vec3(50.0f, 50.0f, 50.0f));
-	//ModelViewProjectionMatrix = ProjectionMatrix * ModelViewMatrix;
-	//glUniformMatrix4fv(loc_ModelViewProjectionMatrix_simple, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
-	//glLineWidth(2.0f);
-	//draw_axes();
-	//glLineWidth(1.0f);
-
+	
 	glUseProgram(h_ShaderProgram_TXPS);
-	//glUniform1i(loc_shadow_texture, ShadowMapping.texture_unit);
 
 	glUniform1i(loc_flag_texture_reverse, false);
-	//set_material_floor();
-	//glUniform1i(loc_base_texture, TEXTURE_INDEX_ORIGINAL);
 	glUniform1i(loc_base_texture, texnum_ori);
-	//glUniform1i(loc_original_texture, TEXTURE_INDEX_TEST);
 	glUniform1i(loc_original_texture, texnum_ori);
 
 	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, -IMGSIZE/2, 0.0f));
 	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(IMGSIZE, IMGSIZE, IMGSIZE));
-	//ModelMatrix = glm::rotate(ModelMatrix, -90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
 	ModelViewMatrix = ViewMatrix * ModelMatrix;
 	ModelViewProjectionMatrix = ProjectionMatrix * ModelViewMatrix;
 	ModelViewMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
-
-
+	
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_TXPS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 	glUniformMatrix4fv(loc_ModelViewMatrix_TXPS, 1, GL_FALSE, &ModelViewMatrix[0][0]);
 	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_TXPS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 	draw_quad();
 
 	glUseProgram(0);
-
 }
-
 
 void draw_compressed_texture() {
 	glm::mat4 ModelMatrix;
 	
 
 	glUseProgram(h_ShaderProgram_TXPS);
-	//glUniform1i(loc_shadow_texture, ShadowMapping.texture_unit);
 
-	glUniform1i(loc_flag_texture_reverse, true);
-	//set_material_floor();
-	glUniform1i(loc_base_texture, texnum_comp);
-	//glUniform1i(loc_base_texture, TEXTURE_INDEX_TEST);
-	glUniform1i(loc_original_texture, texnum_ori);
-	//glUniform1i(loc_original_texture, TEXTURE_INDEX_COMPRESS_ASTC12X12);
+	glUniform1i(loc_flag_texture_reverse, true);//DDS 포맷은 상하가 반전되어 있다
+	glUniform1i(loc_base_texture, texnum_comp);			//랜더링할 텍스쳐
+	glUniform1i(loc_original_texture, texnum_ori);		//비교 대상 텍스쳐(원본)
 
 	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f- IMGSIZE, -IMGSIZE/2, 0.0f));
 	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(IMGSIZE, IMGSIZE, IMGSIZE));
-	//ModelMatrix = glm::rotate(ModelMatrix, -90.0f*TO_RADIAN, glm::vec3(1.0f, 0.0f, 0.0f));
 	ModelViewMatrix = ViewMatrix * ModelMatrix;
 	ModelViewProjectionMatrix = ProjectionMatrix * ModelViewMatrix;
 	ModelViewMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
-
-
+	
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_TXPS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 	glUniformMatrix4fv(loc_ModelViewMatrix_TXPS, 1, GL_FALSE, &ModelViewMatrix[0][0]);
 	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_TXPS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 	draw_quad();
 
 	glUseProgram(0);
-
 }
 
+//정의 시 1000frame 랜더링 시간 측정.
 //#define TIMETEST 0
-int timer_cnt = 0;
-float dislaytime = 0.0f;
 
-__int64 start_main, freq_main, end_main;
-#define CHECK_TIME_START QueryPerformanceFrequency((LARGE_INTEGER*)&freq_main); QueryPerformanceCounter((LARGE_INTEGER*)&start_main)
-#define CHECK_TIME_END(a) QueryPerformanceCounter((LARGE_INTEGER*)&end_main); a = (float)((float)(end_main - start_main) / (freq_main / 1000.0f))
+int timer_cnt = 0;
+
 // callbacks
 void display(void) {
 #ifdef TIMETEST
+	float dislaytime = 0.0f;
+	__int64 start_main, freq_main, end_main;
+	#define CHECK_TIME_START QueryPerformanceFrequency((LARGE_INTEGER*)&freq_main); QueryPerformanceCounter((LARGE_INTEGER*)&start_main)
+	#define CHECK_TIME_END(a) QueryPerformanceCounter((LARGE_INTEGER*)&end_main); a = (float)((float)(end_main - start_main) / (freq_main / 1000.0f))
+
 	float computetime;
 
 	timer_cnt++;
@@ -259,8 +218,6 @@ void display(void) {
 		draw_compressed_texture();
 	
 #endif
-	
-
 	glutSwapBuffers();
 }
 
@@ -323,7 +280,6 @@ void keyboard(unsigned char key, int x, int y) {
 		glutPostRedisplay();
 		break;
 	case 'm':
-		//printf("log, texnum : %d\n",texnum);
 		texnum_comp++;
 		if (texnum_comp >= TEXTURE_INDEX_COMPRESS_TEST20) {
 			texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;
@@ -367,45 +323,25 @@ void reshape(int width, int height) {
 }
 
 void cleanup(void) {
-	glDeleteVertexArrays(1, &axes_VAO);
-	glDeleteBuffers(1, &axes_VBO);
-
-	glDeleteVertexArrays(1, &tiger_VAO);
-	glDeleteBuffers(1, &tiger_VBO);
-
 	glDeleteVertexArrays(1, &rectangle_VAO);
 	glDeleteBuffers(1, &rectangle_VBO);
-	
 }
 
 void register_callbacks(void) {
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
 	glutReshapeFunc(reshape);
-	//glutTimerFunc(rotation_speed_tiger, timer_scene, 1);
 	glutCloseFunc(cleanup);
 	glutIdleFunc(display);
 }
 
 void prepare_shader_program(void) {
-//	int i;
-	//char string[256];
-	ShaderInfo shader_info_simple[3] = {
-		{ GL_VERTEX_SHADER, "Shaders/simple.vert" },
-	{ GL_FRAGMENT_SHADER, "Shaders/simple.frag" },
-	{ GL_NONE, NULL }
-	};
+	
 	ShaderInfo shader_info_TXPS[3] = {
 		{ GL_VERTEX_SHADER, "Shaders/Phong_Tx.vert" },
 	{ GL_FRAGMENT_SHADER, "Shaders/Phong_Tx.frag" },
 	{ GL_NONE, NULL }
 	};
-
-
-	//////////////////
-	h_ShaderProgram_simple = LoadShaders(shader_info_simple);
-	loc_primitive_color = glGetUniformLocation(h_ShaderProgram_simple, "u_primitive_color");
-	loc_ModelViewProjectionMatrix_simple = glGetUniformLocation(h_ShaderProgram_simple, "u_ModelViewProjectionMatrix");
 
 	//////////////////
 	h_ShaderProgram_TXPS = LoadShaders(shader_info_TXPS);
@@ -420,15 +356,7 @@ void prepare_shader_program(void) {
 	loc_flag_texture_reverse = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_reverse");
 }
 
-void initialize_flags(void) {
-	flag.texture_mapping = 1;
-	flag.texture_diffrence = 0;
 
-	glUseProgram(h_ShaderProgram_TXPS);
-	glUniform1i(loc_flag_texture_mapping, flag.texture_mapping);
-	glUniform1i(loc_flag_texture_diffrence, flag.texture_diffrence);
-	glUseProgram(0);
-}
 
 void initialize_OpenGL(void) {
 	glEnable(GL_DEPTH_TEST);
@@ -440,60 +368,22 @@ void initialize_OpenGL(void) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	campos = glm::vec3(0.0f, 0.0f, 0.0f);
-
-#define CAMERA_COORDINATE 000.0f
-	ViewMatrix = glm::lookAt(glm::vec3(CAMERA_COORDINATE, CAMERA_COORDINATE, CAMERA_COORDINATE - IMGSIZE*1.5f), glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f));
-
-	//initialize_lights_and_material();
-	initialize_flags();
-
-	glGenTextures(N_NORMAL_TEXTURES_USED, texture_names);
+	ViewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, - IMGSIZE*1.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	
+	glGenTextures(N_NORMAL_TEXTURES_USED, texture_names);//미리 텍스쳐 생성
 }
 
 
 void prepare_scene(void) {
-	prepare_axes();
 	prepare_quad();
-	//prepare_texture_original("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
-	//prepare_texture_original("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
-
-
-	upload_TEST_Texture_DDS(5);
-	upload_TEST_Texture_Original();
-	upload_TEST_Texture_BPTC();
-	upload_TEST_Texture_DDS(1);
-	upload_TEST_Texture_DDS(3);
+	create_ORIGINAL_texture("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
+	create_ORIGINAL_texture("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
 	
-	//int res;
-
-	//glActiveTexture(GL_TEXTURE0 + TEXTURE_INDEX_COMPRESS_TEST1);
-	//glBindTexture(GL_TEXTURE_2D, texture_names[TEXTURE_INDEX_COMPRESS_TEST1]);
-	//res = loadKTX("Data/testImg/jpg20/results/img1_JPG_BC7.KTX", texture_names[TEXTURE_INDEX_ORIGINAL_TEST1]);
-	//res = loadKTX("Data/testImg/jpg20/results/img1_JPG_DXT5.KTX",texture_names[TEXTURE_INDEX_COMPRESS_TEST1]);
-	//printf("res = %d\n",res);
-
-	//loadBC7("Data/img1.dds");
-	//loadDDS("Data/img1.dds");
-
-	//GLint params1, params2;
-
-	//glGetIntegerv(GL_MAJOR_VERSION, &params1);
-	//glGetIntegerv(GL_MINOR_VERSION, &params2);
-
-	//printf("-------------version : %d . %d\n", params1, params2);
-	//fprintf(stdout, " - OpenGL version supported: %s\n", glGetString(GL_VERSION));
-
-
-	//loadDDSs("Data/4kimg_JPG_DXT3_7.DDS");
-
-	//compress_test("Data/4kimg.jpg","test.img");
-	//oadTexture("test.img");
-	//prepare_texture_ASTC();
-	//loadDDS("Data/4kimg_JPG_DXT3_4.DDS");
-	//texnum=texture_loadDDS("Data/4kimg_JPG_DXT5_3.DDS");
-	//texnum = loadDDSs("Data/uvtemplate - 복사본.DDS");
-
+	upload_TEST_Texture_Original();
+	upload_TEST_Texture_DXT(1);
+	upload_TEST_Texture_DXT(3);
+	upload_TEST_Texture_DXT(5);
+	upload_TEST_Texture_BPTC();
 	//upload_TEST_Texture_ASTC(4);
 	//upload_TEST_Texture_ASTC(5);
 	//upload_TEST_Texture_ASTC(6);
@@ -538,7 +428,12 @@ void greetings(char *program_name, char messages[][256], int n_message_lines) {
 
 	for (int i = 0; i < n_message_lines; i++)
 		fprintf(stdout, "%s\n", messages[i]);
-	fprintf(stdout, "\n**************************************************************\n\n");
+	fprintf(stdout, "\n'w', 's', 'a', 'd', 'z', 'c' => Move camera\n");
+	fprintf(stdout, "'p' => View Diffrence\n");
+	fprintf(stdout, "'n' => Change Draw Mode\n");
+	fprintf(stdout, "'m' => View Next Image\n");
+	fprintf(stdout, "'t' => Toggle Texture\n");
+	fprintf(stdout, "**************************************************************\n\n");
 
 	initialize_glew();
 }
@@ -547,11 +442,10 @@ void greetings(char *program_name, char messages[][256], int n_message_lines) {
 int main(int argc, char *argv[]) {
 	// Phong Shading
 	char program_name[64] = "Texture compress 에 따른 비교";
-	char messages[N_MESSAGE_LINES][256] = { "    - Keys used: '0', '1', 't', 'f', 's', 'd', 'r', 'l', 'ESC'" };
+	char messages[N_MESSAGE_LINES][256] = { "    - Keys used: 'w', 's', 'a', 'd', 'z', 'c', 'p', 'n', 'm', 't' 'ESC'" };
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-	// glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize((int)IMGSIZE*2, (int)IMGSIZE);
 	glutInitContextVersion(4, 5);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
