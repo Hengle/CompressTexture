@@ -103,11 +103,11 @@ void upload_TEST_Texture_ASTC(int compressLevel) {
 	float time = 0.0f;
 
 	for (int i = 1; i <= 20; i++) {
-		sprintf(name, "Data/astc/%dx%d/img%d.astc", compressLevel, compressLevel,i);
-		time += create_ASTC_texture(name, TEXTURE_INDEX_COMPRESS_TEST1-1+i);
+		sprintf(name, "Data/astc/%dx%d/img%d.astc", compressLevel, compressLevel, i);
+		time += create_ASTC_texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
 	}
 
-	printf("upload time for ASTC %dx%d compress : %f\n", compressLevel, compressLevel,time);
+	printf("upload time for ASTC %dx%d compress : %f\n", compressLevel, compressLevel, time);
 
 	FILE* fp = fopen("log.txt", "a");
 	fprintf(fp, "upload time for ASTC %dx%d compress : %f\n", compressLevel, compressLevel, time);
@@ -119,14 +119,14 @@ void upload_TEST_Texture_DXT(int compressLevel) {//DXT 1, 3, 5
 	float time = 0.0f;
 
 	for (int i = 1; i <= 20; i++) {
-		sprintf(name, "Data/dxt/img%d_JPG_DXT%d.DDS", i,compressLevel);
+		sprintf(name, "Data/dxt/img%d_JPG_DXT%d.DDS", i, compressLevel);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
 	}
 
 	printf("upload time for DXT%d compress : %f\n", compressLevel, time);
 
 	FILE* fp = fopen("log.txt", "a");
-	fprintf(fp,"upload time for DXT%d compress : %f\n", compressLevel, time);
+	fprintf(fp, "upload time for DXT%d compress : %f\n", compressLevel, time);
 	fclose(fp);
 
 }
@@ -168,11 +168,11 @@ void compare_PSNR() {
 		}
 
 		//BC7
-		sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_BC7.DDS", i);
-		score = getPSNR(name_ori[i], name);
-		printf("BPTC - %lf ", score);
+		//sprintf(name, "Data/testImg/jpg20/results/img%d_JPG_BC7.DDS", i);
+		//score = getPSNR(name_ori[i], name);
+		//printf("BPTC - %lf ", score);
 
-		printf("\n");
+		//printf("\n");
 	}
 
 	////ASTC

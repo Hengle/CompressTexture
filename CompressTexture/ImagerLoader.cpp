@@ -194,7 +194,7 @@ GLuint load_astc_image(const char *filename)
 	else if (xdim == 4 && ydim == 4) {
 		glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_COMPRESSED_RGBA_ASTC_4x4_KHR, xsize, ysize, 0, size, buffer);
 	}
-	
+
 	free(buffer);
 
 	return texname;
@@ -300,7 +300,7 @@ float load_astc_image_checktime(const char *filename)
 #define FOURCC_DXT5 0x35545844 // Equivalent to "DXT5" in ASCII
 #define FOURCC_BPTC 0x30315844
 GLuint load_dds_image(const char * imagepath) {
-	   
+
 	unsigned char header[124];
 
 	FILE *fp;
@@ -374,7 +374,7 @@ GLuint load_dds_image(const char * imagepath) {
 
 	unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16;
 	unsigned int offset = 0;
-		
+
 	/* load the mipmaps */
 	for (unsigned int level = 0; level < mipMapCount && (width || height); ++level)
 	{
@@ -390,7 +390,7 @@ GLuint load_dds_image(const char * imagepath) {
 		if (height < 1) height = 1;
 
 	}
-	
+
 	free(buffer);
 
 	return texname;

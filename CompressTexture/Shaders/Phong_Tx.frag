@@ -7,9 +7,6 @@ uniform bool u_flag_texture_reverse = false;
 uniform bool u_flag_texture_mapping = true;
 uniform bool u_flag_texture_diffrence = false;
 
-const float zero_f = 0.0f;
-const float one_f = 1.0f;
-
 in vec3 v_position_EC;
 in vec3 v_normal_EC;
 in vec2 v_tex_coord;

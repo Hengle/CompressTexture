@@ -105,19 +105,19 @@ int draw_mode = 0;
 
 void draw_original_texture() {
 	glm::mat4 ModelMatrix;
-	
+
 	glUseProgram(h_ShaderProgram_TXPS);
 
 	glUniform1i(loc_flag_texture_reverse, false);
 	glUniform1i(loc_base_texture, texnum_ori);
 	glUniform1i(loc_original_texture, texnum_ori);
 
-	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, -IMGSIZE/2, 0.0f));
+	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, -IMGSIZE / 2, 0.0f));
 	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(IMGSIZE, IMGSIZE, IMGSIZE));
 	ModelViewMatrix = ViewMatrix * ModelMatrix;
 	ModelViewProjectionMatrix = ProjectionMatrix * ModelViewMatrix;
 	ModelViewMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
-	
+
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_TXPS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 	glUniformMatrix4fv(loc_ModelViewMatrix_TXPS, 1, GL_FALSE, &ModelViewMatrix[0][0]);
 	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_TXPS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
@@ -128,7 +128,7 @@ void draw_original_texture() {
 
 void draw_compressed_texture() {
 	glm::mat4 ModelMatrix;
-	
+
 
 	glUseProgram(h_ShaderProgram_TXPS);
 
@@ -136,12 +136,12 @@ void draw_compressed_texture() {
 	glUniform1i(loc_base_texture, texnum_comp);			//랜더링할 텍스쳐
 	glUniform1i(loc_original_texture, texnum_ori);		//비교 대상 텍스쳐(원본)
 
-	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f- IMGSIZE, -IMGSIZE/2, 0.0f));
+	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f - IMGSIZE, -IMGSIZE / 2, 0.0f));
 	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(IMGSIZE, IMGSIZE, IMGSIZE));
 	ModelViewMatrix = ViewMatrix * ModelMatrix;
 	ModelViewProjectionMatrix = ProjectionMatrix * ModelViewMatrix;
 	ModelViewMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
-	
+
 	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_TXPS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
 	glUniformMatrix4fv(loc_ModelViewMatrix_TXPS, 1, GL_FALSE, &ModelViewMatrix[0][0]);
 	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_TXPS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
@@ -160,8 +160,8 @@ void display(void) {
 #ifdef TIMETEST
 	float dislaytime = 0.0f;
 	__int64 start_main, freq_main, end_main;
-	#define CHECK_TIME_START QueryPerformanceFrequency((LARGE_INTEGER*)&freq_main); QueryPerformanceCounter((LARGE_INTEGER*)&start_main)
-	#define CHECK_TIME_END(a) QueryPerformanceCounter((LARGE_INTEGER*)&end_main); a = (float)((float)(end_main - start_main) / (freq_main / 1000.0f))
+#define CHECK_TIME_START QueryPerformanceFrequency((LARGE_INTEGER*)&freq_main); QueryPerformanceCounter((LARGE_INTEGER*)&start_main)
+#define CHECK_TIME_END(a) QueryPerformanceCounter((LARGE_INTEGER*)&end_main); a = (float)((float)(end_main - start_main) / (freq_main / 1000.0f))
 
 	float computetime;
 
@@ -206,7 +206,7 @@ void display(void) {
 		}
 	}
 #else
-	
+
 	glClearColor(1, 0, 0, 0);
 	glViewport(0, 0, WINDOW_param.width, WINDOW_param.height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -214,7 +214,7 @@ void display(void) {
 		draw_original_texture();
 	if (draw_mode != 1)
 		draw_compressed_texture();
-	
+
 #endif
 	glutSwapBuffers();
 }
@@ -222,7 +222,7 @@ void display(void) {
 glm::vec3 campos;
 
 void setCamera() {
-	ViewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, -IMGSIZE*1.5f), glm::vec3(0.0f, 0.0f, 0.0f),	glm::vec3(0.0f, 1.0f, 0.0f));
+	ViewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, -IMGSIZE * 1.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	ViewMatrix = glm::translate(ViewMatrix, campos);
 	glutPostRedisplay();
 }
@@ -272,7 +272,7 @@ void keyboard(unsigned char key, int x, int y) {
 		case 0: printf("draw all image\n"); break;
 		case 1: printf("draw original image\n"); break;
 		case 2: printf("draw compressed image\n"); break;
-		}		
+		}
 
 		glutSetWindowTitle(titleTex[texnum_comp]);
 		glutPostRedisplay();
@@ -334,7 +334,7 @@ void register_callbacks(void) {
 }
 
 void prepare_shader_program(void) {
-	
+
 	ShaderInfo shader_info_TXPS[3] = {
 		{ GL_VERTEX_SHADER, "Shaders/Phong_Tx.vert" },
 	{ GL_FRAGMENT_SHADER, "Shaders/Phong_Tx.frag" },
@@ -366,8 +366,8 @@ void initialize_OpenGL(void) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	campos = glm::vec3(0.0f, 0.0f, 0.0f);
-	ViewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, - IMGSIZE*1.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	
+	ViewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, -IMGSIZE * 1.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
 	//glGenTextures(N_NORMAL_TEXTURES_USED, texture_names);//미리 텍스쳐 생성
 }
 
@@ -376,7 +376,7 @@ void prepare_scene(void) {
 	prepare_quad();
 	create_ORIGINAL_texture("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
 	create_ORIGINAL_texture("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
-	
+
 	upload_TEST_Texture_Original();
 	upload_TEST_Texture_DXT(1);
 	upload_TEST_Texture_DXT(3);
@@ -398,7 +398,7 @@ void initialize_renderer(void) {
 	prepare_shader_program();
 	initialize_OpenGL();
 	prepare_scene();
-	
+
 }
 
 void initialize_glew(void) {
@@ -444,7 +444,7 @@ int main(int argc, char *argv[]) {
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-	glutInitWindowSize((int)IMGSIZE*2, (int)IMGSIZE);
+	glutInitWindowSize((int)IMGSIZE * 2, (int)IMGSIZE);
 	glutInitContextVersion(4, 2);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow(program_name);
