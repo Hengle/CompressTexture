@@ -38,14 +38,15 @@ void prepare_quad(void) { // Draw coordinate axes.
 float create_ORIGINAL_texture(const char* filename, GLuint textureID) {
 	float time;
 	glActiveTexture(GL_TEXTURE0 + textureID);
-	glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
+	//glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
 
-	time = load_unpack_image(filename);
+	time = load_unpack_image_checktime(filename);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
 	return time;
 }
 
@@ -53,9 +54,9 @@ float create_ASTC_texture(const char* filename, GLuint textureID) {
 
 	float time;
 	glActiveTexture(GL_TEXTURE0 + textureID);
-	glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
+	//glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
 
-	time = load_astc_image(filename);
+	time = load_astc_image_checktime(filename);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -69,9 +70,9 @@ float create_DDS_Texture(const char* filename, GLuint textureID) {
 
 	float time;
 	glActiveTexture(GL_TEXTURE0 + textureID);
-	glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
+	//glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
 
-	time = load_dds_image(filename);
+	time = load_dds_image_checktime(filename);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

@@ -50,8 +50,6 @@ struct _WINDOW_param {
 
 #include "ImageLoader.h"
 
-GLuint texture_names[N_NORMAL_TEXTURES_USED];
-
 char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 	"ORIGINAL",
 	  "TEST",
@@ -99,7 +97,7 @@ char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 
 #include "Objects.h"
 
-#define IMGSIZE 1024.0f
+#define IMGSIZE 600.0f
 GLuint texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;		//original (unpack) texture name
 GLuint texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;		//compressed texture name
 
@@ -370,7 +368,7 @@ void initialize_OpenGL(void) {
 	campos = glm::vec3(0.0f, 0.0f, 0.0f);
 	ViewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, - IMGSIZE*1.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	
-	glGenTextures(N_NORMAL_TEXTURES_USED, texture_names);//미리 텍스쳐 생성
+	//glGenTextures(N_NORMAL_TEXTURES_USED, texture_names);//미리 텍스쳐 생성
 }
 
 

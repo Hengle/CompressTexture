@@ -18,7 +18,6 @@
 #define TEXTURE_INDEX_ORIGINAL 0
 #define TEXTURE_INDEX_TEST 1
 
-
 #define TEXTURE_INDEX_COMPRESS_TEST1 2
 #define TEXTURE_INDEX_COMPRESS_TEST2 3
 #define TEXTURE_INDEX_COMPRESS_TEST3 4
@@ -39,7 +38,6 @@
 #define TEXTURE_INDEX_COMPRESS_TEST18 19
 #define TEXTURE_INDEX_COMPRESS_TEST19 20
 #define TEXTURE_INDEX_COMPRESS_TEST20 21
-
 
 #define TEXTURE_INDEX_ORIGINAL_TEST1 22
 #define TEXTURE_INDEX_ORIGINAL_TEST2 23
@@ -63,7 +61,13 @@
 #define TEXTURE_INDEX_ORIGINAL_TEST20 41
 
 
-float load_unpack_image(const char *filename);
-float load_astc_image(const char *filename);
-float load_dds_image(const char * imagepath);
+GLuint load_unpack_image(const char *filename);
+float load_unpack_image_checktime(const char *filename);
+
+GLuint load_astc_image(const char *filename);
+float load_astc_image_checktime(const char *filename);
+
+GLuint load_dds_image(const char * imagepath);
+float load_dds_image_checktime(const char * imagepath);
+
 double getPSNR(const char* fileName1, const char* fileName2);

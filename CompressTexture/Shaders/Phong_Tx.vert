@@ -11,7 +11,6 @@ layout (location = 2) in vec2 a_tex_coord;
 out vec3 v_position_EC;
 out vec3 v_normal_EC;
 out vec2 v_tex_coord;
-out vec4 v_shadow_coord[NUMBER_OF_LIGHT_COUNT];
 
 void main(void) {	
 	v_position_EC = vec3(u_ModelViewMatrix*vec4(a_position, 1.0f));
