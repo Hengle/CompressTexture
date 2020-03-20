@@ -104,3 +104,8 @@ upload time for DXT1 compress : 15.895202
 upload time for DXT3 compress : 29.252701
 upload time for DXT5 compress : 16.620300
 upload time for BPTC compress : 17.053999
+upload time for original : 278.082886
+upload time for DXT1 compress : 53.502003
+upload time for DXT3 compress : 107.693802
+upload time for DXT5 compress : 68.755104
+upload time for BPTC compress : 114.037697

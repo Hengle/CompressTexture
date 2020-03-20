@@ -1,6 +1,4 @@
-#version 450
-
-#define NUMBER_OF_LIGHT_COUNT 4 
+#version 420
 
 uniform mat4 u_ModelViewProjectionMatrix;
 uniform mat4 u_ModelViewMatrix;

@@ -1,5 +1,4 @@
-#version 450
-
+#version 420
 
 uniform sampler2D u_base_texture;
 uniform sampler2D u_original_texture;

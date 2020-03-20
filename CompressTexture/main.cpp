@@ -447,7 +447,7 @@ int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	glutInitWindowSize((int)IMGSIZE*2, (int)IMGSIZE);
-	glutInitContextVersion(4, 5);
+	glutInitContextVersion(4, 2);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutCreateWindow(program_name);
 
