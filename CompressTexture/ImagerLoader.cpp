@@ -5,7 +5,8 @@ __int64 start, freq, end;
 #define CHECK_TIME_START QueryPerformanceFrequency((LARGE_INTEGER*)&freq); QueryPerformanceCounter((LARGE_INTEGER*)&start)
 #define CHECK_TIME_END(a) QueryPerformanceCounter((LARGE_INTEGER*)&end); a = (float)((float)(end - start) / (freq / 1000.0f))
 
-
+//압축되지 않은 일반 이미지(jpg, png 등)을 로드하여 텍스처하는 함수
+//리턴 : texname
 GLuint load_unpack_image(const char *filename) {
 	FREE_IMAGE_FORMAT tx_file_format;
 	int tx_bits_per_pixel;
@@ -23,7 +24,7 @@ GLuint load_unpack_image(const char *filename) {
 	if (tx_bits_per_pixel == 32)
 		tx_pixmap_32 = tx_pixmap;
 	else {
-		//fprintf(stdout, " * Converting texture from %d bits to 32 bits...\n", tx_bits_per_pixel);
+		//GPU에서 업로드하기 위해 비트맵 포맷으로 변환
 		tx_pixmap_32 = FreeImage_ConvertTo32Bits(tx_pixmap);
 	}
 
@@ -45,6 +46,8 @@ GLuint load_unpack_image(const char *filename) {
 	return texname;
 }
 
+//압축되지 않은 일반 이미지(jpg, png 등)을 로드하여 텍스처하는 함수 - 시간 측정 버전
+//리턴 : 업로드 시간
 float load_unpack_image_checktime(const char *filename) {
 	FREE_IMAGE_FORMAT tx_file_format;
 	int tx_bits_per_pixel;
@@ -110,6 +113,8 @@ int perform_srgb_transform = 0;
 
 #define MAGIC_FILE_CONSTANT 0x5CA1AB13
 
+//ASTC 포맷 파일을 로드하여 텍스처하는 함수 - 시간 측정 버전
+//리턴 : texname
 GLuint load_astc_image(const char *filename)
 {
 	FILE *f = fopen(filename, "rb");
@@ -200,7 +205,8 @@ GLuint load_astc_image(const char *filename)
 	return texname;
 }
 
-
+//ASTC 포맷 파일을 로드하여 텍스처하는 함수 - 시간 측정 버전
+//리턴 : 업로드 시간
 float load_astc_image_checktime(const char *filename)
 {
 	FILE *f = fopen(filename, "rb");
@@ -295,6 +301,8 @@ float load_astc_image_checktime(const char *filename)
 }
 
 
+//.DDS 포맷 파일(DXT1~5, BPTC)을 로드하여 텍스처하는 함수 - 시간 측정 버전
+//리턴 : texname
 #define FOURCC_DXT1 0x31545844 // Equivalent to "DXT1" in ASCII
 #define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
 #define FOURCC_DXT5 0x35545844 // Equivalent to "DXT5" in ASCII
@@ -396,6 +404,8 @@ GLuint load_dds_image(const char * imagepath) {
 	return texname;
 }
 
+//.DDS 포맷 파일(DXT1~5, BPTC)을 로드하여 텍스처하는 함수 - 시간 측정 버전
+//리턴 : 업로드 시간
 float load_dds_image_checktime(const char * imagepath) {
 
 	unsigned char header[124];
@@ -502,6 +512,7 @@ float load_dds_image_checktime(const char * imagepath) {
 
 
 //두 이미지의 유사성 비교, 높을수록 좋은 것.
+//리턴 : PSNR 점수
 double getPSNR(const char* fileName1, const char* fileName2)
 {
 	FreeImage_Initialise(TRUE);

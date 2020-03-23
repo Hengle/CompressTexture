@@ -45,8 +45,8 @@ void main(void) {
 		tex_color = texture(u_base_texture, tex_coord);
 
 	
-		final_color.x = abs(original_color.x - tex_color.x) * 10;
-		final_color.y = abs(original_color.y - tex_color.y) * 10;
-		final_color.z = abs(original_color.z - tex_color.z) * 10;
+		final_color.x = 1.0 - abs(original_color.x - tex_color.x);
+		final_color.y = 1.0 - abs(original_color.y - tex_color.y);
+		final_color.z = 1.0 - abs(original_color.z - tex_color.z);
 	}
 }

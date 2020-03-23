@@ -49,6 +49,7 @@ struct _WINDOW_param {
 
 
 #include "ImageLoader.h"
+#include "Objects.h"
 
 char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 	"ORIGINAL",
@@ -95,7 +96,6 @@ char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 	  "TEST_Original_20"
 };
 
-#include "Objects.h"
 
 #define IMGSIZE 600.0f
 GLuint texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;		//original (unpack) texture name
@@ -379,9 +379,9 @@ void prepare_scene(void) {
 
 	upload_TEST_Texture_Original();
 	upload_TEST_Texture_DXT(1);
-	upload_TEST_Texture_DXT(3);
-	upload_TEST_Texture_DXT(5);
-	upload_TEST_Texture_BPTC();
+	//upload_TEST_Texture_DXT(3);
+	//upload_TEST_Texture_DXT(5);
+	//upload_TEST_Texture_BPTC();
 	//upload_TEST_Texture_ASTC(4);
 	//upload_TEST_Texture_ASTC(5);
 	//upload_TEST_Texture_ASTC(6);
