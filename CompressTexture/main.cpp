@@ -74,6 +74,10 @@ char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 	  "TEST_COMPRESSED_18",
 	  "TEST_COMPRESSED_19",
 	  "TEST_COMPRESSED_20",
+	  "TEST_COMPRESSED_21",
+	  "TEST_COMPRESSED_22",
+	  "TEST_COMPRESSED_23",
+	  "TEST_COMPRESSED_24",
 	  "TEST_Original_1",
 	  "TEST_Original_2",
 	  "TEST_Original_3",
@@ -93,7 +97,11 @@ char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 	  "TEST_Original_17",
 	  "TEST_Original_18",
 	  "TEST_Original_19",
-	  "TEST_Original_20"
+	  "TEST_Original_20",
+	  "TEST_Original_21",
+	  "TEST_Original_22",
+	  "TEST_Original_23",
+	  "TEST_Original_24",
 };
 
 
@@ -279,12 +287,12 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'm':
 		texnum_comp++;
-		if (texnum_comp >= TEXTURE_INDEX_COMPRESS_TEST20) {
+		if (texnum_comp >= TEXTURE_INDEX_COMPRESS_TEST1 + TEST_IMAGE_COUNT) {
 			texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;
 		}
 
 		texnum_ori++;
-		if (texnum_ori >= TEXTURE_INDEX_ORIGINAL_TEST20) {
+		if (texnum_ori >= TEXTURE_INDEX_ORIGINAL_TEST1 + TEST_IMAGE_COUNT ) {
 			texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;
 		}
 
@@ -378,10 +386,10 @@ void prepare_scene(void) {
 	create_ORIGINAL_texture("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
 
 	upload_TEST_Texture_Original();
-	upload_TEST_Texture_DXT(1);
+	//upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);
-	//upload_TEST_Texture_BPTC();
+	upload_TEST_Texture_BPTC();
 	//upload_TEST_Texture_ASTC(4);
 	//upload_TEST_Texture_ASTC(5);
 	//upload_TEST_Texture_ASTC(6);
@@ -391,6 +399,7 @@ void prepare_scene(void) {
 	//upload_TEST_Texture_ASTC(112);
 
 	//compare_PSNR();
+
 }
 
 void initialize_renderer(void) {

@@ -11,7 +11,6 @@
 #include "Shaders/LoadShaders.h"
 #include "My_Shading.h"
 #include <time.h>
-
 #include <glm/gtc/matrix_transform.hpp> //translate, rotate, scale, lookAt, perspective, etc.
 #include <glm/gtc/matrix_inverse.hpp> // inverseTranspose, etc.
 

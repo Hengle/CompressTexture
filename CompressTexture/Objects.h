@@ -1,6 +1,6 @@
 
-
-#define N_NORMAL_TEXTURES_USED 42
+#define TEST_IMAGE_COUNT 24
+#define N_NORMAL_TEXTURES_USED 50
 
 #define TEXTURE_INDEX_ORIGINAL 0
 #define TEXTURE_INDEX_TEST 1
@@ -25,27 +25,35 @@
 #define TEXTURE_INDEX_COMPRESS_TEST18 19
 #define TEXTURE_INDEX_COMPRESS_TEST19 20
 #define TEXTURE_INDEX_COMPRESS_TEST20 21
+#define TEXTURE_INDEX_COMPRESS_TEST21 22
+#define TEXTURE_INDEX_COMPRESS_TEST22 23
+#define TEXTURE_INDEX_COMPRESS_TEST23 24
+#define TEXTURE_INDEX_COMPRESS_TEST24 25
 
-#define TEXTURE_INDEX_ORIGINAL_TEST1 22
-#define TEXTURE_INDEX_ORIGINAL_TEST2 23
-#define TEXTURE_INDEX_ORIGINAL_TEST3 24
-#define TEXTURE_INDEX_ORIGINAL_TEST4 25
-#define TEXTURE_INDEX_ORIGINAL_TEST5 26
-#define TEXTURE_INDEX_ORIGINAL_TEST6 27
-#define TEXTURE_INDEX_ORIGINAL_TEST7 28
-#define TEXTURE_INDEX_ORIGINAL_TEST8 29
-#define TEXTURE_INDEX_ORIGINAL_TEST9 30
-#define TEXTURE_INDEX_ORIGINAL_TEST10 31
-#define TEXTURE_INDEX_ORIGINAL_TEST11 32
-#define TEXTURE_INDEX_ORIGINAL_TEST12 33
-#define TEXTURE_INDEX_ORIGINAL_TEST13 34
-#define TEXTURE_INDEX_ORIGINAL_TEST14 35
-#define TEXTURE_INDEX_ORIGINAL_TEST15 36
-#define TEXTURE_INDEX_ORIGINAL_TEST16 37
-#define TEXTURE_INDEX_ORIGINAL_TEST17 38
-#define TEXTURE_INDEX_ORIGINAL_TEST18 39
-#define TEXTURE_INDEX_ORIGINAL_TEST19 40
-#define TEXTURE_INDEX_ORIGINAL_TEST20 41
+#define TEXTURE_INDEX_ORIGINAL_TEST1 26
+#define TEXTURE_INDEX_ORIGINAL_TEST2 27
+#define TEXTURE_INDEX_ORIGINAL_TEST3 28
+#define TEXTURE_INDEX_ORIGINAL_TEST4 29
+#define TEXTURE_INDEX_ORIGINAL_TEST5 30
+#define TEXTURE_INDEX_ORIGINAL_TEST6 31
+#define TEXTURE_INDEX_ORIGINAL_TEST7 32
+#define TEXTURE_INDEX_ORIGINAL_TEST8 33
+#define TEXTURE_INDEX_ORIGINAL_TEST9 34
+#define TEXTURE_INDEX_ORIGINAL_TEST10 35
+#define TEXTURE_INDEX_ORIGINAL_TEST11 36
+#define TEXTURE_INDEX_ORIGINAL_TEST12 37
+#define TEXTURE_INDEX_ORIGINAL_TEST13 38
+#define TEXTURE_INDEX_ORIGINAL_TEST14 39
+#define TEXTURE_INDEX_ORIGINAL_TEST15 40
+#define TEXTURE_INDEX_ORIGINAL_TEST16 41
+#define TEXTURE_INDEX_ORIGINAL_TEST17 42
+#define TEXTURE_INDEX_ORIGINAL_TEST18 43
+#define TEXTURE_INDEX_ORIGINAL_TEST19 44
+#define TEXTURE_INDEX_ORIGINAL_TEST20 45
+#define TEXTURE_INDEX_ORIGINAL_TEST21 46
+#define TEXTURE_INDEX_ORIGINAL_TEST22 47
+#define TEXTURE_INDEX_ORIGINAL_TEST23 48
+#define TEXTURE_INDEX_ORIGINAL_TEST24 49
 
 // floor object
 GLuint rectangle_VBO, rectangle_VAO;
@@ -134,7 +142,7 @@ void upload_TEST_Texture_Original() {
 	char name[100];
 	float time = 0.0f;
 
-	for (int i = 1; i <= 20; i++) {
+	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		sprintf(name, "Data/original/img%d.jpg", i);
 		time += create_ORIGINAL_texture(name, TEXTURE_INDEX_ORIGINAL_TEST1 - 1 + i);
 	}
@@ -150,7 +158,7 @@ void upload_TEST_Texture_ASTC(int compressLevel) {
 	char name[100];
 	float time = 0.0f;
 
-	for (int i = 1; i <= 20; i++) {
+	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		sprintf(name, "Data/astc/%dx%d/img%d.astc", compressLevel, compressLevel, i);
 		time += create_ASTC_texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
 	}
@@ -166,7 +174,7 @@ void upload_TEST_Texture_DXT(int compressLevel) {//DXT 1, 3, 5
 	char name[100];
 	float time = 0.0f;
 
-	for (int i = 1; i <= 20; i++) {
+	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		sprintf(name, "Data/dxt/img%d_JPG_DXT%d.DDS", i, compressLevel);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
 	}
@@ -183,7 +191,7 @@ void upload_TEST_Texture_BPTC() {
 	char name[100];
 	float time = 0.0f;
 
-	for (int i = 1; i <= 20; i++) {
+	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		sprintf(name, "Data/bc7/img%d.DDS", i);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
 	}
@@ -196,17 +204,17 @@ void upload_TEST_Texture_BPTC() {
 }
 
 void compare_PSNR() {
-	char name_ori[20][100];
+	char name_ori[TEST_IMAGE_COUNT][100];
 	char name[100];
 
 	double score;
 	float time = 0.0f;
 
-	for (int i = 1; i <= 20; i++) {
+	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		sprintf(name_ori[i], "Data/testImg/jpg20/img%d.jpg", i);
 	}
 
-	for (int i = 1; i <= 20; i++) {
+	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		printf("image %2d, PSNR Score => ", i);
 		//DXT
 		for (int compressLevel = 1; compressLevel <= 5; compressLevel += 2) {
@@ -227,7 +235,7 @@ void compare_PSNR() {
 	//int size[] = {4,5,6,8,10,12};
 	//for (int j = 0; j < 6; j ++) {
 	//	int compressLevel = size[j];
-	//	for (int i = 1; i <= 20; i++) {
+	//	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 	//		sprintf(name, "Data/testImg/%dx%d/img%d.astc", compressLevel, compressLevel, i);
 	//		score = getPSNR(name_ori[i], name);
 	//		printf("image %d, ASTC(hdr) %dx%d PSNR Score = %lf\n", i, compressLevel, compressLevel ,score);

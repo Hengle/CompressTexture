@@ -76,12 +76,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\usr\local\OpenGL\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\usr\local\OpenGL\include;$(SolutionDir)External;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>C:\usr\local\OpenGL\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\usr\local\OpenGL\lib\x86;$(SolutionDir)External;</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;freeglut.lib;Freeimage.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -104,14 +105,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\usr\local\OpenGL\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\usr\local\OpenGL\include;$(SolutionDir)External;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\usr\local\OpenGL\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\usr\local\OpenGL\lib\x86;$(SolutionDir)External;</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;freeglut.lib;Freeimage.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
