@@ -15,6 +15,7 @@ layout (location = 0) out vec4 final_color;
 
 
 void main(void) {
+
 	vec4 base_color, shaded_color;
 
 	if(u_flag_texture_diffrence == false){

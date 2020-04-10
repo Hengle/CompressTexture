@@ -75,3 +75,71 @@ upload time for BPTC compress : 34.492001
 upload time for BPTC compress : 29.820396
 upload time for original : 136.296509
 upload time for BPTC compress : 28.913700
+upload time for original : 142.884293
+upload time for BPTC compress : 28.331697
+upload time for original : 138.051208
+upload time for BPTC compress : 32.038902
+upload time for original : 140.356491
+upload time for BPTC compress : 34.977001
+upload time for original : 132.147507
+upload time for BPTC compress : 30.401899
+upload time for original : 133.108109
+upload time for BPTC compress : 29.282804
+upload time for original : 132.854294
+upload time for BPTC compress : 28.419102
+upload time for original : 134.696396
+upload time for BPTC compress : 29.763798
+upload time for original : 133.730713
+upload time for BPTC compress : 29.429501
+upload time for original : 136.706696
+upload time for BPTC compress : 29.926897
+upload time for original : 134.518600
+upload time for BPTC compress : 28.273602
+upload time for original : 135.025909
+upload time for BPTC compress : 29.824701
+upload time for original : 137.719513
+upload time for BPTC compress : 29.009998
+upload time for original : 137.910004
+upload time for BPTC compress : 28.543997
+upload time for original : 134.397690
+upload time for BPTC compress : 29.904999
+upload time for original : 137.506210
+upload time for BPTC compress : 28.695803
+upload time for original : 135.362396
+upload time for BPTC compress : 29.177601
+upload time for original : 134.562622
+upload time for BPTC compress : 30.108704
+upload time for original : 137.361404
+upload time for BPTC compress : 30.032604
+upload time for original : 133.205490
+upload time for BPTC compress : 31.586103
+upload time for original : 134.015610
+upload time for BPTC compress : 30.085001
+upload time for original : 135.375000
+upload time for BPTC compress : 30.582699
+upload time for original : 142.927307
+upload time for BPTC compress : 31.545000
+upload time for original : 134.054901
+upload time for BPTC compress : 29.049202
+upload time for original : 151.659409
+upload time for BPTC compress : 30.957500
+upload time for original : 139.211807
+upload time for BPTC compress : 29.696199
+upload time for original : 141.176285
+upload time for BPTC compress : 31.749403
+upload time for YUV+DXT1 compress : 9.474199
+upload time for original : 145.681107
+upload time for BPTC compress : 36.368599
+upload time for YUV+DXT1 compress : 15.131499
+upload time for original : 150.668015
+upload time for BPTC compress : 30.750599
+upload time for YUV+DXT1 compress : 13.720000
+upload time for original : 142.270096
+upload time for BPTC compress : 34.829498
+upload time for YUV+DXT1 compress : 10.517599
+upload time for original : 140.665985
+upload time for BPTC compress : 38.154701
+upload time for YUV+DXT1 compress : 10.740700
+upload time for original : 144.015594
+upload time for BPTC compress : 33.060299
+upload time for YUV+DXT1 compress : 9.411500

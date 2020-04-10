@@ -146,6 +146,8 @@
   <ItemGroup>
     <None Include="Shaders\Phong_Tx.frag" />
     <None Include="Shaders\Phong_Tx.vert" />
+    <None Include="Shaders\Phong_yuv.frag" />
+    <None Include="Shaders\Phong_yuv.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

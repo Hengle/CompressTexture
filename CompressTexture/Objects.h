@@ -143,7 +143,7 @@ void upload_TEST_Texture_Original() {
 	float time = 0.0f;
 
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
-		sprintf(name, "Data/original/img%d.jpg", i);
+		sprintf(name, "Data/original/img%d.png", i);
 		time += create_ORIGINAL_texture(name, TEXTURE_INDEX_ORIGINAL_TEST1 - 1 + i);
 	}
 
@@ -199,6 +199,29 @@ void upload_TEST_Texture_BPTC() {
 
 	FILE* fp = fopen("log.txt", "a");
 	fprintf(fp, "upload time for BPTC compress : %f\n", time);
+	fclose(fp);
+
+}
+
+void upload_TEST_Texture_YUV() {
+
+	char name[100];
+	float time = 0.0f;
+
+	for (int i = 1; i <= TEST_IMAGE_COUNT; i+=3) {
+
+		sprintf(name, "Data/yuv/image_y_%d.DDS", i / 3);
+		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
+		sprintf(name, "Data/yuv/image_u_%d.DDS", i / 3);
+		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 + 0 + i);
+		sprintf(name, "Data/yuv/image_v_%d.DDS", i / 3);
+		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 + 1 + i);
+
+	}
+	printf("upload time for YUV+DXT1 compress : %f\n", time);
+
+	FILE* fp = fopen("log.txt", "a");
+	fprintf(fp, "upload time for YUV+DXT1 compress : %f\n", time);
 	fclose(fp);
 
 }

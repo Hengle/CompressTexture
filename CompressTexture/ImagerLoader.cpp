@@ -472,6 +472,7 @@ float load_dds_image_checktime(const char * imagepath) {
 	case FOURCC_BPTC:
 		format = GL_COMPRESSED_RGBA_BPTC_UNORM;
 		break;
+		GL_COMPRESSED_RED_RGTC1;
 	default:
 		free(buffer);
 		return 0;
@@ -541,4 +542,12 @@ double getPSNR(const char* fileName1, const char* fileName2)
 	FreeImage_Unload(dib2);
 
 	return psnr;
+}
+
+
+void saveGrayImage() {
+
+
+	FreeImage_sa
+
 }
