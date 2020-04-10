@@ -141,7 +141,6 @@ void draw_compressed_texture() {
 
 
 	glUseProgram(h_ShaderProgram_TXPS);
-
 	glUniform1i(loc_flag_texture_reverse, true);//DDS 포맷은 상하가 반전되어 있다
 	glUniform1i(loc_base_texture, texnum_comp);			//랜더링할 텍스쳐
 	glUniform1i(loc_original_texture, texnum_ori);		//비교 대상 텍스쳐(원본)
@@ -303,6 +302,9 @@ void keyboard(unsigned char key, int x, int y) {
 		glUseProgram(h_ShaderProgram_TXPS);
 		glUniform1i(loc_flag_texture_diffrence, flag.texture_diffrence);
 		glUseProgram(0);
+		glUseProgram(h_ShaderProgram_YUVS);
+		glUniform1i(loc_flag_texture_diffrence_yuv, flag.texture_diffrence);
+		glUseProgram(0);
 		glutPostRedisplay();
 		break;
 	case 'n':
@@ -447,7 +449,7 @@ void prepare_scene(void) {
 	//upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);
-	upload_TEST_Texture_BPTC();
+	//upload_TEST_Texture_BPTC();
 	//upload_TEST_Texture_ASTC(4);
 	//upload_TEST_Texture_ASTC(5);
 	//upload_TEST_Texture_ASTC(6);
@@ -459,7 +461,7 @@ void prepare_scene(void) {
 
 	//compare_PSNR();
 
-
+	//exit(0);
 }
 
 void initialize_renderer(void) {

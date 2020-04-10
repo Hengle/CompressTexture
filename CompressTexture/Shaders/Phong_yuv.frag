@@ -24,10 +24,12 @@ void main(void) {
 	vec4 base_color, shaded_color;
 
 	vec2 texcoord;
-	texcoord.x =  1.0 - v_tex_coord.x;
-	texcoord.y =  v_tex_coord.y;
+	texcoord.x = v_tex_coord.x;
+	texcoord.y = 1 -  v_tex_coord.y;
 
 	float y,u,v;
+
+
 	if(textureIndex == 1){	
 		y = texture2D(u_texture_y, texcoord).b;  
 		u = texture2D(u_texture_u, texcoord).b - 0.5;  
@@ -50,4 +52,26 @@ void main(void) {
 
     final_color = vec4(r,g,b,1.0);
 
+
+	
+	if(u_flag_texture_diffrence == false){	
+		final_color = vec4(r,g,b,1.0);
+	}
+	else{
+	
+		vec4 original_color, tex_color;
+		original_color = texture(u_original_texture, v_tex_coord);
+		vec2 tex_coord = vec2(v_tex_coord.x, v_tex_coord.y);
+
+		if(u_flag_texture_reverse == true){
+			tex_coord = vec2(v_tex_coord.x, 1-v_tex_coord.y);
+		}
+
+		tex_color = vec4(r,g,b,1.0);
+
+	
+		final_color.x = 1.0 - abs(original_color.x - tex_color.x);
+		final_color.y = 1.0 - abs(original_color.y - tex_color.y);
+		final_color.z = 1.0 - abs(original_color.z - tex_color.z);
+	}
 }

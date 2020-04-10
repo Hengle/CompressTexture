@@ -143,7 +143,8 @@ void upload_TEST_Texture_Original() {
 	float time = 0.0f;
 
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
-		sprintf(name, "Data/original/img%d.png", i);
+		//sprintf(name, "Data/original/img%d.png", i);
+		sprintf(name, "Data/yuv/original/image_yuv_%d.png", i-1);
 		time += create_ORIGINAL_texture(name, TEXTURE_INDEX_ORIGINAL_TEST1 - 1 + i);
 	}
 
@@ -175,7 +176,8 @@ void upload_TEST_Texture_DXT(int compressLevel) {//DXT 1, 3, 5
 	float time = 0.0f;
 
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
-		sprintf(name, "Data/dxt/img%d_JPG_DXT%d.DDS", i, compressLevel);
+		//sprintf(name, "Data/dxt/img%d_JPG_DXT%d.DDS", i, compressLevel);
+		sprintf(name, "Data/yuv/dxt%d/image_yuv_%d.DDS", compressLevel, i-1);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
 	}
 
@@ -192,7 +194,8 @@ void upload_TEST_Texture_BPTC() {
 	float time = 0.0f;
 
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
-		sprintf(name, "Data/bc7/img%d.DDS", i);
+		//sprintf(name, "Data/bc7/img%d.DDS", i);
+		sprintf(name, "Data/yuv/bc7/image_yuv_%d.DDS", i-1);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
 	}
 	printf("upload time for BPTC compress : %f\n", time);
@@ -210,11 +213,11 @@ void upload_TEST_Texture_YUV() {
 
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i+=3) {
 
-		sprintf(name, "Data/yuv/image_y_%d.DDS", i / 3);
+		sprintf(name, "Data/yuv/yuv_dxt1/image_y_%d.DDS", i / 3);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
-		sprintf(name, "Data/yuv/image_u_%d.DDS", i / 3);
+		sprintf(name, "Data/yuv/yuv_dxt1/image_u_%d.DDS", i / 3);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 + 0 + i);
-		sprintf(name, "Data/yuv/image_v_%d.DDS", i / 3);
+		sprintf(name, "Data/yuv/yuv_dxt1/image_v_%d.DDS", i / 3);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 + 1 + i);
 
 	}
