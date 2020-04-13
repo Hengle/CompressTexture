@@ -82,7 +82,7 @@ float load_unpack_image_checktime(const char *filename) {
 
 	glFinish();
 	CHECK_TIME_START;
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
 
 	glFinish();
 	CHECK_TIME_END(compute_time);
@@ -542,12 +542,4 @@ double getPSNR(const char* fileName1, const char* fileName2)
 	FreeImage_Unload(dib2);
 
 	return psnr;
-}
-
-
-void saveGrayImage() {
-
-
-	FreeImage_sa
-
 }

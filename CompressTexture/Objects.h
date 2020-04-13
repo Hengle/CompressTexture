@@ -142,22 +142,49 @@ void upload_TEST_Texture_Original() {
 	char name[100];
 	float time = 0.0f;
 
+	type_of_original_image = 0;
+
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		//sprintf(name, "Data/original/img%d.png", i);
-		sprintf(name, "Data/yuv/original/image_yuv_%d.png", i-1);
+		sprintf(name, "Data/yuv/original_rgb/image_yuv_%d.bmp", i-1);
 		time += create_ORIGINAL_texture(name, TEXTURE_INDEX_ORIGINAL_TEST1 - 1 + i);
 	}
 
-	printf("upload time for original : %f\n", time);
+	printf("upload time for original rgb : %f\n", time);
 
 	FILE* fp = fopen("log.txt", "a");
-	fprintf(fp, "upload time for original : %f\n", time);
+	fprintf(fp, "upload time for original rgb : %f\n", time);
 	fclose(fp);
+}
+
+void upload_TEST_Texture_Original_YUV() {
+
+	char name[100];
+	float time = 0.0f;
+	type_of_original_image = 1;
+
+	for (int i = 1; i <= TEST_IMAGE_COUNT; i += 3) {
+
+		sprintf(name, "Data/yuv/original_yuv/image_y_%d.bmp", i / 3);
+		time += create_ORIGINAL_texture(name, TEXTURE_INDEX_ORIGINAL_TEST1 - 1 + i);
+		sprintf(name, "Data/yuv/original_yuv/image_u_%d.bmp", i / 3);
+		time += create_ORIGINAL_texture(name, TEXTURE_INDEX_ORIGINAL_TEST1 + 0 + i);
+		sprintf(name, "Data/yuv/original_yuv/image_v_%d.bmp", i / 3);
+		time += create_ORIGINAL_texture(name, TEXTURE_INDEX_ORIGINAL_TEST1 + 1 + i);
+
+	}
+	printf("upload time for original yuv : %f\n", time);
+
+	FILE* fp = fopen("log.txt", "a");
+	fprintf(fp, "upload time for original yuv : %f\n", time);
+	fclose(fp);
+
 }
 
 void upload_TEST_Texture_ASTC(int compressLevel) {
 	char name[100];
 	float time = 0.0f;
+	type_of_compressed_image = 0;
 
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		sprintf(name, "Data/astc/%dx%d/img%d.astc", compressLevel, compressLevel, i);
@@ -174,6 +201,7 @@ void upload_TEST_Texture_ASTC(int compressLevel) {
 void upload_TEST_Texture_DXT(int compressLevel) {//DXT 1, 3, 5
 	char name[100];
 	float time = 0.0f;
+	type_of_compressed_image = 0;
 
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		//sprintf(name, "Data/dxt/img%d_JPG_DXT%d.DDS", i, compressLevel);
@@ -192,6 +220,7 @@ void upload_TEST_Texture_DXT(int compressLevel) {//DXT 1, 3, 5
 void upload_TEST_Texture_BPTC() {
 	char name[100];
 	float time = 0.0f;
+	type_of_compressed_image = 0;
 
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		//sprintf(name, "Data/bc7/img%d.DDS", i);
@@ -210,6 +239,7 @@ void upload_TEST_Texture_YUV() {
 
 	char name[100];
 	float time = 0.0f;
+	type_of_compressed_image = 1;
 
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i+=3) {
 

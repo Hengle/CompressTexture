@@ -17,7 +17,10 @@ GLuint h_ShaderProgram_TXPS, h_ShaderProgram_YUVS;
 GLint loc_ModelViewProjectionMatrix_simple, loc_primitive_color;
 
 GLint loc_ModelViewProjectionMatrix_TXPS, loc_ModelViewMatrix_TXPS, loc_ModelViewMatrixInvTrans_TXPS;
-GLint loc_base_texture, loc_original_texture, loc_flag_texture_mapping, loc_flag_texture_diffrence, loc_flag_texture_reverse, loc_flag_fog;
+GLint loc_flag_texture_mapping, loc_flag_texture_diffrence, loc_flag_texture_reverse, loc_flag_fog;
+GLint loc_drawtype, loc_typeof_original_image, loc_typeof_compressed_image;
+GLint loc_base_texture, loc_base_texture_y, loc_base_texture_u, loc_base_texture_v, loc_base_texture_index;
+GLint loc_original_texture, loc_original_texture_y, loc_original_texture_u, loc_original_texture_v, loc_original_texture_index;
 
 GLint loc_ModelViewProjectionMatrix_YUVS, loc_ModelViewMatrix_YUVS, loc_ModelViewMatrixInvTrans_YUVS;
 GLint loc_texture_y, loc_texture_u, loc_texture_v, loc_texture_index, loc_original_texture_yuv, loc_flag_texture_mapping_yuv, loc_flag_texture_diffrence_yuv, loc_flag_texture_reverse_yuv;
@@ -29,6 +32,10 @@ GLint loc_texture_y, loc_texture_u, loc_texture_v, loc_texture_index, loc_origin
 glm::mat4 ModelViewProjectionMatrix, ModelViewMatrix;
 glm::mat3 ModelViewMatrixInvTrans;
 glm::mat4 ViewMatrix, ProjectionMatrix;
+
+//이미지가 rgb인지, yuv인지 구분하기 위해서. 0 -rgb, 1- yuv
+int type_of_original_image = 0;
+int type_of_compressed_image = 0;
 
 #define TO_RADIAN 0.01745329252f  
 #define TO_DEGREE 57.295779513f
@@ -118,9 +125,30 @@ void draw_original_texture() {
 
 	glUseProgram(h_ShaderProgram_TXPS);
 
-	glUniform1i(loc_flag_texture_reverse, false);
+	glUniform1i(loc_drawtype, 0);
+
+	glUniform1i(loc_typeof_original_image, type_of_original_image);
+	glUniform1i(loc_typeof_compressed_image, 0);
+
+	glUniform1i(loc_flag_texture_reverse, true);
 	glUniform1i(loc_base_texture, texnum_ori);
 	glUniform1i(loc_original_texture, texnum_ori);
+
+	if (type_of_original_image == 0) {//RGB image
+		glUniform1i(loc_base_texture, texnum_ori);			//랜더링할 텍스쳐
+		//printf("ori : %d texnum : %d\n", texnum_ori, texnum_comp);
+	}
+	else {//yuv image
+		glUniform1i(loc_flag_texture_reverse, true);//DDS 포맷은 상하가 반전되어 있다
+		int texindex = texnum_ori - TEXTURE_INDEX_ORIGINAL_TEST1;
+		int y = texindex - texindex % 3 + TEXTURE_INDEX_ORIGINAL_TEST1, u = y + 1, v = y + 2;
+		glUniform1i(loc_original_texture_y, y);			//랜더링할 텍스쳐 y
+		glUniform1i(loc_original_texture_u, u);			//랜더링할 텍스쳐 u
+		glUniform1i(loc_original_texture_v, v);			//랜더링할 텍스쳐 v
+		glUniform1i(loc_original_texture_index, texindex % 3 + 1);			//랜더링할 텍스처 안에서의 이미지 번호. 한 텍스처에 3개의 이미지 삽입
+		//printf("texcomp : %d. ", texnum_comp);
+		//printf("texnum : %d, y=%d u=%d v=%d\n", texindex % 3 + 1, y+24,u+24,v+24);
+	}
 
 	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, -IMGSIZE / 2, 0.0f));
 	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(IMGSIZE, IMGSIZE, IMGSIZE));
@@ -139,12 +167,31 @@ void draw_original_texture() {
 void draw_compressed_texture() {
 	glm::mat4 ModelMatrix;
 
-
 	glUseProgram(h_ShaderProgram_TXPS);
-	glUniform1i(loc_flag_texture_reverse, true);//DDS 포맷은 상하가 반전되어 있다
-	glUniform1i(loc_base_texture, texnum_comp);			//랜더링할 텍스쳐
+
+	glUniform1i(loc_drawtype, 1);
+
+	glUniform1i(loc_typeof_compressed_image, type_of_compressed_image);
+	//printf("type of com tex : %d\n", type_of_compressed_image);
+
+	glUniform1i(loc_flag_texture_reverse, false);//DDS 포맷은 상하가 반전되어 있다
 	glUniform1i(loc_original_texture, texnum_ori);		//비교 대상 텍스쳐(원본)
 
+	if (type_of_compressed_image == 0) {//RGB image
+		glUniform1i(loc_base_texture, texnum_comp);			//랜더링할 텍스쳐
+		//printf("ori : %d texnum : %d\n", texnum_ori, texnum_comp);
+	}
+	else {//yuv image
+		glUniform1i(loc_flag_texture_reverse, true);//DDS 포맷은 상하가 반전되어 있다
+		int texindex = texnum_comp - TEXTURE_INDEX_COMPRESS_TEST1;
+		int y = texindex - texindex % 3 + TEXTURE_INDEX_COMPRESS_TEST1, u = y + 1, v = y + 2;
+		glUniform1i(loc_base_texture_y, y);			//랜더링할 텍스쳐 y
+		glUniform1i(loc_base_texture_u, u);			//랜더링할 텍스쳐 u
+		glUniform1i(loc_base_texture_v, v);			//랜더링할 텍스쳐 v
+		glUniform1i(loc_base_texture_index, texindex % 3 + 1);			//랜더링할 텍스처 안에서의 이미지 번호. 한 텍스처에 3개의 이미지 삽입
+		//printf("texcomp : %d. ", texnum_comp);
+		//printf("texnum : %d, y=%d u=%d v=%d\n", texindex % 3 + 1, y+24,u+24,v+24);
+	}
 	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f - IMGSIZE, -IMGSIZE / 2, 0.0f));
 	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(IMGSIZE, IMGSIZE, IMGSIZE));
 	ModelViewMatrix = ViewMatrix * ModelMatrix;
@@ -165,7 +212,7 @@ void draw_compressed_texture_yuv() {
 	
 	glUseProgram(h_ShaderProgram_YUVS);
 
-	glUniform1i(loc_flag_texture_reverse_yuv, true);//DDS 포맷은 상하가 반전되어 있다
+	glUniform1i(loc_flag_texture_reverse_yuv, false);//DDS 포맷은 상하가 반전되어 있다
 	int texindex = texnum_comp - TEXTURE_INDEX_COMPRESS_TEST1;
 	int y = texindex - texindex %3 + TEXTURE_INDEX_COMPRESS_TEST1, u = y+1, v = y+2;
 	
@@ -252,8 +299,8 @@ void display(void) {
 	if (draw_mode != 2)
 		draw_original_texture();
 	if (draw_mode != 1)
-		draw_compressed_texture_yuv();
-		//draw_compressed_texture();
+		//draw_compressed_texture_yuv();
+		draw_compressed_texture();
 
 #endif
 	glutSwapBuffers();
@@ -390,8 +437,23 @@ void prepare_shader_program(void) {
 	loc_ModelViewMatrix_TXPS = glGetUniformLocation(h_ShaderProgram_TXPS, "u_ModelViewMatrix");
 	loc_ModelViewMatrixInvTrans_TXPS = glGetUniformLocation(h_ShaderProgram_TXPS, "u_ModelViewMatrixInvTrans");
 
+	loc_typeof_original_image = glGetUniformLocation(h_ShaderProgram_TXPS, "u_type_of_original_image");
+	loc_typeof_compressed_image = glGetUniformLocation(h_ShaderProgram_TXPS, "u_type_of_compressed_image");
+
+	loc_drawtype = glGetUniformLocation(h_ShaderProgram_TXPS, "u_drawtype");
+
 	loc_base_texture = glGetUniformLocation(h_ShaderProgram_TXPS, "u_base_texture");
+	loc_base_texture_y = glGetUniformLocation(h_ShaderProgram_TXPS, "u_base_texture_y");
+	loc_base_texture_u = glGetUniformLocation(h_ShaderProgram_TXPS, "u_base_texture_u");
+	loc_base_texture_v = glGetUniformLocation(h_ShaderProgram_TXPS, "u_base_texture_v");
+	loc_base_texture_index = glGetUniformLocation(h_ShaderProgram_TXPS, "u_base_textureIndex");
+
 	loc_original_texture = glGetUniformLocation(h_ShaderProgram_TXPS, "u_original_texture");
+	loc_original_texture_y = glGetUniformLocation(h_ShaderProgram_TXPS, "u_original_texture_y");
+	loc_original_texture_u = glGetUniformLocation(h_ShaderProgram_TXPS, "u_original_texture_u");
+	loc_original_texture_v = glGetUniformLocation(h_ShaderProgram_TXPS, "u_original_texture_v");
+	loc_original_texture_index = glGetUniformLocation(h_ShaderProgram_TXPS, "u_original_textureIndex");
+
 	loc_flag_texture_mapping = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_mapping");
 	loc_flag_texture_diffrence = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_diffrence");
 	loc_flag_texture_reverse = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_reverse");
@@ -445,7 +507,8 @@ void prepare_scene(void) {
 	create_ORIGINAL_texture("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
 	create_ORIGINAL_texture("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
 
-	upload_TEST_Texture_Original();
+	//upload_TEST_Texture_Original();
+	upload_TEST_Texture_Original_YUV();
 	//upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);
