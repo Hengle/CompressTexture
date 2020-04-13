@@ -11,7 +11,7 @@
 #include <time.h>
 
 
-GLuint h_ShaderProgram_TXPS, h_ShaderProgram_YUVS;
+GLuint h_ShaderProgram_TXPS;
 
 // for simple shaders
 GLint loc_ModelViewProjectionMatrix_simple, loc_primitive_color;
@@ -21,9 +21,6 @@ GLint loc_flag_texture_mapping, loc_flag_texture_diffrence, loc_flag_texture_rev
 GLint loc_drawtype, loc_typeof_original_image, loc_typeof_compressed_image;
 GLint loc_base_texture, loc_base_texture_y, loc_base_texture_u, loc_base_texture_v, loc_base_texture_index;
 GLint loc_original_texture, loc_original_texture_y, loc_original_texture_u, loc_original_texture_v, loc_original_texture_index;
-
-GLint loc_ModelViewProjectionMatrix_YUVS, loc_ModelViewMatrix_YUVS, loc_ModelViewMatrixInvTrans_YUVS;
-GLint loc_texture_y, loc_texture_u, loc_texture_v, loc_texture_index, loc_original_texture_yuv, loc_flag_texture_mapping_yuv, loc_flag_texture_diffrence_yuv, loc_flag_texture_reverse_yuv;
 
 // include glm/*.hpp only if necessary
 //#include <glm/glm.hpp> 
@@ -207,35 +204,6 @@ void draw_compressed_texture() {
 }
 
 
-void draw_compressed_texture_yuv() {
-	glm::mat4 ModelMatrix;
-	
-	glUseProgram(h_ShaderProgram_YUVS);
-
-	glUniform1i(loc_flag_texture_reverse_yuv, false);//DDS 포맷은 상하가 반전되어 있다
-	int texindex = texnum_comp - TEXTURE_INDEX_COMPRESS_TEST1;
-	int y = texindex - texindex %3 + TEXTURE_INDEX_COMPRESS_TEST1, u = y+1, v = y+2;
-	
-	glUniform1i(loc_texture_y, y);			//랜더링할 텍스쳐 y
-	glUniform1i(loc_texture_u, u);			//랜더링할 텍스쳐 u
-	glUniform1i(loc_texture_v, v);			//랜더링할 텍스쳐 v
-	glUniform1i(loc_texture_index, texindex %3 + 1);			//랜더링할 텍스처 안에서의 이미지 번호. 한 텍스처에 3개의 이미지 삽입
-	glUniform1i(loc_original_texture_yuv, texnum_ori);		//비교 대상 텍스쳐(원본)
-
-	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f - IMGSIZE, -IMGSIZE / 2, 0.0f));
-	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(IMGSIZE, IMGSIZE, IMGSIZE));
-	ModelViewMatrix = ViewMatrix * ModelMatrix;
-	ModelViewProjectionMatrix = ProjectionMatrix * ModelViewMatrix;
-	ModelViewMatrixInvTrans = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
-
-	glUniformMatrix4fv(loc_ModelViewProjectionMatrix_YUVS, 1, GL_FALSE, &ModelViewProjectionMatrix[0][0]);
-	glUniformMatrix4fv(loc_ModelViewMatrix_YUVS, 1, GL_FALSE, &ModelViewMatrix[0][0]);
-	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_YUVS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
-	draw_quad();
-
-	glUseProgram(0);
-}
-
 //정의 시 1000frame 랜더링 시간 측정.
 //#define TIMETEST 0
 
@@ -349,9 +317,6 @@ void keyboard(unsigned char key, int x, int y) {
 		glUseProgram(h_ShaderProgram_TXPS);
 		glUniform1i(loc_flag_texture_diffrence, flag.texture_diffrence);
 		glUseProgram(0);
-		glUseProgram(h_ShaderProgram_YUVS);
-		glUniform1i(loc_flag_texture_diffrence_yuv, flag.texture_diffrence);
-		glUseProgram(0);
 		glutPostRedisplay();
 		break;
 	case 'n':
@@ -457,29 +422,6 @@ void prepare_shader_program(void) {
 	loc_flag_texture_mapping = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_mapping");
 	loc_flag_texture_diffrence = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_diffrence");
 	loc_flag_texture_reverse = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_reverse");
-
-
-	ShaderInfo shader_info_YUVS[3] = {
-		{ GL_VERTEX_SHADER, "Shaders/Phong_yuv.vert" },
-	{ GL_FRAGMENT_SHADER, "Shaders/Phong_yuv.frag" },
-	{ GL_NONE, NULL }
-	};
-
-	h_ShaderProgram_YUVS = LoadShaders(shader_info_YUVS);
-
-
-	loc_ModelViewProjectionMatrix_YUVS = glGetUniformLocation(h_ShaderProgram_YUVS, "u_ModelViewProjectionMatrix");
-	loc_ModelViewMatrix_YUVS = glGetUniformLocation(h_ShaderProgram_YUVS, "u_ModelViewMatrix");
-	loc_ModelViewMatrixInvTrans_YUVS = glGetUniformLocation(h_ShaderProgram_YUVS, "u_ModelViewMatrixInvTrans");
-
-	loc_texture_y = glGetUniformLocation(h_ShaderProgram_YUVS, "u_texture_y");
-	loc_texture_u = glGetUniformLocation(h_ShaderProgram_YUVS, "u_texture_u");
-	loc_texture_v = glGetUniformLocation(h_ShaderProgram_YUVS, "u_texture_v");
-	loc_texture_index = glGetUniformLocation(h_ShaderProgram_YUVS, "textureIndex");
-	loc_original_texture_yuv = glGetUniformLocation(h_ShaderProgram_YUVS, "u_original_texture");
-	loc_flag_texture_mapping_yuv = glGetUniformLocation(h_ShaderProgram_YUVS, "u_flag_texture_mapping");
-	loc_flag_texture_diffrence_yuv = glGetUniformLocation(h_ShaderProgram_YUVS, "u_flag_texture_diffrence");
-	loc_flag_texture_reverse_yuv = glGetUniformLocation(h_ShaderProgram_YUVS, "u_flag_texture_reverse");
 
 
 }
