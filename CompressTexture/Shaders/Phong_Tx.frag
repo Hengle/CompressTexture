@@ -86,21 +86,29 @@ void main(void) {
 		}
 		else if (u_type_of_compressed_image == 1) {//yuv image
 
-			float y, u, v;
-			if (u_base_textureIndex == 1) {
-				y = texture2D(u_base_texture_y, v_tex_coord).b;
-				u = texture2D(u_base_texture_u, v_tex_coord).b - 0.5;
-				v = texture2D(u_base_texture_v, v_tex_coord).b - 0.5;
-			}
-			else if (u_base_textureIndex == 2) {
-				y = texture2D(u_base_texture_y, v_tex_coord).g;
-				u = texture2D(u_base_texture_u, v_tex_coord).g - 0.5;
-				v = texture2D(u_base_texture_v, v_tex_coord).g - 0.5;
+			vec2 tex_coord;
+			if (u_flag_texture_reverse == true) {
+				tex_coord = vec2(v_tex_coord.x, 1 - v_tex_coord.y);
 			}
 			else {
-				y = texture2D(u_base_texture_y, v_tex_coord).r;
-				u = texture2D(u_base_texture_u, v_tex_coord).r - 0.5;
-				v = texture2D(u_base_texture_v, v_tex_coord).r - 0.5;
+				tex_coord = vec2(v_tex_coord.x, v_tex_coord.y);
+			}
+
+			float y, u, v;
+			if (u_base_textureIndex == 1) {
+				y = texture2D(u_base_texture_y, tex_coord).b;
+				u = texture2D(u_base_texture_u, tex_coord).b - 0.5;
+				v = texture2D(u_base_texture_v, tex_coord).b - 0.5;
+			}
+			else if (u_base_textureIndex == 2) {
+				y = texture2D(u_base_texture_y, tex_coord).g;
+				u = texture2D(u_base_texture_u, tex_coord).g - 0.5;
+				v = texture2D(u_base_texture_v, tex_coord).g - 0.5;
+			}
+			else {
+				y = texture2D(u_base_texture_y, tex_coord).r;
+				u = texture2D(u_base_texture_u, tex_coord).r - 0.5;
+				v = texture2D(u_base_texture_v, tex_coord).r - 0.5;
 			}
 
 			float r = y + 1.402 * v;
@@ -149,9 +157,9 @@ void main(void) {
 				original_color = vec4(r, g, b, 1.0);
 			}
 
-			final_color.x = 1.0 - abs(original_color.x - base_color.x) * 10;
-			final_color.y = 1.0 - abs(original_color.y - base_color.y) * 10;
-			final_color.z = 1.0 - abs(original_color.z - base_color.z) * 10;
+			final_color.x = 1.0 - abs(original_color.x - base_color.x);
+			final_color.y = 1.0 - abs(original_color.y - base_color.y);
+			final_color.z = 1.0 - abs(original_color.z - base_color.z);
 		}
 	}
 }

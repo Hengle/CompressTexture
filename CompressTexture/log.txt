@@ -1,379 +1,68 @@
-upload time for original : 135.877319
-upload time for original : 138.422989
-upload time for original : 135.673706
-upload time for original : 135.773102
-upload time for original : 136.203690
-upload time for original : 135.336884
-upload time for original : 137.243103
-upload time for original : 133.649399
-upload time for original : 138.868988
-upload time for original : 135.071793
-upload time for original : 136.179108
-upload time for original : 136.009995
-upload time for DXT1 compress : 16.960199
-upload time for DXT1 compress : 16.894600
-upload time for DXT1 compress : 16.840998
-upload time for DXT1 compress : 15.478500
-upload time for DXT1 compress : 16.998798
-upload time for DXT1 compress : 16.295198
-upload time for DXT1 compress : 17.000200
-upload time for DXT1 compress : 15.714901
-upload time for DXT1 compress : 16.017599
-upload time for DXT1 compress : 17.001699
-upload time for DXT1 compress : 16.502201
-upload time for DXT3 compress : 30.983599
-upload time for DXT3 compress : 29.632702
-upload time for DXT3 compress : 29.520102
-upload time for DXT3 compress : 28.373600
-upload time for DXT3 compress : 29.389997
-upload time for DXT3 compress : 27.241697
-upload time for DXT3 compress : 28.594402
-upload time for DXT3 compress : 27.574900
-upload time for DXT3 compress : 28.302498
-upload time for DXT3 compress : 28.890598
-upload time for DXT5 compress : 30.216303
-upload time for DXT5 compress : 28.990002
-upload time for DXT5 compress : 28.543100
-upload time for DXT5 compress : 26.956497
-upload time for DXT5 compress : 28.850300
-upload time for DXT5 compress : 28.177097
-upload time for DXT5 compress : 27.764397
-upload time for DXT5 compress : 29.185299
-upload time for DXT5 compress : 31.014198
-upload time for DXT5 compress : 26.639299
-upload time for BPTC compress : 29.368599
-upload time for BPTC compress : 29.802803
-upload time for BPTC compress : 27.716200
-upload time for BPTC compress : 28.150799
-upload time for BPTC compress : 27.845098
-upload time for BPTC compress : 29.553301
-upload time for BPTC compress : 28.413700
-upload time for BPTC compress : 27.746899
-upload time for BPTC compress : 27.783798
-upload time for BPTC compress : 27.632202
-upload time for YUV+DXT1 compress : 9.429100
-upload time for YUV+DXT1 compress : 10.323399
-upload time for YUV+DXT1 compress : 9.326301
-upload time for YUV+DXT1 compress : 9.533200
-upload time for YUV+DXT1 compress : 9.455999
-upload time for YUV+DXT1 compress : 9.968701
-upload time for YUV+DXT1 compress : 9.354500
-upload time for YUV+DXT1 compress : 9.434200
-upload time for YUV+DXT1 compress : 9.835902
-upload time for YUV+DXT1 compress : 9.706201
-upload time for DXT1 compress : 17.110001
-upload time for original : 130.123306
-upload time for DXT1 compress : 16.711601
-upload time for original : 136.819687
-upload time for YUV+DXT1 compress : 10.980500
-upload time for original : 140.367996
-upload time for YUV+DXT1 compress : 9.967899
-upload time for original : 136.989899
-upload time for DXT1 compress : 17.536299
-upload time for original : 147.004700
-upload time for YUV+DXT1 compress : 13.957200
-upload time for original : 159.650391
-upload time for YUV+DXT1 compress : 12.168301
-upload time for original : 147.943405
-upload time for BPTC compress : 35.822601
-upload time for original : 140.987289
-upload time for BPTC compress : 29.616598
-upload time for original : 148.542801
-upload time for BPTC compress : 29.095798
-upload time for original : 149.157211
-upload time for BPTC compress : 35.163700
-upload time for original : 150.332916
-upload time for BPTC compress : 38.815300
-upload time for original : 148.831696
-upload time for BPTC compress : 35.187500
-upload time for original : 153.028610
-upload time for BPTC compress : 32.732803
-upload time for original : 146.937317
-upload time for BPTC compress : 29.844896
-upload time for original : 155.805496
-upload time for BPTC compress : 30.462696
-upload time for original : 155.207214
-upload time for BPTC compress : 33.924797
-upload time for original : 146.837387
-upload time for BPTC compress : 40.468994
-upload time for original : 161.230896
-upload time for BPTC compress : 35.846500
-upload time for original : 145.625885
-upload time for BPTC compress : 30.941900
-upload time for original : 149.911591
-upload time for BPTC compress : 32.427803
-upload time for original : 149.192291
-upload time for BPTC compress : 32.713299
-upload time for original : 147.824188
-upload time for BPTC compress : 39.521099
-upload time for original : 155.103195
-upload time for BPTC compress : 38.364895
-upload time for original : 160.272995
-upload time for BPTC compress : 34.586601
-upload time for original : 147.572495
-upload time for BPTC compress : 29.904797
-upload time for original : 148.776611
-upload time for BPTC compress : 36.798500
-upload time for original : 152.265106
-upload time for BPTC compress : 31.946001
-upload time for original : 159.330185
-upload time for BPTC compress : 32.846401
-upload time for original : 143.745087
-upload time for BPTC compress : 31.660301
-upload time for original : 148.986710
-upload time for BPTC compress : 34.145203
-upload time for original : 157.695297
-upload time for YUV+DXT1 compress : 12.612000
-upload time for original : 143.539108
-upload time for YUV+DXT1 compress : 12.261899
-upload time for original : 144.164108
-upload time for YUV+DXT1 compress : 11.882601
-upload time for original : 156.824387
-upload time for YUV+DXT1 compress : 11.307900
-upload time for original : 145.503296
-upload time for YUV+DXT1 compress : 10.734401
-upload time for original : 149.170288
-upload time for YUV+DXT1 compress : 11.826499
-upload time for original : 157.876389
-upload time for YUV+DXT1 compress : 10.848599
-upload time for original : 148.264694
-upload time for YUV+DXT1 compress : 12.362199
-upload time for original : 144.677689
-upload time for YUV+DXT1 compress : 11.016299
-upload time for original : 153.207306
-upload time for YUV+DXT1 compress : 12.861700
-upload time for original : 144.121796
-upload time for YUV+DXT1 compress : 13.184400
-upload time for original : 151.358582
-upload time for YUV+DXT1 compress : 9.719400
-upload time for original : 153.763702
-upload time for YUV+DXT1 compress : 14.162198
-upload time for original : 149.374878
-upload time for YUV+DXT1 compress : 10.487501
-upload time for original : 149.658691
-upload time for YUV+DXT1 compress : 13.054799
-upload time for original : 148.791397
-upload time for DXT1 compress : 28.094999
-upload time for original : 152.714401
-upload time for DXT1 compress : 22.324903
-upload time for original : 147.575684
-upload time for YUV+DXT1 compress : 11.985400
-upload time for original : 151.375198
-upload time for YUV+DXT1 compress : 12.339500
-upload time for original : 141.449219
-upload time for YUV+DXT1 compress : 15.202401
-upload time for original rgb : 151.544785
-upload time for original rgb : 146.922516
-upload time for original yuv : 0.000000
-upload time for YUV+DXT1 compress : 9.549199
-upload time for original rgb : 146.993896
-upload time for original yuv : 89.506195
-upload time for YUV+DXT1 compress : 13.847700
-upload time for original rgb : 151.434586
-upload time for original yuv : 82.866684
-upload time for YUV+DXT1 compress : 13.807300
-upload time for original rgb : 153.717300
-upload time for original yuv : 86.602303
-upload time for BPTC compress : 36.159401
-upload time for original rgb : 146.489899
-upload time for original yuv : 99.976700
-upload time for BPTC compress : 35.035503
-upload time for YUV+DXT1 compress : 11.858601
-upload time for original rgb : 149.097290
-upload time for original yuv : 89.895790
-upload time for BPTC compress : 31.510601
-upload time for YUV+DXT1 compress : 11.965502
-upload time for original rgb : 148.557800
-upload time for original yuv : 91.463310
-upload time for BPTC compress : 33.879101
-upload time for YUV+DXT1 compress : 13.239199
-upload time for original rgb : 151.494202
-upload time for original yuv : 83.598900
-upload time for BPTC compress : 30.275700
-upload time for YUV+DXT1 compress : 11.074600
-upload time for original rgb : 151.027924
-upload time for original yuv : 92.055290
-upload time for BPTC compress : 31.312904
-upload time for YUV+DXT1 compress : 13.135600
-upload time for original rgb : 150.755493
-upload time for original yuv : 88.040611
-upload time for BPTC compress : 32.414097
-upload time for YUV+DXT1 compress : 10.046800
-upload time for original rgb : 143.775497
-upload time for original yuv : 84.702690
-upload time for BPTC compress : 31.745398
-upload time for YUV+DXT1 compress : 10.414999
-upload time for original rgb : 153.395203
-upload time for original yuv : 87.511292
-upload time for BPTC compress : 31.991800
-upload time for YUV+DXT1 compress : 11.975698
-upload time for original rgb : 144.915405
-upload time for original yuv : 88.239502
-upload time for BPTC compress : 30.389200
-upload time for YUV+DXT1 compress : 9.946100
-upload time for original rgb : 149.694397
-upload time for original yuv : 83.488785
-upload time for BPTC compress : 31.530998
-upload time for YUV+DXT1 compress : 10.492800
-upload time for original rgb : 149.341293
-upload time for original yuv : 84.541916
-upload time for BPTC compress : 30.290602
-upload time for YUV+DXT1 compress : 12.065901
-upload time for original rgb : 153.009109
-upload time for original yuv : 85.748108
-upload time for BPTC compress : 29.911303
-upload time for YUV+DXT1 compress : 11.136300
-upload time for original rgb : 151.244614
-upload time for original yuv : 84.939194
-upload time for BPTC compress : 33.664097
-upload time for YUV+DXT1 compress : 13.114400
-upload time for original rgb : 151.026489
-upload time for BPTC compress : 34.796200
-upload time for YUV+DXT1 compress : 10.118200
-upload time for original rgb : 154.664001
-upload time for YUV+DXT1 compress : 11.031602
-upload time for original rgb : 153.312714
-upload time for BPTC compress : 34.348202
-upload time for original rgb : 153.994598
-upload time for YUV+DXT1 compress : 11.942400
-upload time for original rgb : 151.232193
-upload time for YUV+DXT1 compress : 12.965500
-upload time for original rgb : 153.206375
-upload time for YUV+DXT1 compress : 12.835001
-upload time for original rgb : 158.593094
-upload time for YUV+DXT1 compress : 12.566001
-upload time for original rgb : 157.261719
-upload time for YUV+DXT1 compress : 12.335901
-upload time for original rgb : 147.676208
-upload time for BPTC compress : 34.184105
-upload time for original rgb : 146.703293
-upload time for BPTC compress : 31.820602
-upload time for original rgb : 148.721588
-upload time for BPTC compress : 36.457699
-upload time for original rgb : 148.907486
-upload time for original yuv : 83.819595
-upload time for BPTC compress : 31.298706
-upload time for original rgb : 148.760696
-upload time for original yuv : 91.298897
-upload time for BPTC compress : 36.615604
-upload time for original yuv : 83.853195
-upload time for YUV+DXT1 compress : 13.807500
-upload time for original yuv : 84.102905
-upload time for YUV+DXT1 compress : 11.909700
-upload time for original yuv : 87.258995
-upload time for BPTC compress : 32.990299
-upload time for original yuv : 90.803993
-upload time for BPTC compress : 31.290802
-upload time for original yuv : 82.977493
-upload time for BPTC compress : 30.907898
-upload time for original rgb : 149.601501
-upload time for YUV+DXT1 compress : 12.405700
-upload time for original rgb : 145.160095
-upload time for YUV+DXT1 compress : 12.849100
-upload time for original rgb : 154.426895
-upload time for YUV+DXT1 compress : 12.392599
-upload time for original rgb : 157.769302
-upload time for YUV+DXT1 compress : 12.606100
-upload time for original rgb : 152.938919
-upload time for YUV+DXT1 compress : 9.897799
-upload time for original rgb : 152.124496
-upload time for YUV+DXT1 compress : 9.678801
-upload time for original rgb : 159.976105
-upload time for YUV+DXT1 compress : 12.364201
-upload time for original rgb : 144.257385
-upload time for YUV+DXT1 compress : 11.579899
-upload time for original rgb : 155.684113
-upload time for YUV+DXT1 compress : 13.341400
-upload time for original rgb : 151.338806
-upload time for YUV+DXT1 compress : 13.978301
-upload time for original rgb : 148.446396
-upload time for YUV+DXT1 compress : 13.589600
-upload time for original rgb : 151.399124
-upload time for YUV+DXT1 compress : 10.252299
-upload time for original rgb : 162.452972
-upload time for BPTC compress : 36.550407
-upload time for YUV+DXT1 compress : 12.826500
-upload time for original rgb : 151.476181
-upload time for original yuv : 84.736000
-upload time for BPTC compress : 36.129101
-upload time for YUV+DXT1 compress : 10.709001
-upload time for original rgb : 149.721695
-upload time for original yuv : 87.908691
-upload time for BPTC compress : 29.114500
-upload time for YUV+DXT1 compress : 10.919000
-upload time for original rgb : 141.946503
-upload time for original yuv : 83.045898
-upload time for BPTC compress : 32.127602
-upload time for YUV+DXT1 compress : 10.674000
-upload time for original rgb : 148.166107
-upload time for original yuv : 90.244606
-upload time for BPTC compress : 31.179401
-upload time for YUV+DXT1 compress : 12.310999
-upload time for original rgb : 147.050186
-upload time for original yuv : 82.551102
-upload time for BPTC compress : 33.639301
-upload time for YUV+DXT1 compress : 10.083500
-upload time for original rgb : 129.422409
-upload time for original yuv : 75.292801
-upload time for BPTC compress : 29.829599
-upload time for YUV+DXT1 compress : 10.378500
-upload time for original rgb : 137.202301
-upload time for original yuv : 77.923004
-upload time for BPTC compress : 29.511997
-upload time for YUV+DXT1 compress : 9.949100
-upload time for original rgb : 138.278702
-upload time for original yuv : 79.355499
-upload time for BPTC compress : 28.394802
-upload time for YUV+DXT1 compress : 9.574900
-upload time for original rgb : 135.827301
-upload time for original yuv : 80.313705
-upload time for BPTC compress : 32.531704
-upload time for YUV+DXT1 compress : 9.761001
-upload time for original yuv : 78.273300
-upload time for BPTC compress : 28.109400
-upload time for original yuv : 79.122787
-upload time for BPTC compress : 30.835199
-upload time for original yuv : 78.238892
-upload time for BPTC compress : 27.357000
-upload time for original yuv : 79.260597
-upload time for BPTC compress : 27.652298
-upload time for original yuv : 79.045807
-upload time for BPTC compress : 28.188597
-upload time for original yuv : 80.370300
-upload time for BPTC compress : 29.031301
-upload time for original yuv : 81.969505
-upload time for BPTC compress : 30.119902
-upload time for original yuv : 78.302597
-upload time for YUV+DXT1 compress : 9.811799
-upload time for original yuv : 81.289207
-upload time for YUV+DXT1 compress : 12.431700
-upload time for original yuv : 77.904297
-upload time for YUV+DXT1 compress : 9.498900
-upload time for original yuv : 76.396088
-upload time for YUV+DXT1 compress : 9.662601
-upload time for original rgb : 118.127907
-upload time for YUV+DXT1 compress : 11.008301
-upload time for original rgb : 128.519608
-upload time for YUV+DXT1 compress : 8.524899
-upload time for original rgb : 119.428207
-upload time for YUV+DXT1 compress : 9.804801
-upload time for original rgb : 126.228210
-upload time for YUV+DXT1 compress : 10.088399
-upload time for original rgb : 119.675293
-upload time for YUV+DXT1 compress : 0.155900
-upload time for original rgb : 122.070816
-upload time for YUV+DXT1 compress : 9.819701
-upload time for original yuv : 71.232407
-upload time for YUV+DXT1 compress : 11.622800
-upload time for original yuv : 72.667305
-upload time for YUV+DXT1 compress : 12.418100
-upload time for original rgb : 121.301796
-upload time for YUV+DXT1 compress : 10.308001
-upload time for original rgb : 127.121613
-upload time for YUV+DXT1 compress : 10.430102
-upload time for original yuv : 70.442207
-upload time for YUV+DXT1 compress : 9.944998
-upload time for original yuv : 72.916603
-upload time for YUV+DXT1 compress : 10.779500
-upload time for original yuv : 67.831200
-upload time for YUV+DXT1 compress : 10.147799
+upload time for original rgb : 120.957008
+upload time for original rgb : 115.236298
+upload time for original rgb : 121.148087
+upload time for original rgb : 121.127007
+upload time for original rgb : 119.441101
+upload time for original rgb : 119.439880
+upload time for original rgb : 121.021004
+upload time for original rgb : 119.725105
+upload time for original rgb : 120.304604
+upload time for original rgb : 118.691795
+upload time for original rgb : 116.353104
+upload time for original rgb : 122.152206
+upload time for original yuv : 70.683998
+upload time for original yuv : 69.780098
+upload time for original yuv : 69.957298
+upload time for original yuv : 71.023796
+upload time for original yuv : 70.085007
+upload time for original yuv : 69.395798
+upload time for original yuv : 67.899597
+upload time for original yuv : 72.363991
+upload time for original yuv : 70.347900
+upload time for original yuv : 69.203308
+upload time for YUV+DXT1 compress : 10.095499
+upload time for YUV+DXT1 compress : 9.588700
+upload time for YUV+DXT1 compress : 9.351799
+upload time for YUV+DXT1 compress : 9.810300
+upload time for YUV+DXT1 compress : 9.307600
+upload time for YUV+DXT1 compress : 9.691001
+upload time for YUV+DXT1 compress : 9.385399
+upload time for YUV+DXT1 compress : 9.414399
+upload time for YUV+DXT1 compress : 10.189798
+upload time for YUV+DXT1 compress : 9.418001
+upload time for YUV+DXT1 compress : 9.690299
+upload time for YUV+DXT1 compress : 9.848999
+upload time for original yuv : 70.432510
+upload time for YUV+DXT1 compress : 9.586200
+upload time for original rgb : 122.339294
+upload time for original yuv : 69.637207
+upload time for original rgb : 123.203796
+upload time for original yuv : 71.415901
+upload time for original yuv : 70.379395
+upload time for YUV+DXT1 compress : 11.598100
+upload time for original rgb : 121.548286
+upload time for DXT1 compress : 19.247299
+upload time for original yuv : 72.402206
+upload time for DXT1 compress : 16.352701
+upload time for original yuv : 70.662003
+upload time for DXT1 compress : 18.022200
+upload time for original yuv : 69.081902
+upload time for YUV+DXT1 compress : 10.490300
+upload time for original yuv : 73.248901
+upload time for YUV+DXT1 compress : 72.415398
+upload time for original yuv : 73.838303
+upload time for YUV+DXT1 compress : 70.717300
+upload time for original yuv : 71.750298
+upload time for YUV+DXT1 compress : 72.052406
+upload time for original yuv : 74.624207
+upload time for YUV+DXT1 compress : 73.199707
+upload time for original yuv : 72.626991
+upload time for YUV+DXT1 compress : 69.791908
+upload time for original yuv : 69.277199
+upload time for YUV+DXT1 compress : 68.810692
+upload time for original yuv : 73.106491
+upload time for YUV+DXT1 compress : 13.105499
+upload time for original yuv : 74.193100
+upload time for YUV+DXT1 compress : 11.081200
+upload time for original yuv : 76.891396
+upload time for BPTC compress : 34.677498

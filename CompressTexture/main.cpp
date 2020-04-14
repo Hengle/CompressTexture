@@ -179,7 +179,7 @@ void draw_compressed_texture() {
 		//printf("ori : %d texnum : %d\n", texnum_ori, texnum_comp);
 	}
 	else {//yuv image
-		glUniform1i(loc_flag_texture_reverse, true);//DDS 포맷은 상하가 반전되어 있다
+		//glUniform1i(loc_flag_texture_reverse, true);//DDS 포맷은 상하가 반전되어 있다
 		int texindex = texnum_comp - TEXTURE_INDEX_COMPRESS_TEST1;
 		int y = texindex - texindex % 3 + TEXTURE_INDEX_COMPRESS_TEST1, u = y + 1, v = y + 2;
 		glUniform1i(loc_base_texture_y, y);			//랜더링할 텍스쳐 y
@@ -454,7 +454,7 @@ void prepare_scene(void) {
 	//upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);
-	//upload_TEST_Texture_BPTC();
+	upload_TEST_Texture_BPTC();
 	//upload_TEST_Texture_ASTC(4);
 	//upload_TEST_Texture_ASTC(5);
 	//upload_TEST_Texture_ASTC(6);
@@ -462,7 +462,7 @@ void prepare_scene(void) {
 	//upload_TEST_Texture_ASTC(10);
 	//upload_TEST_Texture_ASTC(12);
 	//upload_TEST_Texture_ASTC(112);
-	upload_TEST_Texture_YUV();
+	//upload_TEST_Texture_YUV();
 
 	//compare_PSNR();
 
