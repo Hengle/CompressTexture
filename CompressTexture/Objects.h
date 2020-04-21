@@ -62,6 +62,10 @@
 #define TEXTURE_INDEX_DEPTH_TEST4 53
 #define TEXTURE_INDEX_DEPTH_TEST5 54
 
+#define TEXTURE_TEST_R 50
+#define TEXTURE_TEST_G 51
+#define TEXTURE_TEST_B 52
+
 // floor object
 GLuint rectangle_VBO, rectangle_VAO;
 GLfloat rectangle_vertices[6][8] = {  // vertices enumerated counterclockwise

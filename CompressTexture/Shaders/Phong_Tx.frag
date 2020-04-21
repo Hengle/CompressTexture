@@ -33,6 +33,15 @@ layout (location = 0) out vec4 final_color;
 void main(void) {
 
 	vec4 base_color;
+	vec4 original_color = texture(u_base_texture_y, v_tex_coord);
+	vec2 coord = vec2(v_tex_coord.x, 1 - v_tex_coord.y);
+	base_color = texture(u_base_texture_u, coord);
+	final_color.x = 1.0 - abs(original_color.r - base_color.g)*100;
+	final_color.y = 1;
+	final_color.z = 1;
+	//final_color = original_color;
+
+	return;
 
 	//original image
 	if (u_drawtype == 0) {

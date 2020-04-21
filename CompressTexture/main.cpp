@@ -189,6 +189,11 @@ void draw_compressed_texture() {
 		//printf("texcomp : %d. ", texnum_comp);
 		//printf("texnum : %d, y=%d u=%d v=%d\n", texindex % 3 + 1, y+24,u+24,v+24);
 	}
+
+	glUniform1i(loc_base_texture_y, TEXTURE_TEST_R);			//랜더링할 텍스쳐 y
+	glUniform1i(loc_base_texture_u, TEXTURE_TEST_G);			//랜더링할 텍스쳐 u
+	//glUniform1i(loc_base_texture_v, TEXTURE_TEST_B);			//랜더링할 텍스쳐 v
+
 	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f - IMGSIZE, -IMGSIZE / 2, 0.0f));
 	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(IMGSIZE, IMGSIZE, IMGSIZE));
 	ModelViewMatrix = ViewMatrix * ModelMatrix;
@@ -496,7 +501,7 @@ void FreeImageSetupRGBATEST(int width, int height, BYTE* plane, const char* name
 	}
 
 	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
-	FreeImage_Save(FIF_BMP, Image, name);
+	FreeImage_Save(FIF_PNG, Image, name);
 	FreeImage_Unload(Image);
 
 }
@@ -528,8 +533,8 @@ void depthMapTest() {
 	FreeImageSetupRGBTEST(2048, 2048, upperBuf, "upperDepth.bmp");	//상위 bit. 보다 중요
 	FreeImageSetupRGBTEST(2048, 2048, lowerBuf, "lowerDepth.bmp");  //하위 bit. 보다 덜 중요
 
-	FreeImageSetupRGBATEST(2048, 2048, upperBuf, "upperDepth_rgba.bmp");
-	FreeImageSetupRGBATEST(2048, 2048, lowerBuf, "lowerDepth_rgba.bmp");
+	FreeImageSetupRGBATEST(2048, 2048, upperBuf, "upperDepth_rgba.png");
+	FreeImageSetupRGBATEST(2048, 2048, lowerBuf, "lowerDepth_rgba.png");
 
 	//unsigned short* usBuf = new unsigned short[realSize];
 	unsigned short* usBuf = new unsigned short[realSize];
@@ -574,6 +579,9 @@ void prepare_scene(void) {
 	//upload_TEST_Texture_YUV();
 	upload_TEST_Texture_Depth();
 	//compare_PSNR();
+
+	create_DDS_Texture("Data/depth/bc7/upperDepth_rgba.DDS", TEXTURE_TEST_R);
+	create_ORIGINAL_texture("Data/depth/original/upperDepth_rgba.png", TEXTURE_TEST_G);
 
 	//exit(0);
 }
