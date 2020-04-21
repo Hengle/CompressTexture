@@ -1,6 +1,6 @@
 
 #define TEST_IMAGE_COUNT 24
-#define N_NORMAL_TEXTURES_USED 50
+#define N_NORMAL_TEXTURES_USED 55
 
 #define TEXTURE_INDEX_ORIGINAL 0
 #define TEXTURE_INDEX_TEST 1
@@ -54,6 +54,13 @@
 #define TEXTURE_INDEX_ORIGINAL_TEST22 47
 #define TEXTURE_INDEX_ORIGINAL_TEST23 48
 #define TEXTURE_INDEX_ORIGINAL_TEST24 49
+
+
+#define TEXTURE_INDEX_DEPTH_TEST1 50
+#define TEXTURE_INDEX_DEPTH_TEST2 51
+#define TEXTURE_INDEX_DEPTH_TEST3 52
+#define TEXTURE_INDEX_DEPTH_TEST4 53
+#define TEXTURE_INDEX_DEPTH_TEST5 54
 
 // floor object
 GLuint rectangle_VBO, rectangle_VAO;
@@ -256,6 +263,14 @@ void upload_TEST_Texture_YUV() {
 	FILE* fp = fopen("log.txt", "a");
 	fprintf(fp, "upload time for YUV+DXT1 compress : %f\n", time);
 	fclose(fp);
+
+}
+
+void upload_TEST_Texture_Depth() {
+
+	char name[100];
+	float time = 0.0f;
+
 
 }
 

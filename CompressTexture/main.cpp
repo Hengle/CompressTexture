@@ -444,10 +444,119 @@ void initialize_OpenGL(void) {
 }
 
 
+void FreeImageSetupRGBTEST(int width, int height, BYTE* plane, const char* name)
+{
+
+	int w = width; int h = height; int c = 3;
+	FIBITMAP * bitmap = FreeImage_Allocate(w, h, c);
+	BYTE * src = new BYTE[w*h*c];
+	for (int i = 0; i < w*h; i++) {
+		src[i * c + 0] = plane[i];//B
+		src[i * c + 1] = plane[i];;//G
+		src[i * c + 2] = plane[i];;//R
+	}
+
+	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
+	FreeImage_Save(FIF_BMP, Image, name);
+	FreeImage_Unload(Image);
+
+}
+
+
+void FreeImageSetupRGBTEST2(int width, int height, unsigned short* plane, const char* name)
+{
+
+	int w = width; int h = height; int c = 3;
+	FIBITMAP * bitmap = FreeImage_Allocate(w, h, c);
+	BYTE * src = new BYTE[w*h*c];
+	for (int i = 0; i < w*h; i++) {
+		src[i * c + 0] = plane[i] / 256;//B
+		src[i * c + 1] = plane[i];;//G
+		src[i * c + 2] = plane[i];;//R
+	}
+
+	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
+	FreeImage_Save(FIF_BMP, Image, name);
+	FreeImage_Unload(Image);
+
+}
+
+
+void FreeImageSetupRGBATEST(int width, int height, BYTE* plane, const char* name)
+{
+
+	int w = width; int h = height; int c = 4;
+	FIBITMAP * bitmap = FreeImage_Allocate(w, h, c);
+	BYTE * src = new BYTE[w*h*c];
+	for (int i = 0; i < w*h; i++) {
+		src[i * c + 0] = plane[i];//B
+		src[i * c + 1] = plane[i];//G
+		src[i * c + 2] = plane[i];//R
+		src[i * c + 3] = plane[i];//A
+	}
+
+	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
+	FreeImage_Save(FIF_BMP, Image, name);
+	FreeImage_Unload(Image);
+
+}
+
+void depthMapTest() {
+
+	char name[100] = "Data/DATA";
+
+	int readsize = 2048 * 2048 * 2;
+	BYTE* readbuf = new BYTE[readsize];
+
+	FILE* fp = fopen(name, "rb");
+	fread(readbuf, sizeof(BYTE), readsize, fp);
+
+	int realSize = 2048 * 2048;
+
+	BYTE* upperBuf = new BYTE[realSize];
+	BYTE* lowerBuf = new BYTE[realSize];
+
+	for (int i = 0; i < readsize; i++) {
+		if (i % 2 == 1) {
+			upperBuf[i / 2] = readbuf[i];
+		}
+		else if (i % 2 == 0) {
+			lowerBuf[i / 2] = readbuf[i];
+		}
+	}
+
+	FreeImageSetupRGBTEST(2048, 2048, upperBuf, "upperDepth.bmp");	//상위 bit. 보다 중요
+	FreeImageSetupRGBTEST(2048, 2048, lowerBuf, "lowerDepth.bmp");  //하위 bit. 보다 덜 중요
+
+	FreeImageSetupRGBATEST(2048, 2048, upperBuf, "upperDepth_rgba.bmp");
+	FreeImageSetupRGBATEST(2048, 2048, lowerBuf, "lowerDepth_rgba.bmp");
+
+	//unsigned short* usBuf = new unsigned short[realSize];
+	unsigned short* usBuf = new unsigned short[realSize];
+	//FreeImageSetupRGBTEST2(2048, 2048, usBuf, "usDepth1.bmp");
+	//fread(usBuf, sizeof(usBuf), 1, fp);
+
+	for (int i = 0; i < readsize; i++) {
+		if (i % 2 == 0) {
+			usBuf[i / 2] = readbuf[i] + readbuf[i + 1] * 256;
+		}
+	}
+	FreeImageSetupRGBTEST2(2048, 2048, usBuf, "usDepth.bmp");
+
+
+	fclose(fp);
+
+	printf("load depth map.\n");
+
+}
+
+
 void prepare_scene(void) {
 	prepare_quad();
 	create_ORIGINAL_texture("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
 	create_ORIGINAL_texture("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
+
+	depthMapTest();
 
 	//upload_TEST_Texture_Original();
 	upload_TEST_Texture_Original_YUV();
@@ -463,7 +572,7 @@ void prepare_scene(void) {
 	//upload_TEST_Texture_ASTC(12);
 	//upload_TEST_Texture_ASTC(112);
 	//upload_TEST_Texture_YUV();
-
+	upload_TEST_Texture_Depth();
 	//compare_PSNR();
 
 	//exit(0);
