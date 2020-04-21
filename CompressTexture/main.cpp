@@ -22,6 +22,9 @@ GLint loc_drawtype, loc_typeof_original_image, loc_typeof_compressed_image;
 GLint loc_base_texture, loc_base_texture_y, loc_base_texture_u, loc_base_texture_v, loc_base_texture_index;
 GLint loc_original_texture, loc_original_texture_y, loc_original_texture_u, loc_original_texture_v, loc_original_texture_index;
 
+
+GLint loc_depth_num, loc_depth_uncomp_16bit, loc_depth_uncomp_upper, loc_depth_uncomp_lower, loc_depth_comp_upper, loc_depth_comp_lower, loc_depth_uncomp_split,  loc_depth_comp_split1, loc_depth_comp_split2;
+
 // include glm/*.hpp only if necessary
 //#include <glm/glm.hpp> 
 #include <glm/gtc/matrix_transform.hpp> //translate, rotate, scale, lookAt, perspective, etc.
@@ -55,6 +58,7 @@ struct _WINDOW_param {
 
 
 #include "ImageLoader.h"
+#include "ImageWriter.h"
 #include "Objects.h"
 
 char titleTex[N_NORMAL_TEXTURES_USED][30] = {
@@ -114,6 +118,7 @@ char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 #define IMGSIZE 600.0f
 GLuint texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;		//original (unpack) texture name
 GLuint texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;		//compressed texture name
+GLuint texnum_depth = 0;
 
 int draw_mode = 0;
 
@@ -161,6 +166,7 @@ void draw_original_texture() {
 	glUseProgram(0);
 }
 
+
 void draw_compressed_texture() {
 	glm::mat4 ModelMatrix;
 
@@ -190,8 +196,8 @@ void draw_compressed_texture() {
 		//printf("texnum : %d, y=%d u=%d v=%d\n", texindex % 3 + 1, y+24,u+24,v+24);
 	}
 
-	glUniform1i(loc_base_texture_y, TEXTURE_TEST_R);			//랜더링할 텍스쳐 y
-	glUniform1i(loc_base_texture_u, TEXTURE_TEST_G);			//랜더링할 텍스쳐 u
+	//glUniform1i(loc_base_texture_y, TEXTURE_TEST_R);			//랜더링할 텍스쳐 y
+	//glUniform1i(loc_base_texture_u, TEXTURE_TEST_G);			//랜더링할 텍스쳐 u
 	//glUniform1i(loc_base_texture_v, TEXTURE_TEST_B);			//랜더링할 텍스쳐 v
 
 	ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f - IMGSIZE, -IMGSIZE / 2, 0.0f));
@@ -208,6 +214,21 @@ void draw_compressed_texture() {
 	glUseProgram(0);
 }
 
+void setDepthTex() {
+
+	glUseProgram(h_ShaderProgram_TXPS);
+
+	glUniform1i(loc_depth_uncomp_16bit, TEXTURE_INDEX_DEPTH_UNCOMP_16BIT);
+	glUniform1i(loc_depth_uncomp_upper, TEXTURE_INDEX_DEPTH_UNCOMP_UPPER);
+	glUniform1i(loc_depth_uncomp_lower, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER);
+	glUniform1i(loc_depth_comp_upper, TEXTURE_INDEX_DEPTH_COMP_UPPER);
+	glUniform1i(loc_depth_comp_lower, TEXTURE_INDEX_DEPTH_COMP_LOWER);
+	glUniform1i(loc_depth_uncomp_split, TEXTURE_INDEX_DEPTH_UNCOMP_SPLIT);
+	glUniform1i(loc_depth_comp_split1, TEXTURE_INDEX_DEPTH_COMP_SPLIT1);
+	glUniform1i(loc_depth_comp_split2, TEXTURE_INDEX_DEPTH_COMP_SPLIT2);
+
+	glUseProgram(0);
+}
 
 //정의 시 1000frame 랜더링 시간 측정.
 //#define TIMETEST 0
@@ -265,6 +286,8 @@ void display(void) {
 		}
 	}
 #else
+
+	setDepthTex();
 
 	glClearColor(1, 0, 0, 0);
 	glViewport(0, 0, WINDOW_param.width, WINDOW_param.height);
@@ -337,6 +360,31 @@ void keyboard(unsigned char key, int x, int y) {
 		glutSetWindowTitle(titleTex[texnum_comp]);
 		glutPostRedisplay();
 		break;
+	case 'b':
+		texnum_depth++;
+
+		if (texnum_depth >5) {
+			texnum_depth = 0;
+		}
+		switch (texnum_depth) {
+		case 0:printf("depth_uncomp_16bit\n");
+			glutSetWindowTitle("depth_uncomp_16bit"); break;
+		case 1:printf("depth_uncomp upper/ BPTC lower\n");
+			glutSetWindowTitle("depth_uncomp upper/ BPTC lower"); break;
+		case 2:printf("depth_BPTC upper/ uncomp lower\n");
+			glutSetWindowTitle("depth_BPTC upper/ uncomp lower"); break;
+		case 3:printf("depth_BPTC upper/ BPTC lower\n");
+			glutSetWindowTitle("depth_BPTC upper/ BPTC lower"); break;
+		case 4:printf("depth_DXT1_High Fill\n");
+			glutSetWindowTitle("depth_DXT1_High Fill"); break;
+		case 5:printf("depth_BPTC_high Fill\n");
+			glutSetWindowTitle("depth_BPTC_high Fill"); break;
+		}
+		glUseProgram(h_ShaderProgram_TXPS);
+		glUniform1i(loc_depth_num, texnum_depth);
+		glUseProgram(0);
+		break;
+
 	case 'm':
 		texnum_comp++;
 		if (texnum_comp >= TEXTURE_INDEX_COMPRESS_TEST1 + TEST_IMAGE_COUNT) {
@@ -429,6 +477,16 @@ void prepare_shader_program(void) {
 	loc_flag_texture_reverse = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_reverse");
 
 
+	loc_depth_num = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_number");
+	loc_depth_uncomp_16bit = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_uncomp_16bit");
+	loc_depth_uncomp_upper = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_uncomp_upper");
+	loc_depth_uncomp_lower = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_uncomp_lower");
+	loc_depth_comp_upper = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_upper");
+	loc_depth_comp_lower = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower");
+	loc_depth_uncomp_split = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_uncomp_split");
+	loc_depth_comp_split1 = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_split1");
+	loc_depth_comp_split2 = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_split2");
+
 }
 
 
@@ -449,64 +507,8 @@ void initialize_OpenGL(void) {
 }
 
 
-void FreeImageSetupRGBTEST(int width, int height, BYTE* plane, const char* name)
-{
 
-	int w = width; int h = height; int c = 3;
-	FIBITMAP * bitmap = FreeImage_Allocate(w, h, c);
-	BYTE * src = new BYTE[w*h*c];
-	for (int i = 0; i < w*h; i++) {
-		src[i * c + 0] = plane[i];//B
-		src[i * c + 1] = plane[i];;//G
-		src[i * c + 2] = plane[i];;//R
-	}
-
-	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
-	FreeImage_Save(FIF_BMP, Image, name);
-	FreeImage_Unload(Image);
-
-}
-
-
-void FreeImageSetupRGBTEST2(int width, int height, unsigned short* plane, const char* name)
-{
-
-	int w = width; int h = height; int c = 3;
-	FIBITMAP * bitmap = FreeImage_Allocate(w, h, c);
-	BYTE * src = new BYTE[w*h*c];
-	for (int i = 0; i < w*h; i++) {
-		src[i * c + 0] = plane[i] / 256;//B
-		src[i * c + 1] = plane[i];;//G
-		src[i * c + 2] = plane[i];;//R
-	}
-
-	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
-	FreeImage_Save(FIF_BMP, Image, name);
-	FreeImage_Unload(Image);
-
-}
-
-
-void FreeImageSetupRGBATEST(int width, int height, BYTE* plane, const char* name)
-{
-
-	int w = width; int h = height; int c = 4;
-	FIBITMAP * bitmap = FreeImage_Allocate(w, h, c);
-	BYTE * src = new BYTE[w*h*c];
-	for (int i = 0; i < w*h; i++) {
-		src[i * c + 0] = plane[i];//B
-		src[i * c + 1] = plane[i];//G
-		src[i * c + 2] = plane[i];//R
-		src[i * c + 3] = plane[i];//A
-	}
-
-	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
-	FreeImage_Save(FIF_PNG, Image, name);
-	FreeImage_Unload(Image);
-
-}
-
-void depthMapTest() {
+void depthMapWrite() {
 
 	char name[100] = "Data/DATA";
 
@@ -529,25 +531,26 @@ void depthMapTest() {
 			lowerBuf[i / 2] = readbuf[i];
 		}
 	}
+	
+	FreeImageSaveFile_8bit_RGBA(2048, 2048, upperBuf, "upperDepth_rgba.png");
+	FreeImageSaveFile_8bit_RGBA(2048, 2048, lowerBuf, "lowerDepth_rgba.png");
 
-	FreeImageSetupRGBTEST(2048, 2048, upperBuf, "upperDepth.bmp");	//상위 bit. 보다 중요
-	FreeImageSetupRGBTEST(2048, 2048, lowerBuf, "lowerDepth.bmp");  //하위 bit. 보다 덜 중요
-
-	FreeImageSetupRGBATEST(2048, 2048, upperBuf, "upperDepth_rgba.png");
-	FreeImageSetupRGBATEST(2048, 2048, lowerBuf, "lowerDepth_rgba.png");
-
-	//unsigned short* usBuf = new unsigned short[realSize];
 	unsigned short* usBuf = new unsigned short[realSize];
-	//FreeImageSetupRGBTEST2(2048, 2048, usBuf, "usDepth1.bmp");
-	//fread(usBuf, sizeof(usBuf), 1, fp);
 
 	for (int i = 0; i < readsize; i++) {
 		if (i % 2 == 0) {
 			usBuf[i / 2] = readbuf[i] + readbuf[i + 1] * 256;
 		}
 	}
-	FreeImageSetupRGBTEST2(2048, 2048, usBuf, "usDepth.bmp");
 
+	FreeImageSetupRGB_SPLIT_min(2048,2048, usBuf,"splitDepth_min.bmp");
+	FreeImageSetupRGB_SPLIT_max(2048, 2048, usBuf, "splitDepth_max.bmp");
+
+	FreeImageSetupRGBA_SPLIT_min(2048, 2048, usBuf, "splitDepth_bptc_min.png");
+	FreeImageSetupRGBA_SPLIT_max(2048, 2048, usBuf, "splitDepth_bptc_max.png");
+
+	FreeImageSaveFile_16bit_RGBA(2048, 2048, usBuf, "Depth_rgba.png");
+	FreeImageSaveFile_16bit_Grayscale(2048,2048, usBuf,"Depth_gs.png");
 
 	fclose(fp);
 
@@ -561,7 +564,7 @@ void prepare_scene(void) {
 	create_ORIGINAL_texture("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
 	create_ORIGINAL_texture("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
 
-	depthMapTest();
+	//depthMapWrite();
 
 	//upload_TEST_Texture_Original();
 	upload_TEST_Texture_Original_YUV();
@@ -580,8 +583,8 @@ void prepare_scene(void) {
 	upload_TEST_Texture_Depth();
 	//compare_PSNR();
 
-	create_DDS_Texture("Data/depth/bc7/upperDepth_rgba.DDS", TEXTURE_TEST_R);
-	create_ORIGINAL_texture("Data/depth/original/upperDepth_rgba.png", TEXTURE_TEST_G);
+	//create_DDS_Texture("Data/depth/bc7/upperDepth_rgba.DDS", TEXTURE_TEST_R);
+	//create_ORIGINAL_RGBA_texture("Data/depth/original/upperDepth_rgba.png", TEXTURE_TEST_G);
 
 	//exit(0);
 }

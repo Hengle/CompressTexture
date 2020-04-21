@@ -134,11 +134,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ImagerLoader.cpp" />
+    <ClCompile Include="ImageWriter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shaders\LoadShaders.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImageLoader.h" />
+    <ClInclude Include="ImageWriter.h" />
     <ClInclude Include="My_Shading.h" />
     <ClInclude Include="Objects.h" />
     <ClInclude Include="Shaders\LoadShaders.h" />

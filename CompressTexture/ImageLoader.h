@@ -15,8 +15,9 @@
 #include <glm/gtc/matrix_inverse.hpp> // inverseTranspose, etc.
 
 
-GLuint load_unpack_image(const char *filename);
-float load_unpack_image_checktime(const char *filename);
+GLuint load_unpack_image(const char *filename, GLuint ReadRGBAType);
+float load_unpack_image_checktime(const char *filename, GLuint ReadRGBAType);
+float load_unpack_image_16bit_checktime(const char *filename, GLuint ReadRGBAType);
 
 GLuint load_astc_image(const char *filename);
 float load_astc_image_checktime(const char *filename);

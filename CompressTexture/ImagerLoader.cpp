@@ -7,7 +7,7 @@ __int64 start, freq, end;
 
 //압축되지 않은 일반 이미지(jpg, png 등)을 로드하여 텍스처하는 함수
 //리턴 : texname
-GLuint load_unpack_image(const char *filename) {
+GLuint load_unpack_image(const char *filename, GLuint ReadRGBAType) {
 	FREE_IMAGE_FORMAT tx_file_format;
 	int tx_bits_per_pixel;
 	FIBITMAP *tx_pixmap, *tx_pixmap_32;
@@ -37,7 +37,7 @@ GLuint load_unpack_image(const char *filename) {
 	glGenTextures(1, &texname);
 	glBindTexture(GL_TEXTURE_2D, texname);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
 
 	FreeImage_Unload(tx_pixmap_32);
 	if (tx_bits_per_pixel != 32)
@@ -48,7 +48,7 @@ GLuint load_unpack_image(const char *filename) {
 
 //압축되지 않은 일반 이미지(jpg, png 등)을 로드하여 텍스처하는 함수 - 시간 측정 버전
 //리턴 : 업로드 시간
-float load_unpack_image_checktime(const char *filename) {
+float load_unpack_image_checktime(const char *filename, GLuint ReadRGBAType) {
 	FREE_IMAGE_FORMAT tx_file_format;
 	int tx_bits_per_pixel;
 	FIBITMAP *tx_pixmap, *tx_pixmap_32;
@@ -82,7 +82,7 @@ float load_unpack_image_checktime(const char *filename) {
 
 	glFinish();
 	CHECK_TIME_START;
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
 
 	glFinish();
 	CHECK_TIME_END(compute_time);
@@ -90,6 +90,55 @@ float load_unpack_image_checktime(const char *filename) {
 
 	FreeImage_Unload(tx_pixmap_32);
 	if (tx_bits_per_pixel != 32)
+		FreeImage_Unload(tx_pixmap);
+
+	return compute_time;
+}
+
+//압축되지 않은 일반 이미지(jpg, png 등)을 로드하여 텍스처하는 함수 - 시간 측정 버전
+//리턴 : 업로드 시간
+float load_unpack_image_16bit_checktime(const char *filename, GLuint ReadRGBAType) {
+	FREE_IMAGE_FORMAT tx_file_format;
+	int tx_bits_per_pixel;
+	FIBITMAP *tx_pixmap, *tx_pixmap_64;
+
+	int width, height;
+	GLvoid *data;
+
+	tx_file_format = FreeImage_GetFileType(filename, 0);
+	// assume everything is fine with reading texture from file: no error checking
+	tx_pixmap = FreeImage_Load(tx_file_format, filename);
+	tx_bits_per_pixel = FreeImage_GetBPP(tx_pixmap);
+
+	//fprintf(stdout, " * A %d-bit texture was read from %s.\n", tx_bits_per_pixel, filename);
+	if (tx_bits_per_pixel == 64)
+		tx_pixmap_64 = tx_pixmap;
+	else {
+		//fprintf(stdout, " * Converting texture from %d bits to 32 bits...\n", tx_bits_per_pixel);
+		tx_pixmap_64 = FreeImage_ConvertTo32Bits(tx_pixmap);
+	}
+
+	width = FreeImage_GetWidth(tx_pixmap_64);
+	height = FreeImage_GetHeight(tx_pixmap_64);
+	data = FreeImage_GetBits(tx_pixmap_64);
+
+	//generate and bind texture
+	GLuint texname;
+	glGenTextures(1, &texname);
+	glBindTexture(GL_TEXTURE_2D, texname);
+
+	float compute_time;
+
+	glFinish();
+	CHECK_TIME_START;
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT, data);
+
+	glFinish();
+	CHECK_TIME_END(compute_time);
+	//fprintf(stdout, " * Loaded %dx%d RGBA texture into graphics memory.\n\n", width, height);
+
+	FreeImage_Unload(tx_pixmap_64);
+	if (tx_bits_per_pixel != 64)
 		FreeImage_Unload(tx_pixmap);
 
 	return compute_time;

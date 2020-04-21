@@ -1,6 +1,6 @@
 
 #define TEST_IMAGE_COUNT 24
-#define N_NORMAL_TEXTURES_USED 55
+#define N_NORMAL_TEXTURES_USED 58
 
 #define TEXTURE_INDEX_ORIGINAL 0
 #define TEXTURE_INDEX_TEST 1
@@ -55,12 +55,14 @@
 #define TEXTURE_INDEX_ORIGINAL_TEST23 48
 #define TEXTURE_INDEX_ORIGINAL_TEST24 49
 
-
-#define TEXTURE_INDEX_DEPTH_TEST1 50
-#define TEXTURE_INDEX_DEPTH_TEST2 51
-#define TEXTURE_INDEX_DEPTH_TEST3 52
-#define TEXTURE_INDEX_DEPTH_TEST4 53
-#define TEXTURE_INDEX_DEPTH_TEST5 54
+#define TEXTURE_INDEX_DEPTH_UNCOMP_16BIT 50
+#define TEXTURE_INDEX_DEPTH_UNCOMP_UPPER 51
+#define TEXTURE_INDEX_DEPTH_UNCOMP_LOWER 52
+#define TEXTURE_INDEX_DEPTH_COMP_UPPER 53
+#define TEXTURE_INDEX_DEPTH_COMP_LOWER 54
+#define TEXTURE_INDEX_DEPTH_UNCOMP_SPLIT 55
+#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1 56
+#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2 57
 
 #define TEXTURE_TEST_R 50
 #define TEXTURE_TEST_G 51
@@ -107,7 +109,39 @@ float create_ORIGINAL_texture(const char* filename, GLuint textureID) {
 	glActiveTexture(GL_TEXTURE0 + textureID);
 	//glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
 
-	time = load_unpack_image_checktime(filename);
+	time = load_unpack_image_checktime(filename,GL_RGB);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	return time;
+}
+
+
+float create_ORIGINAL_RGBA_16_texture(const char* filename, GLuint textureID) {
+	float time;
+	glActiveTexture(GL_TEXTURE0 + textureID);
+	//glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
+
+	time = load_unpack_image_16bit_checktime(filename, GL_RGBA);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	return time;
+}
+
+
+float create_ORIGINAL_RGBA_texture(const char* filename, GLuint textureID) {
+	float time;
+	glActiveTexture(GL_TEXTURE0 + textureID);
+	//glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
+
+	time = load_unpack_image_checktime(filename, GL_RGBA);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -274,6 +308,18 @@ void upload_TEST_Texture_Depth() {
 
 	char name[100];
 	float time = 0.0f;
+
+	time += create_ORIGINAL_RGBA_16_texture("Data/Depth/original/Depth_rgba.png", TEXTURE_INDEX_DEPTH_UNCOMP_16BIT);
+	time += create_ORIGINAL_RGBA_texture("Data/Depth/original/upperDepth_rgba.png", TEXTURE_INDEX_DEPTH_UNCOMP_UPPER);
+	time += create_ORIGINAL_RGBA_texture("Data/Depth/original/lowerDepth_rgba.png", TEXTURE_INDEX_DEPTH_UNCOMP_LOWER);
+	time += create_DDS_Texture("Data/Depth/bc7/upperDepth_rgba.DDS", TEXTURE_INDEX_DEPTH_COMP_UPPER);
+	time += create_DDS_Texture("Data/Depth/bc7/lowerDepth_rgba.DDS", TEXTURE_INDEX_DEPTH_COMP_LOWER);
+	time += create_ORIGINAL_RGBA_texture("Data/Depth/original/splitDepth.bmp", TEXTURE_INDEX_DEPTH_UNCOMP_SPLIT);
+	time += create_DDS_Texture("Data/Depth/dxt1/splitDepth_max.DDS", TEXTURE_INDEX_DEPTH_COMP_SPLIT1);
+	time += create_DDS_Texture("Data/Depth/bc7/splitDepth_bptc_max.DDS", TEXTURE_INDEX_DEPTH_COMP_SPLIT2);
+
+	printf("upload time for 8 kind of Depth Image : %f\n", time);
+
 
 
 }
