@@ -567,11 +567,11 @@ void prepare_scene(void) {
 	//depthMapWrite();
 
 	//upload_TEST_Texture_Original();
-	upload_TEST_Texture_Original_YUV();
-	//upload_TEST_Texture_DXT(1);
+	//upload_TEST_Texture_Original_YUV();
+	upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);
-	upload_TEST_Texture_BPTC();
+	//upload_TEST_Texture_BPTC();
 	//upload_TEST_Texture_ASTC(4);
 	//upload_TEST_Texture_ASTC(5);
 	//upload_TEST_Texture_ASTC(6);
@@ -580,7 +580,7 @@ void prepare_scene(void) {
 	//upload_TEST_Texture_ASTC(12);
 	//upload_TEST_Texture_ASTC(112);
 	//upload_TEST_Texture_YUV();
-	upload_TEST_Texture_Depth();
+	//upload_TEST_Texture_Depth();
 	//compare_PSNR();
 
 

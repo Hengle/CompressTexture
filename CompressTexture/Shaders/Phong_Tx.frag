@@ -175,8 +175,8 @@ void main(void) {
 
 	//return;
 
-	printDepthMap();
-	return;
+	//printDepthMap();
+	//return;
 
 	//original image
 	if (u_drawtype == 0) {

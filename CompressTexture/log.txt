@@ -521,3 +521,12 @@ upload time for original yuv : 75.706299
 upload time for BPTC compress : 37.023697
 upload time for original yuv : 74.724091
 upload time for BPTC compress : 33.786503
+upload time for DXT1 compress : 22.123402
+upload time for DXT1 compress : 19.145100
+upload time for DXT1 compress : 17.505299
+upload time for DXT1 compress : 18.561501
+upload time for DXT1 compress : 18.829302
+upload time for DXT1 compress : 17.596500
+upload time for original yuv : 90.680695
+upload time for DXT1 compress : 22.856798
+upload time for DXT1 compress : 18.139599

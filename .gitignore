@@ -11,6 +11,7 @@
 *.idb
 *.iobj
 *.ipdb
+log.txt
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
