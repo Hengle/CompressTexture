@@ -306,17 +306,17 @@ float load_astc_image_checktime(const char *filename)
 	int yblocks = (ysize + ydim - 1) / ydim;
 	int zblocks = (zsize + zdim - 1) / zdim;
 	int size = xblocks * yblocks * zblocks * 16;
-	uint8_t *buffer = (uint8_t *)malloc(size);
+	uint8_t *buffer = (uint8_t *)malloc(sizeof(uint8_t)*size);
 	if (!buffer)
 	{
 		fclose(f);
 		printf("Ran out of memory\n");
 		exit(1);
 	}
-	size_t bytes_to_read = xblocks * yblocks * zblocks * 16;
-	size_t bytes_read = fread(buffer, 1, bytes_to_read, f);
+	//size_t bytes_to_read = xblocks * yblocks * zblocks * 16;
+	size_t bytes_read = fread(buffer, 1, size, f);
 	fclose(f);
-	if (bytes_read != bytes_to_read)
+	if (bytes_read != size)
 	{
 		printf("Failed to read file %s\n", filename);
 		exit(1);
@@ -346,6 +346,11 @@ float load_astc_image_checktime(const char *filename)
 	CHECK_TIME_END(compute_time);
 
 	free(buffer);
+		
+	//GLint bytes;
+	//glGetTextureLevelParameteriv(texname, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &bytes);
+	//printf("memory size : %d byte, %dMB\n", bytes, bytes / 1024 / 1024);
+
 	return compute_time;
 }
 
@@ -480,6 +485,7 @@ float load_dds_image_checktime(const char * imagepath) {
 	glGenTextures(1, &texname);
 	glBindTexture(GL_TEXTURE_2D, texname);
 
+
 	/* get the surface desc */
 	fread(&header, 124, 1, fp);
 
@@ -555,6 +561,14 @@ float load_dds_image_checktime(const char * imagepath) {
 	CHECK_TIME_END(compute_time);
 
 	free(buffer);
+
+
+/*
+
+	GLint bytes;
+	glGetTextureLevelParameteriv(texname, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &bytes);
+	printf("memory size : %d byte, %dMB\n", bytes, bytes/1024/1024);*/
+
 
 	return compute_time;
 

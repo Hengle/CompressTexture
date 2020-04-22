@@ -486,3 +486,38 @@ upload time for original yuv : 74.144493
 upload time for BPTC compress : 34.579803
 upload time for original yuv : 72.596794
 upload time for BPTC compress : 35.397598
+upload time for original yuv : 101.141991
+upload time for original yuv : 79.643204
+upload time for ASTC 4x4 compress : 6440.158203
+upload time for DXT1 compress : 22.535999
+upload time for DXT1 compress : 18.401497
+upload time for DXT1 compress : 19.575500
+upload time for DXT1 compress : 20.897902
+upload time for DXT1 compress : 20.755400
+upload time for DXT1 compress : 18.778301
+upload time for DXT1 compress : 17.534801
+upload time for DXT1 compress : 18.723698
+upload time for ASTC 4x4 compress : 6088.356934
+upload time for ASTC 4x4 compress : 0.000000
+upload time for ASTC 4x4 compress : 0.000000
+upload time for ASTC 4x4 compress : 5883.876953
+upload time for ASTC 4x4 compress : 0.000000
+upload time for ASTC 4x4 compress : 0.000000
+upload time for ASTC 4x4 compress : 6194.546875
+upload time for ASTC 4x4 compress : 6016.838379
+upload time for original yuv : 72.178604
+upload time for original yuv : 77.166702
+upload time for original yuv : 75.801796
+upload time for DXT1 compress : 21.233301
+upload time for DXT1 compress : 18.597300
+upload time for DXT1 compress : 21.951300
+upload time for DXT1 compress : 21.455101
+upload time for DXT1 compress : 21.858002
+upload time for DXT1 compress : 20.787102
+upload time for DXT1 compress : 21.135403
+upload time for ASTC 4x4 compress : 5974.333008
+upload time for ASTC 12x12 compress : 4732.043945
+upload time for original yuv : 75.706299
+upload time for BPTC compress : 37.023697
+upload time for original yuv : 74.724091
+upload time for BPTC compress : 33.786503

@@ -583,6 +583,7 @@ void prepare_scene(void) {
 	upload_TEST_Texture_Depth();
 	//compare_PSNR();
 
+
 	//create_DDS_Texture("Data/depth/bc7/upperDepth_rgba.DDS", TEXTURE_TEST_R);
 	//create_ORIGINAL_RGBA_texture("Data/depth/original/upperDepth_rgba.png", TEXTURE_TEST_G);
 
