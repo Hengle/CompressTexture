@@ -557,18 +557,65 @@ void depthMapWrite() {
 	printf("load depth map.\n");
 
 }
+int texTypeIndex = 0;
 
+void consoleInput() {
+
+	printf("Please Select type of Texture.\n");
+	printf("0 : Uncompressed BMP(8bit RGB)\n");
+	printf("1 : Uncompressed BMP(8bit YUV)\n");
+	printf("2 : DXT1\n");
+	printf("3 : DXT3\n");
+	printf("4 : DXT5\n");
+	printf("5 : BPTC\n");
+	printf("6 : ASTC 4X4\n");
+	printf("7 : DXT1 + YUV\n");
+
+	scanf("%d", &texTypeIndex);
+
+	if (!(0 <= texTypeIndex && texTypeIndex <= 7)) {
+		printf("select 0~7.\n");
+		consoleInput();
+	}
+	else {
+		printf("Result time is upload 24 image(2048*2048) time.\n");
+
+		switch (texTypeIndex) {
+		case 0: printf("Memory : 12MB for 1 image\n"); break;
+		case 1: printf("Memory : 6MB for 1 image\n"); break;
+		case 2: printf("Memory : 2MB for 1 image\n"); break;
+		case 3: printf("Memory : 4MB for 1 image\n"); break;
+		case 4: printf("Memory : 4MB for 1 image\n"); break;
+		case 5: printf("Memory : 4MB for 1 image\n"); break;
+		case 6: printf("Memory : 4MB for 1 image\n"); break;
+		case 7: printf("Memory : 1MB for 1 image\n"); break;
+		}
+
+	}
+}
 
 void prepare_scene(void) {
 	prepare_quad();
 	create_ORIGINAL_texture("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
 	create_ORIGINAL_texture("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
 
+
+	switch (texTypeIndex) {
+	case 0: upload_TEST_Texture_Original(); break;
+	case 1: upload_TEST_Texture_Original_YUV(); break;
+	case 2: upload_TEST_Texture_DXT(1); break;
+	case 3: upload_TEST_Texture_DXT(3); break;
+	case 4: upload_TEST_Texture_DXT(5); break;
+	case 5: upload_TEST_Texture_BPTC(); break;
+	case 6: upload_TEST_Texture_ASTC(4); break;
+	case 7: upload_TEST_Texture_YUV(); break;
+	}
+
 	//depthMapWrite();
 
 	//upload_TEST_Texture_Original();
 	//upload_TEST_Texture_Original_YUV();
-	upload_TEST_Texture_DXT(1);
+	//upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);
 	//upload_TEST_Texture_BPTC();
@@ -587,7 +634,10 @@ void prepare_scene(void) {
 	//create_DDS_Texture("Data/depth/bc7/upperDepth_rgba.DDS", TEXTURE_TEST_R);
 	//create_ORIGINAL_RGBA_texture("Data/depth/original/upperDepth_rgba.png", TEXTURE_TEST_G);
 
-	//exit(0);
+	printf("Press any key to finish.\n");
+	getchar();
+	getchar();
+	exit(0);
 }
 
 void initialize_renderer(void) {
@@ -616,20 +666,7 @@ void initialize_glew(void) {
 }
 
 void greetings(char *program_name, char messages[][256], int n_message_lines) {
-	fprintf(stdout, "**************************************************************\n\n");
-	fprintf(stdout, "  PROGRAM NAME: %s\n\n", program_name);
-	fprintf(stdout, "    This program was coded for CSE3170 students\n");
-	fprintf(stdout, "      of Dept. of Comp. Sci. & Eng., Sogang University.\n\n");
-
-	for (int i = 0; i < n_message_lines; i++)
-		fprintf(stdout, "%s\n", messages[i]);
-	fprintf(stdout, "\n'w', 's', 'a', 'd', 'z', 'c' => Move camera\n");
-	fprintf(stdout, "'p' => View Diffrence\n");
-	fprintf(stdout, "'n' => Change Draw Mode\n");
-	fprintf(stdout, "'m' => View Next Image\n");
-	fprintf(stdout, "'t' => Toggle Texture\n");
-	fprintf(stdout, "**************************************************************\n\n");
-
+	consoleInput();
 	initialize_glew();
 }
 
