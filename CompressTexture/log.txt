@@ -534,3 +534,8 @@ upload time for DXT1 compress : 23.270597
 upload time for DXT1 compress : 21.476999
 upload time for DXT1 compress : 19.096100
 upload time for DXT1 compress : 20.274300
+upload time for DXT1 compress : 23.065599
+upload time for DXT1 compress : 19.250200
+upload time for DXT1 compress : 19.748699
+upload time for original rgb : 124.361694
+upload time for BPTC compress : 36.723202

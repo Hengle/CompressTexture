@@ -124,6 +124,25 @@ GLuint texnum_depth = 0;
 
 int draw_mode = 0;
 
+void setDepthTex() {
+
+	glUseProgram(h_ShaderProgram_TXPS);
+
+	int texchannal = texnum_depth / 4;
+
+	glUniform1i(loc_depth_uncomp_16bit, TEXTURE_INDEX_DEPTH_UNCOMP_16BIT_TEST1 + texchannal);
+	glUniform1i(loc_depth_uncomp_upper, TEXTURE_INDEX_DEPTH_UNCOMP_UPPER_TEST1 + texchannal);
+	glUniform1i(loc_depth_uncomp_lower, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER_TEST1 + texchannal);
+	glUniform1i(loc_depth_comp_upper, TEXTURE_INDEX_DEPTH_COMP_UPPER_TEST1 + texchannal);
+	glUniform1i(loc_depth_comp_lower, TEXTURE_INDEX_DEPTH_COMP_LOWER_TEST1 + texchannal);
+
+
+	glUniform1i(loc_depth_comp_split1, TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST1 + texnum_depth);
+	glUniform1i(loc_depth_comp_split2, TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST1 + texnum_depth);
+
+	glUseProgram(0);
+}
+
 void draw_original_texture() {
 	glm::mat4 ModelMatrix;
 
@@ -173,7 +192,6 @@ void draw_compressed_texture() {
 	glm::mat4 ModelMatrix;
 
 	glUseProgram(h_ShaderProgram_TXPS);
-
 	glUniform1i(loc_drawtype, 1);
 
 	glUniform1i(loc_typeof_compressed_image, type_of_compressed_image);
@@ -212,21 +230,6 @@ void draw_compressed_texture() {
 	glUniformMatrix4fv(loc_ModelViewMatrix_TXPS, 1, GL_FALSE, &ModelViewMatrix[0][0]);
 	glUniformMatrix3fv(loc_ModelViewMatrixInvTrans_TXPS, 1, GL_FALSE, &ModelViewMatrixInvTrans[0][0]);
 	draw_quad();
-
-	glUseProgram(0);
-}
-
-void setDepthTex() {
-
-	glUseProgram(h_ShaderProgram_TXPS);
-
-	glUniform1i(loc_depth_uncomp_16bit, TEXTURE_INDEX_DEPTH_UNCOMP_16BIT);
-	glUniform1i(loc_depth_uncomp_upper, TEXTURE_INDEX_DEPTH_UNCOMP_UPPER);
-	glUniform1i(loc_depth_uncomp_lower, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER);
-	glUniform1i(loc_depth_comp_upper, TEXTURE_INDEX_DEPTH_COMP_UPPER);
-	glUniform1i(loc_depth_comp_lower, TEXTURE_INDEX_DEPTH_COMP_LOWER);
-	glUniform1i(loc_depth_comp_split1, TEXTURE_INDEX_DEPTH_COMP_SPLIT1);
-	glUniform1i(loc_depth_comp_split2, TEXTURE_INDEX_DEPTH_COMP_SPLIT2);
 
 	glUseProgram(0);
 }
@@ -625,12 +628,12 @@ void prepare_scene(void) {
 
 	//depthMapWrite();
 
-	//upload_TEST_Texture_Original();
+	upload_TEST_Texture_Original();
 	//upload_TEST_Texture_Original_YUV();
-	upload_TEST_Texture_DXT(1);
+	//upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);
-	//upload_TEST_Texture_BPTC();
+	upload_TEST_Texture_BPTC();
 	//upload_TEST_Texture_ASTC(4);
 	//upload_TEST_Texture_ASTC(5);
 	//upload_TEST_Texture_ASTC(6);
