@@ -56,17 +56,15 @@
 #define TEXTURE_INDEX_ORIGINAL_TEST24 49
 
 #define TEXTURE_INDEX_DEPTH_UNCOMP_16BIT 50
+
 #define TEXTURE_INDEX_DEPTH_UNCOMP_UPPER 51
 #define TEXTURE_INDEX_DEPTH_UNCOMP_LOWER 52
 #define TEXTURE_INDEX_DEPTH_COMP_UPPER 53
 #define TEXTURE_INDEX_DEPTH_COMP_LOWER 54
-#define TEXTURE_INDEX_DEPTH_UNCOMP_SPLIT 55
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1 56
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2 57
 
-#define TEXTURE_TEST_R 50
-#define TEXTURE_TEST_G 51
-#define TEXTURE_TEST_B 52
+#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1 55
+#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2 56
+
 
 // floor object
 GLuint rectangle_VBO, rectangle_VAO;
@@ -309,14 +307,14 @@ void upload_TEST_Texture_Depth() {
 	char name[100];
 	float time = 0.0f;
 
-	time += create_ORIGINAL_RGBA_16_texture("Data/Depth/original/Depth_rgba.png", TEXTURE_INDEX_DEPTH_UNCOMP_16BIT);
-	time += create_ORIGINAL_RGBA_texture("Data/Depth/original/upperDepth_rgba.png", TEXTURE_INDEX_DEPTH_UNCOMP_UPPER);
-	time += create_ORIGINAL_RGBA_texture("Data/Depth/original/lowerDepth_rgba.png", TEXTURE_INDEX_DEPTH_UNCOMP_LOWER);
-	time += create_DDS_Texture("Data/Depth/bc7/upperDepth_rgba.DDS", TEXTURE_INDEX_DEPTH_COMP_UPPER);
-	time += create_DDS_Texture("Data/Depth/bc7/lowerDepth_rgba.DDS", TEXTURE_INDEX_DEPTH_COMP_LOWER);
-	time += create_ORIGINAL_RGBA_texture("Data/Depth/original/splitDepth.bmp", TEXTURE_INDEX_DEPTH_UNCOMP_SPLIT);
-	time += create_DDS_Texture("Data/Depth/dxt1/splitDepth_max.DDS", TEXTURE_INDEX_DEPTH_COMP_SPLIT1);
-	time += create_DDS_Texture("Data/Depth/bc7/splitDepth_bptc_max.DDS", TEXTURE_INDEX_DEPTH_COMP_SPLIT2);
+	time += create_ORIGINAL_RGBA_16_texture("Data/Depth/original/Depth_rgba_0.png", TEXTURE_INDEX_DEPTH_UNCOMP_16BIT);
+	time += create_ORIGINAL_RGBA_texture("Data/Depth/original/upperDepth_rgba_0.png", TEXTURE_INDEX_DEPTH_UNCOMP_UPPER);
+	time += create_ORIGINAL_RGBA_texture("Data/Depth/original/lowerDepth_rgba_0.png", TEXTURE_INDEX_DEPTH_UNCOMP_LOWER);
+	time += create_DDS_Texture("Data/Depth/bptc/upperDepth_rgba_0.DDS", TEXTURE_INDEX_DEPTH_COMP_UPPER);
+	time += create_DDS_Texture("Data/Depth/bptc/lowerDepth_rgba_0.DDS", TEXTURE_INDEX_DEPTH_COMP_LOWER);
+	//time += create_ORIGINAL_RGBA_texture("Data/Depth/original/splitDepth.bmp", TEXTURE_INDEX_DEPTH_UNCOMP_SPLIT);
+	time += create_DDS_Texture("Data/Depth/split/dxt1/splitDepth_dxt1_max_0.DDS", TEXTURE_INDEX_DEPTH_COMP_SPLIT1);
+	time += create_DDS_Texture("Data/Depth/split/bptc/splitDepth_bptc_max_0.DDS", TEXTURE_INDEX_DEPTH_COMP_SPLIT2);
 
 	printf("upload time for 8 kind of Depth Image : %f\n", time);
 

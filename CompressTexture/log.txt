@@ -530,3 +530,7 @@ upload time for DXT1 compress : 17.596500
 upload time for original yuv : 90.680695
 upload time for DXT1 compress : 22.856798
 upload time for DXT1 compress : 18.139599
+upload time for DXT1 compress : 23.270597
+upload time for DXT1 compress : 21.476999
+upload time for DXT1 compress : 19.096100
+upload time for DXT1 compress : 20.274300

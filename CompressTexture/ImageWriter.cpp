@@ -39,6 +39,28 @@ void FreeImageSaveFile_16bit_RGBA(int width, int height, unsigned short* plane, 
 	FreeImage_Unload(image);
 }
 
+//unsigned short(16bit) array 로 된 image raw data(grayscale)을 받아 RGBA 이미지로 출력한다.
+void FreeImageSaveFile_16bit_RGBA_4Image(int width, int height, unsigned short* plane_R, unsigned short* plane_G, unsigned short* plane_B, unsigned short* plane_A, const char* name)
+{
+	//16bit rgba
+	int w = width; int h = height; int c = 4;
+	FIBITMAP* image = FreeImage_AllocateT(FIT_RGBA16, w, h, 16 * c);
+	for (int y = 0; y < FreeImage_GetHeight(image); y++) {
+		unsigned short* bits = (unsigned short*)FreeImage_GetScanLine(image, y);
+		for (int x = 0; x < FreeImage_GetWidth(image); x++) {
+			bits[x * c + 0] = plane_R[x + y * w]; //R
+			bits[x * c + 1] = plane_G[x + y * w]; //G
+			bits[x * c + 2] = plane_B[x + y * w]; //B
+			bits[x * c + 3] = plane_A[x + y * w]; //A
+			//bits[x * c + 3] = 65535;//A
+		}
+	}
+
+	FreeImage_Save(FIF_PNG, image, name);
+	FreeImage_Unload(image);
+}
+
+
 
 //unsigned short(16bit) array 로 된 image raw data(grayscale)을 받아 RGB 이미지로 출력한다.
 void FreeImageSaveFile_16bit_RGB(int width, int height, unsigned short* plane, const char* name)
@@ -79,6 +101,25 @@ void FreeImageSaveFile_8bit_RGBA(int width, int height, BYTE* plane, const char*
 	FreeImage_Unload(Image);
 }
 
+//BYTE(8bit) array 로 된 image raw data(grayscale) 4개를 받아 각각을 한 채널씩 RGBA 이미지로 출력한다.
+void FreeImageSaveFile_8bit_RGBA_4Image(int width, int height, BYTE* plane_R, BYTE* plane_G, BYTE* plane_B, BYTE* plane_A, const char* name)
+{
+
+	int w = width; int h = height; int c = 4;
+	FIBITMAP * bitmap = FreeImage_Allocate(w, h, c);
+	BYTE * src = new BYTE[w*h*c];
+	for (int i = 0; i < w*h; i++) {
+		src[i * c + 0] = plane_B[i];//B
+		src[i * c + 1] = plane_G[i];//G
+		src[i * c + 2] = plane_R[i];//R
+		src[i * c + 3] = plane_A[i];//A
+	}
+
+	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
+	FreeImage_Save(FIF_PNG, Image, name);
+	FreeImage_Unload(Image);
+}
+
 
 void FreeImageSetupRGB_SPLIT_min(int width, int height, unsigned short* plane, const char* name)
 {
@@ -103,7 +144,7 @@ void FreeImageSetupRGB_SPLIT_min(int width, int height, unsigned short* plane, c
 	}
 
 	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
-	FreeImage_Save(FIF_BMP, Image, name);
+	FreeImage_Save(FIF_PNG, Image, name);
 	FreeImage_Unload(Image);
 
 }
@@ -134,7 +175,7 @@ void FreeImageSetupRGB_SPLIT_max(int width, int height, unsigned short* plane, c
 	}
 
 	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
-	FreeImage_Save(FIF_BMP, Image, name);
+	FreeImage_Save(FIF_PNG, Image, name);
 	FreeImage_Unload(Image);
 
 }

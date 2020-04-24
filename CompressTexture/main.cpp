@@ -17,13 +17,13 @@ GLuint h_ShaderProgram_TXPS;
 GLint loc_ModelViewProjectionMatrix_simple, loc_primitive_color;
 
 GLint loc_ModelViewProjectionMatrix_TXPS, loc_ModelViewMatrix_TXPS, loc_ModelViewMatrixInvTrans_TXPS;
-GLint loc_flag_texture_mapping, loc_flag_texture_diffrence, loc_flag_texture_reverse, loc_flag_fog;
+GLint loc_flag_texture_mapping, loc_flag_texture_diffrence, loc_flag_texture_reverse, loc_flag_depth_or_color;
 GLint loc_drawtype, loc_typeof_original_image, loc_typeof_compressed_image;
 GLint loc_base_texture, loc_base_texture_y, loc_base_texture_u, loc_base_texture_v, loc_base_texture_index;
 GLint loc_original_texture, loc_original_texture_y, loc_original_texture_u, loc_original_texture_v, loc_original_texture_index;
 
 
-GLint loc_depth_num, loc_depth_uncomp_16bit, loc_depth_uncomp_upper, loc_depth_uncomp_lower, loc_depth_comp_upper, loc_depth_comp_lower, loc_depth_uncomp_split,  loc_depth_comp_split1, loc_depth_comp_split2;
+GLint loc_depth_num, loc_depth_version, loc_depth_uncomp_16bit, loc_depth_uncomp_upper, loc_depth_uncomp_lower, loc_depth_comp_upper, loc_depth_comp_lower,  loc_depth_comp_split1, loc_depth_comp_split2;
 
 // include glm/*.hpp only if necessary
 //#include <glm/glm.hpp> 
@@ -49,6 +49,7 @@ int type_of_compressed_image = 0;
 struct _flag {
 	int texture_mapping;
 	int texture_diffrence;
+	int depth_ot_color;
 } flag;
 
 
@@ -118,6 +119,7 @@ char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 #define IMGSIZE 600.0f
 GLuint texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;		//original (unpack) texture name
 GLuint texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;		//compressed texture name
+GLuint depth_version = 0;
 GLuint texnum_depth = 0;
 
 int draw_mode = 0;
@@ -223,7 +225,6 @@ void setDepthTex() {
 	glUniform1i(loc_depth_uncomp_lower, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER);
 	glUniform1i(loc_depth_comp_upper, TEXTURE_INDEX_DEPTH_COMP_UPPER);
 	glUniform1i(loc_depth_comp_lower, TEXTURE_INDEX_DEPTH_COMP_LOWER);
-	glUniform1i(loc_depth_uncomp_split, TEXTURE_INDEX_DEPTH_UNCOMP_SPLIT);
 	glUniform1i(loc_depth_comp_split1, TEXTURE_INDEX_DEPTH_COMP_SPLIT1);
 	glUniform1i(loc_depth_comp_split2, TEXTURE_INDEX_DEPTH_COMP_SPLIT2);
 
@@ -360,13 +361,21 @@ void keyboard(unsigned char key, int x, int y) {
 		glutSetWindowTitle(titleTex[texnum_comp]);
 		glutPostRedisplay();
 		break;
-	case 'b':
-		texnum_depth++;
+	case 'v':
+		flag.depth_ot_color= 1 - flag.depth_ot_color;
+		glUseProgram(h_ShaderProgram_TXPS);
+		glUniform1i(loc_flag_depth_or_color, flag.depth_ot_color);
+		glUseProgram(0);
+		glutPostRedisplay();
+		break;
 
-		if (texnum_depth >5) {
-			texnum_depth = 0;
+	case 'b':
+		depth_version++;
+
+		if (depth_version >5) {
+			depth_version = 0;
 		}
-		switch (texnum_depth) {
+		switch (depth_version) {
 		case 0:printf("depth_uncomp_16bit\n");
 			glutSetWindowTitle("depth_uncomp_16bit"); break;
 		case 1:printf("depth_uncomp upper/ BPTC lower\n");
@@ -381,11 +390,20 @@ void keyboard(unsigned char key, int x, int y) {
 			glutSetWindowTitle("depth_BPTC_high Fill"); break;
 		}
 		glUseProgram(h_ShaderProgram_TXPS);
-		glUniform1i(loc_depth_num, texnum_depth);
+		glUniform1i(loc_depth_version, depth_version);
 		glUseProgram(0);
 		break;
 
 	case 'm':
+		texnum_depth++;
+
+		if (texnum_depth >= 0 + TEST_IMAGE_COUNT) {
+			texnum_depth = 0;
+		}
+		glUseProgram(h_ShaderProgram_TXPS);
+		glUniform1i(loc_depth_num, texnum_depth);
+		glUseProgram(0);
+
 		texnum_comp++;
 		if (texnum_comp >= TEXTURE_INDEX_COMPRESS_TEST1 + TEST_IMAGE_COUNT) {
 			texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;
@@ -476,14 +494,15 @@ void prepare_shader_program(void) {
 	loc_flag_texture_diffrence = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_diffrence");
 	loc_flag_texture_reverse = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_reverse");
 
+	loc_flag_depth_or_color = glGetUniformLocation(h_ShaderProgram_TXPS, "u_flag_texture_Depth_of_color");
 
 	loc_depth_num = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_number");
+	loc_depth_version = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_version");
 	loc_depth_uncomp_16bit = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_uncomp_16bit");
 	loc_depth_uncomp_upper = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_uncomp_upper");
 	loc_depth_uncomp_lower = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_uncomp_lower");
 	loc_depth_comp_upper = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_upper");
 	loc_depth_comp_lower = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower");
-	loc_depth_uncomp_split = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_uncomp_split");
 	loc_depth_comp_split1 = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_split1");
 	loc_depth_comp_split2 = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_split2");
 
@@ -509,50 +528,90 @@ void initialize_OpenGL(void) {
 
 
 void depthMapWrite() {
+	//한번에 다수의 png를 생성하는데 이게 멀티스레딩 방식인지 뭔지, 제대로 진행되지 않고 끊기는 경우가 있음. 로그를 볼 것.
+	char name[24][100];
 
-	char name[100] = "Data/DATA";
+	for(int i=0;i<24;i++)
+		sprintf(name[i],"Data/DepthRawData/v%d_depth_2048x2048_yuv420p16le.data", i);
+	char filename[100];
 
 	int readsize = 2048 * 2048 * 2;
-	BYTE* readbuf = new BYTE[readsize];
+	BYTE* readbuf[4];
 
-	FILE* fp = fopen(name, "rb");
-	fread(readbuf, sizeof(BYTE), readsize, fp);
+	int imageSize = 2048 * 2048;
+	BYTE* upperBuf[4];
+	BYTE* lowerBuf[4];
+	unsigned short* usBuf[4];
 
-	int realSize = 2048 * 2048;
-
-	BYTE* upperBuf = new BYTE[realSize];
-	BYTE* lowerBuf = new BYTE[realSize];
-
-	for (int i = 0; i < readsize; i++) {
-		if (i % 2 == 1) {
-			upperBuf[i / 2] = readbuf[i];
-		}
-		else if (i % 2 == 0) {
-			lowerBuf[i / 2] = readbuf[i];
-		}
-	}
-	
-	FreeImageSaveFile_8bit_RGBA(2048, 2048, upperBuf, "upperDepth_rgba.png");
-	FreeImageSaveFile_8bit_RGBA(2048, 2048, lowerBuf, "lowerDepth_rgba.png");
-
-	unsigned short* usBuf = new unsigned short[realSize];
-
-	for (int i = 0; i < readsize; i++) {
-		if (i % 2 == 0) {
-			usBuf[i / 2] = readbuf[i] + readbuf[i + 1] * 256;
-		}
+	for (int i = 0; i < 4; i++) {
+		readbuf[i] = new BYTE[readsize];
+		upperBuf[i] = new BYTE[imageSize];
+		lowerBuf[i] = new BYTE[imageSize];
+		usBuf[i] = new unsigned short[imageSize];
 	}
 
-	FreeImageSetupRGB_SPLIT_min(2048,2048, usBuf,"splitDepth_min.bmp");
-	FreeImageSetupRGB_SPLIT_max(2048, 2048, usBuf, "splitDepth_max.bmp");
+	for (int i = 0; i < 6; i++) {
 
-	FreeImageSetupRGBA_SPLIT_min(2048, 2048, usBuf, "splitDepth_bptc_min.png");
-	FreeImageSetupRGBA_SPLIT_max(2048, 2048, usBuf, "splitDepth_bptc_max.png");
+		for (int j = 0; j < 4; j++) {
 
-	FreeImageSaveFile_16bit_RGBA(2048, 2048, usBuf, "Depth_rgba.png");
-	FreeImageSaveFile_16bit_Grayscale(2048,2048, usBuf,"Depth_gs.png");
+			FILE* fp = fopen(name[i * 4 + j], "rb");
+			fread(readbuf[j], sizeof(BYTE), readsize, fp);
 
-	fclose(fp);
+			for (int k = 0; k < readsize; k++) {
+				if (k % 2 == 1) {
+					upperBuf[j][k / 2] = readbuf[j][k];
+				}
+				else if (k % 2 == 0) {
+					lowerBuf[j][k / 2] = readbuf[j][k];
+				}
+			}
+
+			for (int k = 0; k < readsize; k++) {
+				if (k % 2 == 0) {
+					usBuf[j][k / 2] = readbuf[j][k] + readbuf[j][k + 1] * 256;
+				}
+			}
+
+			fclose(fp);
+		}
+
+		printf("load 4 image.\n");
+		for (int j = 0; j < 4; j++) {
+			printf("%s\n",name[i*4+j]);
+		}
+
+
+		sprintf(filename, "output/Depth/upperDepth_rgba_%d.png", i);
+		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, upperBuf[0], upperBuf[1], upperBuf[2], upperBuf[3], filename);
+		printf("create image %s\n", filename);
+
+		sprintf(filename, "output/Depth/lowerDepth_rgba_%d.png", i);
+		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, upperBuf[0], upperBuf[1], upperBuf[2], upperBuf[3], filename);
+		printf("create image %s\n", filename);
+
+		sprintf(filename, "output/Depth/Depth_rgba_%d.png", i );
+		FreeImageSaveFile_16bit_RGBA_4Image(2048, 2048, usBuf[0], usBuf[1], usBuf[2], usBuf[3], filename);
+		printf("create image %s\n", filename);
+
+		for (int j = 0; j < 4; j++) {
+			sprintf(filename, "output/Depth/split/dxt1/splitDepth_dxt1_min_%d.png", i * 4 + j);
+			FreeImageSetupRGB_SPLIT_min(2048, 2048, usBuf[j], filename);
+			printf("create image %s\n", filename);
+			sprintf(filename, "output/Depth/split/dxt1/splitDepth_dxt1_max_%d.png", i * 4 + j);
+			FreeImageSetupRGB_SPLIT_max(2048, 2048, usBuf[j], filename);
+			printf("create image %s\n", filename);
+
+			sprintf(filename, "output/Depth/split/bptc/splitDepth_bptc_min_%d.png", i * 4 + j);
+			FreeImageSetupRGBA_SPLIT_min(2048, 2048, usBuf[j], filename);
+			printf("create image %s\n", filename);
+			sprintf(filename, "output/Depth/split/bptc/splitDepth_bptc_max_%d.png", i * 4 + j);
+			FreeImageSetupRGBA_SPLIT_max(2048, 2048, usBuf[j], filename);
+			printf("create image %s\n", filename);
+		}
+	}
+
+
+
 
 	printf("load depth map.\n");
 
@@ -580,7 +639,7 @@ void prepare_scene(void) {
 	//upload_TEST_Texture_ASTC(12);
 	//upload_TEST_Texture_ASTC(112);
 	//upload_TEST_Texture_YUV();
-	//upload_TEST_Texture_Depth();
+	upload_TEST_Texture_Depth();
 	//compare_PSNR();
 
 
@@ -625,6 +684,8 @@ void greetings(char *program_name, char messages[][256], int n_message_lines) {
 		fprintf(stdout, "%s\n", messages[i]);
 	fprintf(stdout, "\n'w', 's', 'a', 'd', 'z', 'c' => Move camera\n");
 	fprintf(stdout, "'p' => View Diffrence\n");
+	fprintf(stdout, "'v' => Toggle View Depth/Color\n");
+	fprintf(stdout, "'b' => Change Depth Map Version\n");
 	fprintf(stdout, "'n' => Change Draw Mode\n");
 	fprintf(stdout, "'m' => View Next Image\n");
 	fprintf(stdout, "'t' => Toggle Texture\n");
