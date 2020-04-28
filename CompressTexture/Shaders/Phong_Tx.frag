@@ -73,6 +73,7 @@ vec4 getDepthColor(int depth_version) {
 			gray_color = depth_color.a;
 			break;
 		}
+
 		break;
 
 	case 1://uncomp up - BPTC low
@@ -99,7 +100,7 @@ vec4 getDepthColor(int depth_version) {
 	case 2://BPTC up - uncomp low
 		upper_color = texture(u_depth_comp_upper, v_tex_coord);
 		lower_color = texture(u_depth_uncomp_lower, coord);
-
+		
 		switch (color_num) {
 		case 0: //r
 			gray_color = upper_color.r + lower_color.r / 256;
@@ -203,29 +204,23 @@ void printDepthMap() {
 	final_color = depth_color;
 
 	if (u_flag_texture_diffrence == true) {
-
-		final_color.x = 1.0 - abs(depth_color.r - original_color.r) * 100;
-		final_color.y = 1;
-		final_color.z = 1;
+		float diff = abs(depth_color.r - original_color.r) * 20;
+		if (diff > 1.0)
+			diff = 1.0;
+		final_color.x = 1.0 - diff;
+		final_color.y = 1.0 - diff;
+		final_color.z = 1.0 - diff;
 	}
 }
 
 void main(void) {
 
 	vec4 base_color;
-	//vec4 original_color = texture(u_base_texture_y, v_tex_coord);
-	//vec2 coord = vec2(v_tex_coord.x, 1 - v_tex_coord.y);
-	//base_color = texture(u_base_texture_u, coord);
-	//final_color.x = 1.0 - abs(original_color.r - base_color.g)*100;
-	//final_color.y = 1;
-	//final_color.z = 1;
-	//final_color = original_color;
 
-	//return;
+	//render Depth Map Color
 	if (u_flag_texture_Depth_of_color) {
 		printDepthMap();
 		return;
-
 	}
 
 	//original image

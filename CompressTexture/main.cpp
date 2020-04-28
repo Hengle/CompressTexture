@@ -136,6 +136,8 @@ void setDepthTex() {
 	glUniform1i(loc_depth_comp_upper, TEXTURE_INDEX_DEPTH_COMP_UPPER_TEST1 + texchannal);
 	glUniform1i(loc_depth_comp_lower, TEXTURE_INDEX_DEPTH_COMP_LOWER_TEST1 + texchannal);
 
+	//printf("image num : %d %d %d %d %d\n", TEXTURE_INDEX_DEPTH_UNCOMP_16BIT_TEST1 + texchannal, TEXTURE_INDEX_DEPTH_UNCOMP_UPPER_TEST1 + texchannal, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER_TEST1 + texchannal, TEXTURE_INDEX_DEPTH_COMP_UPPER_TEST1 + texchannal, TEXTURE_INDEX_DEPTH_COMP_LOWER_TEST1 + texchannal);
+
 
 	glUniform1i(loc_depth_comp_split1, TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST1 + texnum_depth);
 	glUniform1i(loc_depth_comp_split2, TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST1 + texnum_depth);
@@ -589,7 +591,7 @@ void depthMapWrite() {
 		printf("create image %s\n", filename);
 
 		sprintf(filename, "output/Depth/lowerDepth_rgba_%d.png", i);
-		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, upperBuf[0], upperBuf[1], upperBuf[2], upperBuf[3], filename);
+		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0], lowerBuf[1], lowerBuf[2], lowerBuf[3], filename);
 		printf("create image %s\n", filename);
 
 		sprintf(filename, "output/Depth/Depth_rgba_%d.png", i );
@@ -628,12 +630,12 @@ void prepare_scene(void) {
 
 	//depthMapWrite();
 
-	upload_TEST_Texture_Original();
-	//upload_TEST_Texture_Original_YUV();
-	//upload_TEST_Texture_DXT(1);
+	//upload_TEST_Texture_Original();
+	upload_TEST_Texture_Original_YUV();
+	upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);
-	upload_TEST_Texture_BPTC();
+	//upload_TEST_Texture_BPTC();
 	//upload_TEST_Texture_ASTC(4);
 	//upload_TEST_Texture_ASTC(5);
 	//upload_TEST_Texture_ASTC(6);
