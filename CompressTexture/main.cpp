@@ -377,7 +377,7 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'b':
 		depth_version++;
 
-		if (depth_version >5) {
+		if (depth_version >1) {
 			depth_version = 0;
 		}
 		switch (depth_version) {
@@ -571,9 +571,10 @@ void depthMapWrite() {
 				}
 			}
 
+
 			for (int k = 0; k < readsize; k++) {
 				if (k % 2 == 0) {
-					usBuf[j][k / 2] = readbuf[j][k] + readbuf[j][k + 1] * 256;
+					usBuf[j][k / 2] = (unsigned short)upperBuf[j][k / 2] * 256 + (unsigned short)lowerBuf[j][k / 2];
 				}
 			}
 
@@ -623,15 +624,148 @@ void depthMapWrite() {
 }
 
 
+void depthMapWrite_test() {
+	//한번에 다수의 png를 생성하는데 이게 멀티스레딩 방식인지 뭔지, 제대로 진행되지 않고 끊기는 경우가 있음. 로그를 볼 것.
+	char name[24][100];
+
+	for (int i = 0; i < 24; i++)
+		sprintf(name[i], "Data/DepthRawData/v%d_depth_2048x2048_yuv420p16le.data", i);
+	char filename[100];
+
+	int readsize = 2048 * 2048 * 2;
+	BYTE* readbuf[4];
+
+	int imageSize = 2048 * 2048;
+	BYTE* upperBuf[4];
+	BYTE* lowerBuf[4];
+	unsigned short* usBuf[4];
+
+	for (int i = 0; i < 4; i++) {
+		readbuf[i] = new BYTE[readsize];
+		upperBuf[i] = new BYTE[imageSize];
+		lowerBuf[i] = new BYTE[imageSize];
+		usBuf[i] = new unsigned short[imageSize];
+	}
+
+	for (int i = 0; i < 1; i++) {
+
+		for (int j = 0; j < 4; j++) {
+
+			FILE* fp = fopen(name[i * 4 + j], "rb");
+			fread(readbuf[j], sizeof(BYTE), readsize, fp);
+
+			unsigned short *test_ptr = reinterpret_cast<unsigned short*>(readbuf[j]);
+
+			for (int k = 0; k < readsize; k++) {
+				if (k % 2 == 1) {
+					upperBuf[j][k / 2] = readbuf[j][k];
+				}
+				else if (k % 2 == 0) {
+					lowerBuf[j][k / 2] = readbuf[j][k];
+				}
+			}
+
+
+			for (int k = 0; k < readsize; k++) {
+				if (k % 2 == 0) {
+					usBuf[j][k / 2] = (unsigned short)upperBuf[j][k / 2] * 256 + (unsigned short)lowerBuf[j][k / 2];
+				}
+			}
+
+			fclose(fp);
+		}
+
+		printf("load 4 image.\n");
+		for (int j = 0; j < 4; j++) {
+			printf("%s\n", name[i * 4 + j]);
+		}
+
+
+		sprintf(filename, "upperDepth_8bit_%d.png", i);
+		FreeImageSaveFile_8bit_RGBA_4Image(16, 16, upperBuf[0], upperBuf[1], upperBuf[2], upperBuf[3], filename);
+		printf("create image %s\n", filename);
+
+		sprintf(filename, "lowerDepth_8bit_%d.png", i);
+		FreeImageSaveFile_8bit_RGBA_4Image(16, 16, lowerBuf[0], lowerBuf[1], lowerBuf[2], lowerBuf[3], filename);
+		printf("create image %s\n", filename);
+
+		sprintf(filename, "Depth_16bit_%d.png", i);
+		FreeImageSaveFile_16bit_RGBA_4Image(16, 16, usBuf[0], usBuf[1], usBuf[2], usBuf[3], filename);
+		printf("create image %s\n", filename);
+
+	}
+
+
+
+
+	printf("load depth map.\n");
+
+}
+
+
+void createTestBitmap() {
+	char filename[100];
+
+	int imageSize = 16 * 16;
+	BYTE* upperBuf[4];
+	BYTE* lowerBuf[4];
+	unsigned short* usBuf[4];
+
+	for (int i = 0; i < 4; i++) {
+		upperBuf[i] = new BYTE[imageSize];
+		lowerBuf[i] = new BYTE[imageSize];
+		usBuf[i] = new unsigned short[imageSize];
+	}
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < imageSize; j++) {
+			lowerBuf[i][j] = j;
+			upperBuf[i][j] = imageSize-j-1;
+			usBuf[i][j] = (unsigned short)upperBuf[i][j] * 256 + lowerBuf[i][j];
+		/*	if (i == 3) {
+				usBuf[i][j] = 65535;
+				lowerBuf[i][j] = 255;
+				upperBuf[i][j] = 255;
+			}*/
+		}
+	}
+
+
+	sprintf(filename, "TestImg_8bit_lower.png");
+	FreeImageSaveFile_8bit_RGBA_4Image(16, 16, lowerBuf[0], lowerBuf[1], lowerBuf[2], lowerBuf[3], filename);
+	printf("create image %s\n", filename);
+
+	sprintf(filename, "TestImg_8bit_upper.png");
+	FreeImageSaveFile_8bit_RGBA_4Image(16, 16, upperBuf[0], upperBuf[1], upperBuf[2], upperBuf[3], filename);
+	printf("create image %s\n", filename);
+
+	sprintf(filename, "TestImg_16bit.png");
+	FreeImageSaveFile_16bit_RGBA_4Image(16, 16, usBuf[0], usBuf[1], usBuf[2], usBuf[3], filename);
+	printf("create image %s\n", filename);
+}
+
 void prepare_scene(void) {
 	prepare_quad();
-	create_ORIGINAL_texture("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
-	create_ORIGINAL_texture("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
+	//create_ORIGINAL_texture("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
+	//create_ORIGINAL_texture("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
 
+	//create_ORIGINAL_RGBA_16_texture("TestImg_16bit.png", TEXTURE_INDEX_ORIGINAL);
+	//create_ORIGINAL_texture("TestImg_8bit_upper.png", TEXTURE_INDEX_TEST);
+	//create_ORIGINAL_texture("TestImg_8bit_lower.png", TEXTURE_INDEX_TEST+1);
+
+	//test_loadimg("Data/Depth/original/Depth_rgba_0.png", "Data/Depth/original/upperDepth_rgba_0.png", "Data/Depth/original/lowerDepth_rgba_0.png");
+	//test_loadimg("TestImg_16bit.png", "TestImg_8bit_upper.png", "TestImg_8bit_lower.png");
+
+
+	//create_ORIGINAL_RGBA_16_texture("Depth_16bit_0.png", TEXTURE_INDEX_ORIGINAL);
+	//create_ORIGINAL_texture("upperDepth_8bit_0.png", TEXTURE_INDEX_TEST);
+	//create_ORIGINAL_texture("lowerDepth_8bit_0.png", TEXTURE_INDEX_TEST + 1);
+	//test_loadimg("Depth_16bit_0.png", "upperDepth_8bit_0.png", "lowerDepth_8bit_0.png");
 	//depthMapWrite();
-
-	//upload_TEST_Texture_Original();
-	upload_TEST_Texture_Original_YUV();
+	//createTestBitmap();
+	//depthMapWrite_test();
+	upload_TEST_Texture_Original();
+	//upload_TEST_Texture_Original_YUV();
 	upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);

@@ -90,9 +90,9 @@ void FreeImageSaveFile_8bit_RGBA(int width, int height, BYTE* plane, const char*
 	FIBITMAP * bitmap = FreeImage_Allocate(w, h, c);
 	BYTE * src = new BYTE[w*h*c];
 	for (int i = 0; i < w*h; i++) {
-		src[i * c + 0] = plane[i];//B
+		src[i * c + 0] = plane[i];//R
 		src[i * c + 1] = plane[i];//G
-		src[i * c + 2] = plane[i];//R
+		src[i * c + 2] = plane[i];//B
 		src[i * c + 3] = plane[i];//A
 	}
 
@@ -109,9 +109,9 @@ void FreeImageSaveFile_8bit_RGBA_4Image(int width, int height, BYTE* plane_R, BY
 	FIBITMAP * bitmap = FreeImage_Allocate(w, h, c);
 	BYTE * src = new BYTE[w*h*c];
 	for (int i = 0; i < w*h; i++) {
-		src[i * c + 0] = plane_B[i];//B
+		src[i * c + 0] = plane_R[i];//R
 		src[i * c + 1] = plane_G[i];//G
-		src[i * c + 2] = plane_R[i];//R
+		src[i * c + 2] = plane_B[i];//B
 		src[i * c + 3] = plane_A[i];//A
 	}
 

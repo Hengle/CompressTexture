@@ -82,16 +82,16 @@ vec4 getDepthColor(int depth_version) {
 
 		switch (color_num) {
 		case 0: //r
-			gray_color = upper_color.r + lower_color.r / 256;
+			gray_color = upper_color.r + lower_color.r / 256.0;
 			break;
 		case 1: //g
-			gray_color = upper_color.g + lower_color.g / 256;
+			gray_color = upper_color.g + lower_color.g / 256.0;
 			break;
 		case 2: //b
-			gray_color = upper_color.b + lower_color.b / 256;
+			gray_color = upper_color.b + lower_color.b / 256.0;
 			break;
 		case 3: //a
-			gray_color = upper_color.a + lower_color.a / 256;
+			gray_color = upper_color.a + lower_color.a / 256.0;
 			break;
 		}
 		break;
@@ -103,16 +103,16 @@ vec4 getDepthColor(int depth_version) {
 		
 		switch (color_num) {
 		case 0: //r
-			gray_color = upper_color.r + lower_color.r / 256;
+			gray_color = upper_color.r + lower_color.r / 256.0;
 			break;
 		case 1: //g
-			gray_color = upper_color.g + lower_color.g / 256;
+			gray_color = upper_color.g + lower_color.g / 256.0;
 			break;
 		case 2: //b
-			gray_color = upper_color.b + lower_color.b / 256;
+			gray_color = upper_color.b + lower_color.b / 256.0;
 			break;
 		case 3: //a
-			gray_color = upper_color.a + lower_color.a / 256;
+			gray_color = upper_color.a + lower_color.a / 256.0;
 			break;
 		}
 		break;
@@ -160,14 +160,27 @@ vec4 getDepthColor(int depth_version) {
 		//depth_color = texture(u_depth_comp_split2, v_tex_coord);
 		break;
 
-	//case 20:
-	//	upper_color = texture(u_depth_uncomp_upper, coord);
-	//	lower_color = texture(u_depth_uncomp_lower, coord);
-	//	depth_color.r = upper_color.r + lower_color.r / 256;
-	//	depth_color.g = upper_color.g + lower_color.g / 256;
-	//	depth_color.b = upper_color.b + lower_color.b / 256;
-	//	depth_color.a = 1.0;
-	//	break;
+	case 99:
+		upper_color = texture(u_depth_uncomp_upper, coord);
+		lower_color = texture(u_depth_uncomp_lower, coord);
+
+		switch (color_num) {
+		case 0: //r
+			color = int(upper_color.r * 65535) + int(lower_color.r * 256);
+			gray_color = float(color) / 65536;
+			break;
+		case 1: //g
+			gray_color = upper_color.g + lower_color.g / 256;
+			break;
+		case 2: //b
+			gray_color = upper_color.b + lower_color.b / 256;
+			break;
+		case 3: //a
+			gray_color = upper_color.a + lower_color.a / 256;
+			break;
+		}
+
+		break;
 
 
 	//case 25:
@@ -196,7 +209,7 @@ void printDepthMap() {
 
 	vec4 depth_color = getDepthColor(u_depth_version);
 
-	vec4 original_color = getDepthColor(0);
+	vec4 original_color = getDepthColor(99);
 
 	//final_color.x = 1.0 - abs(depth_color.r);
 	//final_color.y = 1;

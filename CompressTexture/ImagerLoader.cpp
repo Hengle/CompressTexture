@@ -37,7 +37,7 @@ GLuint load_unpack_image(const char *filename, GLuint ReadRGBAType) {
 	glGenTextures(1, &texname);
 	glBindTexture(GL_TEXTURE_2D, texname);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	FreeImage_Unload(tx_pixmap_32);
 	if (tx_bits_per_pixel != 32)
@@ -82,7 +82,7 @@ float load_unpack_image_checktime(const char *filename, GLuint ReadRGBAType) {
 
 	glFinish();
 	CHECK_TIME_START;
-	glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	glFinish();
 	CHECK_TIME_END(compute_time);
@@ -144,6 +144,114 @@ float load_unpack_image_16bit_checktime(const char *filename, GLuint ReadRGBATyp
 	return compute_time;
 }
 
+
+void test_loadimg(const char *filename_ori, const char *filename_upper, const char *filename_lower) {
+	FREE_IMAGE_FORMAT tx_file_format;
+	int tx_bits_per_pixel;
+	FIBITMAP *tx_pixmap, *tx_pixmap_64, *tx_pixmap_32[2];
+
+	int width, height;
+	BYTE *data_ori, *data_upper, *data_lower;
+
+	tx_file_format = FreeImage_GetFileType(filename_ori, 0);
+	// assume everything is fine with reading texture from file: no error checking
+	tx_pixmap = FreeImage_Load(tx_file_format, filename_ori);
+	tx_bits_per_pixel = FreeImage_GetBPP(tx_pixmap);
+
+	//fprintf(stdout, " * A %d-bit texture was read from %s.\n", tx_bits_per_pixel, filename);
+	if (tx_bits_per_pixel == 64)
+		tx_pixmap_64 = tx_pixmap;
+	else {
+		//fprintf(stdout, " * Converting texture from %d bits to 32 bits...\n", tx_bits_per_pixel);
+		tx_pixmap_64 = FreeImage_ConvertTo32Bits(tx_pixmap);
+	}
+
+	width = FreeImage_GetWidth(tx_pixmap_64);
+	height = FreeImage_GetHeight(tx_pixmap_64);
+	data_ori = FreeImage_GetBits(tx_pixmap_64);
+
+
+	tx_file_format = FreeImage_GetFileType(filename_upper, 0);
+	// assume everything is fine with reading texture from file: no error checking
+	tx_pixmap = FreeImage_Load(tx_file_format, filename_upper);
+	tx_bits_per_pixel = FreeImage_GetBPP(tx_pixmap);
+
+	//fprintf(stdout, " * A %d-bit texture was read from %s.\n", tx_bits_per_pixel, filename);
+	if (tx_bits_per_pixel == 32)
+		tx_pixmap_32[0] = tx_pixmap;
+	else {
+		//fprintf(stdout, " * Converting texture from %d bits to 32 bits...\n", tx_bits_per_pixel);
+		tx_pixmap_32[0] = FreeImage_ConvertTo32Bits(tx_pixmap);
+	}
+
+	width = FreeImage_GetWidth(tx_pixmap_32[0]);
+	height = FreeImage_GetHeight(tx_pixmap_32[0]);
+	data_upper = FreeImage_GetBits(tx_pixmap_32[0]);
+
+
+	tx_file_format = FreeImage_GetFileType(filename_lower, 0);
+	// assume everything is fine with reading texture from file: no error checking
+	tx_pixmap = FreeImage_Load(tx_file_format, filename_lower);
+	tx_bits_per_pixel = FreeImage_GetBPP(tx_pixmap);
+
+	//fprintf(stdout, " * A %d-bit texture was read from %s.\n", tx_bits_per_pixel, filename);
+	if (tx_bits_per_pixel == 32)
+		tx_pixmap_32[1] = tx_pixmap;
+	else {
+		//fprintf(stdout, " * Converting texture from %d bits to 32 bits...\n", tx_bits_per_pixel);
+		tx_pixmap_32[1] = FreeImage_ConvertTo32Bits(tx_pixmap);
+	}
+
+	width = FreeImage_GetWidth(tx_pixmap_32[1]);
+	height = FreeImage_GetHeight(tx_pixmap_32[1]);
+	data_lower = FreeImage_GetBits(tx_pixmap_32[1]);
+
+	unsigned short* oridata = new unsigned short[width * height *4];
+
+
+
+	//for (int i = 0; i < 16 * 16 * 4; i+=4) {
+	//	printf("[%d] - %d %d %d %d\n",i/4, (int)data_ori[i], (int)data_ori[i+1], (int)data_ori[i+2], (int)data_ori[i+3]);
+	//	//oridata[i] = data_ori[i * 2] + data_ori[i * 2 + 1] * 256;
+	//}
+	//for (int i = 0; i < 16 * 16 * 4; i+=4) {
+	//	printf("[%d] - %d %d %d %d\n",i/4, (int)data_upper[i], (int)data_upper[i+1], (int)data_upper[i+2], (int)data_upper[i+3]);
+	//}
+
+	for (int i = 0; i < width * height * 4; i++) {
+		oridata[i] = data_ori[i * 2] + data_ori[i * 2 + 1] * 256;
+	}
+	printf("original-16bit\n");
+	for (int i = 0; i < 4*4 * 4; i+=4) {
+		printf("[%3d] - %04x %04x %04x %04x\n",i/4, (int)oridata[i], (int)oridata[i+1], (int)oridata[i+2], (int)oridata[i+3]);
+	}
+	printf("upper-8bit\n");
+	for (int i = 0; i < 4 * 4 * 4; i += 4) {
+		printf("[%3d] - %04x %04x %04x %04x\n", i / 4, (int)data_upper[i]<<8, (int)data_upper[i + 1] << 8, (int)data_upper[i + 2] << 8, (int)data_upper[i + 3] << 8);
+	}
+	printf("lower-8bit\n");
+	for (int i = 0; i < 4 * 4 * 4; i += 4) {
+		printf("[%3d] - %04x %04x %04x %04x\n", i / 4, (int)data_lower[i], (int)data_lower[i + 1], (int)data_lower[i + 2], (int)data_lower[i + 3]);
+	}
+
+	for (int i = 0; i < width * height * 4; i++) {
+		if (oridata[i] == data_upper[i] * 256 + data_lower[i]) {
+
+		}
+		else {
+			printf("error\n");
+		}
+
+	}
+
+
+
+
+	FreeImage_Unload(tx_pixmap_64);
+	FreeImage_Unload(tx_pixmap_32[0]);
+	FreeImage_Unload(tx_pixmap_32[1]);
+
+}
 
 struct astc_header
 {
