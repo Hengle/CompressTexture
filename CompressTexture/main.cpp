@@ -377,21 +377,23 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'b':
 		depth_version++;
 
-		if (depth_version >1) {
+		if (depth_version >4) {
 			depth_version = 0;
 		}
 		switch (depth_version) {
 		case 0:printf("depth_uncomp_16bit\n");
 			glutSetWindowTitle("depth_uncomp_16bit"); break;
-		case 1:printf("depth_uncomp upper/ BPTC lower\n");
+		case 1:printf("depth_uncomp upper/ depth_uncomp lower\n");
+			glutSetWindowTitle("depth_uncomp upper/ depth_uncomp lower"); break;
+		case 2:printf("depth_uncomp upper/ BPTC lower\n");
 			glutSetWindowTitle("depth_uncomp upper/ BPTC lower"); break;
-		case 2:printf("depth_BPTC upper/ uncomp lower\n");
+		case 3:printf("depth_BPTC upper/ uncomp lower\n");
 			glutSetWindowTitle("depth_BPTC upper/ uncomp lower"); break;
-		case 3:printf("depth_BPTC upper/ BPTC lower\n");
+		case 4:printf("depth_BPTC upper/ BPTC lower\n");
 			glutSetWindowTitle("depth_BPTC upper/ BPTC lower"); break;
-		case 4:printf("depth_DXT1_High Fill\n");
+		case 5:printf("depth_DXT1_High Fill\n");
 			glutSetWindowTitle("depth_DXT1_High Fill"); break;
-		case 5:printf("depth_BPTC_high Fill\n");
+		case 6:printf("depth_BPTC_high Fill\n");
 			glutSetWindowTitle("depth_BPTC_high Fill"); break;
 		}
 		glUseProgram(h_ShaderProgram_TXPS);
@@ -599,27 +601,122 @@ void depthMapWrite() {
 		FreeImageSaveFile_16bit_RGBA_4Image(2048, 2048, usBuf[0], usBuf[1], usBuf[2], usBuf[3], filename);
 		printf("create image %s\n", filename);
 
-		for (int j = 0; j < 4; j++) {
-			sprintf(filename, "output/Depth/split/dxt1/splitDepth_dxt1_min_%d.png", i * 4 + j);
-			FreeImageSetupRGB_SPLIT_min(2048, 2048, usBuf[j], filename);
-			printf("create image %s\n", filename);
-			sprintf(filename, "output/Depth/split/dxt1/splitDepth_dxt1_max_%d.png", i * 4 + j);
-			FreeImageSetupRGB_SPLIT_max(2048, 2048, usBuf[j], filename);
-			printf("create image %s\n", filename);
+		//for (int j = 0; j < 4; j++) {
+		//	sprintf(filename, "output/Depth/split/dxt1/splitDepth_dxt1_min_%d.png", i * 4 + j);
+		//	FreeImageSetupRGB_SPLIT_min(2048, 2048, usBuf[j], filename);
+		//	printf("create image %s\n", filename);
+		//	sprintf(filename, "output/Depth/split/dxt1/splitDepth_dxt1_max_%d.png", i * 4 + j);
+		//	FreeImageSetupRGB_SPLIT_max(2048, 2048, usBuf[j], filename);
+		//	printf("create image %s\n", filename);
 
-			sprintf(filename, "output/Depth/split/bptc/splitDepth_bptc_min_%d.png", i * 4 + j);
-			FreeImageSetupRGBA_SPLIT_min(2048, 2048, usBuf[j], filename);
-			printf("create image %s\n", filename);
-			sprintf(filename, "output/Depth/split/bptc/splitDepth_bptc_max_%d.png", i * 4 + j);
-			FreeImageSetupRGBA_SPLIT_max(2048, 2048, usBuf[j], filename);
-			printf("create image %s\n", filename);
-		}
+		//	sprintf(filename, "output/Depth/split/bptc/splitDepth_bptc_min_%d.png", i * 4 + j);
+		//	FreeImageSetupRGBA_SPLIT_min(2048, 2048, usBuf[j], filename);
+		//	printf("create image %s\n", filename);
+		//	sprintf(filename, "output/Depth/split/bptc/splitDepth_bptc_max_%d.png", i * 4 + j);
+		//	FreeImageSetupRGBA_SPLIT_max(2048, 2048, usBuf[j], filename);
+		//	printf("create image %s\n", filename);
+		//}
 	}
 
 
 
 
 	printf("load depth map.\n");
+
+}
+
+void depthMapWrite_multiframe() {
+	//한번에 다수의 png를 생성하는데 이게 멀티스레딩 방식인지 뭔지, 제대로 진행되지 않고 끊기는 경우가 있음. 로그를 볼 것.
+	char name[24][100];
+
+	for (int frame = 0; frame < 5; frame++) {
+
+
+
+		for (int i = 0; i < 24; i++)
+			sprintf(name[i], "Data/DepthRawData/5frame/v%d_depth_2048x2048_yuv420p16le_%d.data", i, frame);
+		char filename[100];
+
+		int readsize = 2048 * 2048 * 2;
+		BYTE* readbuf[4];
+
+		int imageSize = 2048 * 2048;
+		BYTE* upperBuf[4];
+		BYTE* lowerBuf[4];
+		unsigned short* usBuf[4];
+
+		for (int i = 0; i < 4; i++) {
+			readbuf[i] = new BYTE[readsize];
+			upperBuf[i] = new BYTE[imageSize];
+			lowerBuf[i] = new BYTE[imageSize];
+			usBuf[i] = new unsigned short[imageSize];
+		}
+
+		for (int i = 0; i < 6; i++) {
+
+			for (int j = 0; j < 4; j++) {
+
+				FILE* fp = fopen(name[i * 4 + j], "rb");
+				fread(readbuf[j], sizeof(BYTE), readsize, fp);
+
+				for (int k = 0; k < readsize; k++) {
+					if (k % 2 == 1) {
+						upperBuf[j][k / 2] = readbuf[j][k];
+					}
+					else if (k % 2 == 0) {
+						lowerBuf[j][k / 2] = readbuf[j][k];
+					}
+				}
+
+
+				for (int k = 0; k < readsize; k++) {
+					if (k % 2 == 0) {
+						usBuf[j][k / 2] = (unsigned short)upperBuf[j][k / 2] * 256 + (unsigned short)lowerBuf[j][k / 2];
+					}
+				}
+
+				fclose(fp);
+			}
+
+			printf("load 4 image.\n");
+			for (int j = 0; j < 4; j++) {
+				printf("%s\n", name[i * 4 + j]);
+			}
+
+
+			sprintf(filename, "output/Depth/upperDepth_rgba_%d_%d.png", i,frame);
+			FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, upperBuf[0], upperBuf[1], upperBuf[2], upperBuf[3], filename);
+			printf("create image %s\n", filename);
+
+			sprintf(filename, "output/Depth/lowerDepth_rgba_%d_%d.png", i, frame);
+			FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0], lowerBuf[1], lowerBuf[2], lowerBuf[3], filename);
+			printf("create image %s\n", filename);
+
+			sprintf(filename, "output/Depth/Depth_rgba_%d_%d.png", i, frame);
+			FreeImageSaveFile_16bit_RGBA_4Image(2048, 2048, usBuf[0], usBuf[1], usBuf[2], usBuf[3], filename);
+			printf("create image %s\n", filename);
+
+			//for (int j = 0; j < 4; j++) {
+			//	sprintf(filename, "output/Depth/split/dxt1/splitDepth_dxt1_min_%d.png", i * 4 + j);
+			//	FreeImageSetupRGB_SPLIT_min(2048, 2048, usBuf[j], filename);
+			//	printf("create image %s\n", filename);
+			//	sprintf(filename, "output/Depth/split/dxt1/splitDepth_dxt1_max_%d.png", i * 4 + j);
+			//	FreeImageSetupRGB_SPLIT_max(2048, 2048, usBuf[j], filename);
+			//	printf("create image %s\n", filename);
+
+			//	sprintf(filename, "output/Depth/split/bptc/splitDepth_bptc_min_%d.png", i * 4 + j);
+			//	FreeImageSetupRGBA_SPLIT_min(2048, 2048, usBuf[j], filename);
+			//	printf("create image %s\n", filename);
+			//	sprintf(filename, "output/Depth/split/bptc/splitDepth_bptc_max_%d.png", i * 4 + j);
+			//	FreeImageSetupRGBA_SPLIT_max(2048, 2048, usBuf[j], filename);
+			//	printf("create image %s\n", filename);
+			//}
+		}
+
+
+	}
+
+	printf("create depth map.\n");
 
 }
 
@@ -761,12 +858,12 @@ void prepare_scene(void) {
 	//create_ORIGINAL_texture("upperDepth_8bit_0.png", TEXTURE_INDEX_TEST);
 	//create_ORIGINAL_texture("lowerDepth_8bit_0.png", TEXTURE_INDEX_TEST + 1);
 	//test_loadimg("Depth_16bit_0.png", "upperDepth_8bit_0.png", "lowerDepth_8bit_0.png");
-	//depthMapWrite();
+	//depthMapWrite_multiframe();
 	//createTestBitmap();
 	//depthMapWrite_test();
-	upload_TEST_Texture_Original();
-	//upload_TEST_Texture_Original_YUV();
-	upload_TEST_Texture_DXT(1);
+	//upload_TEST_Texture_Original();
+	upload_TEST_Texture_Original_YUV();
+	//upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);
 	//upload_TEST_Texture_BPTC();
@@ -777,7 +874,8 @@ void prepare_scene(void) {
 	//upload_TEST_Texture_ASTC(10);
 	//upload_TEST_Texture_ASTC(12);
 	//upload_TEST_Texture_ASTC(112);
-	//upload_TEST_Texture_YUV();
+	upload_TEST_Texture_YUV_DXT1();
+	//upload_TEST_Texture_YUV_BPTC();
 	upload_TEST_Texture_Depth();
 	//compare_PSNR();
 

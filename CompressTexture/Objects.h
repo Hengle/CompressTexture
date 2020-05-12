@@ -192,12 +192,12 @@ float create_ORIGINAL_texture(const char* filename, GLuint textureID) {
 	return time;
 }
 
-float create_ORIGINAL_RGBA_16_texture(const char* filename, GLuint textureID) {
+float create_ORIGINAL_RGBA16_Depth_texture(const char* filename, GLuint textureID) {
 	float time;
 	glActiveTexture(GL_TEXTURE0 + textureID);
 	//glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
 
-	time = load_unpack_image_16bit_checktime(filename, GL_RGBA);
+	time = load_unpack_image_16bit_checktime(filename, GL_RGBA16UI);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -207,12 +207,12 @@ float create_ORIGINAL_RGBA_16_texture(const char* filename, GLuint textureID) {
 	return time;
 }
 
-float create_ORIGINAL_RGBA_texture(const char* filename, GLuint textureID) {
+float create_ORIGINAL_RGBA8_Depth_texture(const char* filename, GLuint textureID) {
 	float time;
 	glActiveTexture(GL_TEXTURE0 + textureID);
 	//glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
 
-	time = load_unpack_image_checktime(filename, GL_RGBA);
+	time = load_unpack_image_checktime(filename, GL_RGBA8UI);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -263,7 +263,7 @@ void upload_TEST_Texture_Original() {
 
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		//sprintf(name, "Data/original/img%d.png", i);
-		sprintf(name, "Data/yuv/original_rgb/image_yuv_%d.bmp", i-1);
+		sprintf(name, "Data/yuv/original_rgb/image_rgb_%d.bmp", i-1);
 		time += create_ORIGINAL_texture(name, TEXTURE_INDEX_ORIGINAL_TEST1 - 1 + i);
 	}
 
@@ -322,7 +322,7 @@ void upload_TEST_Texture_DXT(int compressLevel) {//DXT 1, 3, 5
 
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		//sprintf(name, "Data/dxt/img%d_JPG_DXT%d.DDS", i, compressLevel);
-		sprintf(name, "Data/yuv/dxt%d/image_yuv_%d.DDS", compressLevel, i-1);
+		sprintf(name, "Data/yuv/dxt%d/image_rgb_%d.DDS", compressLevel, i-1);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
 	}
 
@@ -341,7 +341,7 @@ void upload_TEST_Texture_BPTC() {
 
 	for (int i = 1; i <= TEST_IMAGE_COUNT; i++) {
 		//sprintf(name, "Data/bc7/img%d.DDS", i);
-		sprintf(name, "Data/yuv/bc7/image_yuv_%d.DDS", i-1);
+		sprintf(name, "Data/yuv/bc7/image_rgb_%d.DDS", i-1);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
 	}
 	printf("upload time for BPTC compress : %f ms\n", time);
@@ -352,7 +352,7 @@ void upload_TEST_Texture_BPTC() {
 
 }
 
-void upload_TEST_Texture_YUV() {
+void upload_TEST_Texture_YUV_DXT1() {
 
 	char name[100];
 	float time = 0.0f;
@@ -375,6 +375,29 @@ void upload_TEST_Texture_YUV() {
 	fclose(fp);
 
 }
+void upload_TEST_Texture_YUV_BPTC() {
+
+	char name[100];
+	float time = 0.0f;
+	type_of_compressed_image = 1;
+
+	for (int i = 1; i <= TEST_IMAGE_COUNT; i += 3) {
+
+		sprintf(name, "Data/yuv/yuv_bc7/image_y_%d.DDS", i / 3);
+		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
+		sprintf(name, "Data/yuv/yuv_bc7/image_u_%d.DDS", i / 3);
+		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 + 0 + i);
+		sprintf(name, "Data/yuv/yuv_bc7/image_v_%d.DDS", i / 3);
+		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 + 1 + i);
+
+	}
+	printf("upload time for YUV+BPTC compress : %f ms\n", time);
+
+	FILE* fp = fopen("log.txt", "a");
+	fprintf(fp, "upload time for YUV+BPTC compress : %f\n", time);
+	fclose(fp);
+
+}
 
 void upload_TEST_Texture_Depth() {
 
@@ -390,14 +413,14 @@ void upload_TEST_Texture_Depth() {
 
 	for (int i = 0; i < 6; i++) {
 		sprintf(name,"Data/Depth/original/Depth_rgba_%d.png",i);
-		time_original += create_ORIGINAL_RGBA_16_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_16BIT_TEST1+i);
+		time_original += create_ORIGINAL_RGBA16_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_16BIT_TEST1+i);
 	}
 	printf("upload time for Original 16bit Depth Image : %f ms\n", time_original);
 
 	time = 0.0f;
 	for (int i = 0; i < 6; i++) {
 		sprintf(name, "Data/Depth/original/upperDepth_rgba_%d.png", i);
-		time += create_ORIGINAL_RGBA_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_UPPER_TEST1+i);
+		time += create_ORIGINAL_RGBA8_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_UPPER_TEST1+i);
 	}
 	//printf("upload time for Uncompressed 8bit Upper Depth Image : %f ms\n", time);
 	time_un_up_comp_low += time;
@@ -405,7 +428,7 @@ void upload_TEST_Texture_Depth() {
 	time = 0.0f;
 	for (int i = 0; i < 6; i++) {
 		sprintf(name, "Data/Depth/original/lowerDepth_rgba_%d.png", i);
-		time += create_ORIGINAL_RGBA_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER_TEST1 + i);
+		time += create_ORIGINAL_RGBA8_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER_TEST1 + i);
 	}
 	//printf("upload time for Uncompressed 8bit Lower Depth Image : %f ms\n", time);
 	time_comp_up_un_low += time;

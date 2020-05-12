@@ -37,7 +37,10 @@ GLuint load_unpack_image(const char *filename, GLuint ReadRGBAType) {
 	glGenTextures(1, &texname);
 	glBindTexture(GL_TEXTURE_2D, texname);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	if (ReadRGBAType == GL_RGBA8UI)
+		glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_BYTE, data);
+	else
+		glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
 
 	FreeImage_Unload(tx_pixmap_32);
 	if (tx_bits_per_pixel != 32)
@@ -82,7 +85,10 @@ float load_unpack_image_checktime(const char *filename, GLuint ReadRGBAType) {
 
 	glFinish();
 	CHECK_TIME_START;
-	glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	if (ReadRGBAType == GL_RGBA8UI)
+		glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_BYTE, data);
+	else
+		glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
 
 	glFinish();
 	CHECK_TIME_END(compute_time);
@@ -131,7 +137,10 @@ float load_unpack_image_16bit_checktime(const char *filename, GLuint ReadRGBATyp
 
 	glFinish();
 	CHECK_TIME_START;
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT, data);
+	if(ReadRGBAType == GL_RGBA16UI)
+		glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_SHORT, data);
+	else
+		glTexImage2D(GL_TEXTURE_2D, 0, ReadRGBAType, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT, data);
 
 	glFinish();
 	CHECK_TIME_END(compute_time);
@@ -221,18 +230,18 @@ void test_loadimg(const char *filename_ori, const char *filename_upper, const ch
 	for (int i = 0; i < width * height * 4; i++) {
 		oridata[i] = data_ori[i * 2] + data_ori[i * 2 + 1] * 256;
 	}
-	printf("original-16bit\n");
-	for (int i = 0; i < 4*4 * 4; i+=4) {
-		printf("[%3d] - %04x %04x %04x %04x\n",i/4, (int)oridata[i], (int)oridata[i+1], (int)oridata[i+2], (int)oridata[i+3]);
-	}
-	printf("upper-8bit\n");
-	for (int i = 0; i < 4 * 4 * 4; i += 4) {
-		printf("[%3d] - %04x %04x %04x %04x\n", i / 4, (int)data_upper[i]<<8, (int)data_upper[i + 1] << 8, (int)data_upper[i + 2] << 8, (int)data_upper[i + 3] << 8);
-	}
-	printf("lower-8bit\n");
-	for (int i = 0; i < 4 * 4 * 4; i += 4) {
-		printf("[%3d] - %04x %04x %04x %04x\n", i / 4, (int)data_lower[i], (int)data_lower[i + 1], (int)data_lower[i + 2], (int)data_lower[i + 3]);
-	}
+	//printf("original-16bit\n");
+	//for (int i = 0; i < 4*4 * 4; i+=4) {
+	//	printf("[%3d] - %04x %04x %04x %04x\n",i/4, (int)oridata[i], (int)oridata[i+1], (int)oridata[i+2], (int)oridata[i+3]);
+	//}
+	//printf("upper-8bit\n");
+	//for (int i = 0; i < 4 * 4 * 4; i += 4) {
+	//	printf("[%3d] - %04x %04x %04x %04x\n", i / 4, (int)data_upper[i]<<8, (int)data_upper[i + 1] << 8, (int)data_upper[i + 2] << 8, (int)data_upper[i + 3] << 8);
+	//}
+	//printf("lower-8bit\n");
+	//for (int i = 0; i < 4 * 4 * 4; i += 4) {
+	//	printf("[%3d] - %04x %04x %04x %04x\n", i / 4, (int)data_lower[i], (int)data_lower[i + 1], (int)data_lower[i + 2], (int)data_lower[i + 3]);
+	//}
 
 	for (int i = 0; i < width * height * 4; i++) {
 		if (oridata[i] == data_upper[i] * 256 + data_lower[i]) {
@@ -244,6 +253,103 @@ void test_loadimg(const char *filename_ori, const char *filename_upper, const ch
 
 	}
 
+	//float으로
+	//float* ori = new float[width * height * 4];
+	//float* upper = new float[width * height * 4];
+	//float* lower = new float[width * height * 4];
+	//for (int i = 0; i < width * height * 4; i++) {
+	//	ori[i] = (float)oridata[i] / 65535;
+	//	upper[i] = (float)data_upper[i] / 255;
+	//	lower[i] = (float)data_lower[i] / 255;
+
+	//	if (ori[i] > 1.0f || ori[i] < 0.0f) {
+	//		printf("ori err\n");
+	//	}
+	//	if (upper[i] > 1.0f || upper[i] < 0.0f) {
+	//		printf("upper err\n");
+	//	}
+	//	if (lower[i] > 1.0f || lower[i] < 0.0f) {
+	//		printf("lower err\n");
+	//	}
+	//}
+
+	//printf("original-16bit\n");
+	//for (int i = 0; i < 4  * 4; i += 4) {
+	//	printf("[%3d] - %.10f %.10f %.10f %.10f\n", i / 4, ori[i], ori[i + 1], ori[i + 2], ori[i + 3]);
+	//}
+	//printf("upper-8bit\n");
+	//for (int i = 0; i < 4  * 4; i += 4) {
+	//	printf("[%3d] - %.10f %.10f %.10f %.10f\n", i / 4, upper[i] , upper[i + 1] , upper[i + 2] , upper[i + 3]);
+	//}
+	//printf("lower-8bit\n");
+	//for (int i = 0; i < 4  * 4; i += 4) {
+	//	printf("[%3d] - %.10f %.10f %.10f %.10f\n", i / 4, lower[i], lower[i + 1], lower[i + 2], lower[i + 3]);
+	//}
+	//printf("color-8bit\n");
+	//for (int i = 0; i < 4 * 4; i += 4) {
+	//	printf("[%3d] - %.10f %.10f %.10f %.10f\n", i / 4, (upper[i] * 255 + lower[i]) / 255, (upper[i+1] * 255 + lower[i+1]) / 255, (upper[i+2] * 255 + lower[i+2]) / 255, (upper[i+3] * 255 + lower[i+3]) / 255);
+	//}
+
+	////data_upper[i] * 256 + data_lower[i];
+	//for (int i = 0; i < width * height * 4; i++) {
+	//	float color = (upper[i] * 255 + lower[i]) / 256;
+	//	if (ori[i] == color) {
+
+	//	}
+	//	else {
+	//		printf("error float\n");
+	//	}
+
+	//}
+
+	//unsigned int 으로
+	unsigned int* ori = new unsigned int[width * height * 4];
+	unsigned int* upper = new unsigned int[width * height * 4];
+	unsigned int* lower = new unsigned int[width * height * 4];
+	for (int i = 0; i < width * height * 4; i++) {
+		ori[i] = (unsigned int)oridata[i] * 65536;
+		upper[i] = (unsigned int)data_upper[i] * 16777216;
+		lower[i] = (unsigned int)data_lower[i] * 16777216;
+
+		if (ori[i] > 4294967295 || ori[i] < 0) {
+			printf("ori err\n");
+		}
+		if (upper[i] > 4294967295 || upper[i] < 0) {
+			printf("upper err\n");
+		}
+		if (lower[i] > 4294967295 || lower[i] < 0) {
+			printf("lower err\n");
+		}
+	}
+
+	printf("original-16bit\n");
+	for (int i = 0; i < 4 * 4; i += 4) {
+		printf("[%3d] - %u %u %u %u\n", i / 4, ori[i], ori[i + 1], ori[i + 2], ori[i + 3]);
+	}
+	printf("upper-8bit\n");
+	for (int i = 0; i < 4 * 4; i += 4) {
+		printf("[%3d] - %u %u %u %u\n", i / 4, upper[i], upper[i + 1], upper[i + 2], upper[i + 3]);
+	}
+	printf("lower-8bit\n");
+	for (int i = 0; i < 4 * 4; i += 4) {
+		printf("[%3d] - %u %u %u %u\n", i / 4, lower[i], lower[i + 1], lower[i + 2], lower[i + 3]);
+	}
+	printf("color-8bit\n");
+	for (int i = 0; i < 4 * 4; i += 4) {
+		printf("[%3d] - %u %u %u %u\n", i / 4, (upper[i] + lower[i] / 256), (upper[i+1]  + lower[i+1] / 256) , (upper[i+2] + lower[i+2] / 256) , (upper[i+3] + lower[i+3] / 256) );
+	}
+
+	//data_upper[i] * 256 + data_lower[i];
+	for (int i = 0; i < width * height * 4; i++) {
+		unsigned int color = (upper[i]  + lower[i] / 256) ;
+		if (ori[i] == color) {
+
+		}
+		else {
+			printf("error float\n");
+		}
+
+	}
 
 
 
