@@ -199,8 +199,8 @@ float create_ORIGINAL_RGBA16_Depth_texture(const char* filename, GLuint textureI
 
 	time = load_unpack_image_16bit_checktime(filename, GL_RGBA16UI);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -214,8 +214,8 @@ float create_ORIGINAL_RGBA8_Depth_texture(const char* filename, GLuint textureID
 
 	time = load_unpack_image_checktime(filename, GL_RGBA8UI);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -389,6 +389,15 @@ void upload_TEST_Texture_YUV_BPTC() {
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 + 0 + i);
 		sprintf(name, "Data/yuv/yuv_bc7/image_v_%d.DDS", i / 3);
 		time += create_DDS_Texture(name, TEXTURE_INDEX_COMPRESS_TEST1 + 1 + i);
+
+
+/*
+		sprintf(name, "Data/yuv/original_yuv/image_y_%d.bmp", i / 3);
+		time += create_ORIGINAL_texture(name, TEXTURE_INDEX_COMPRESS_TEST1 - 1 + i);
+		sprintf(name, "Data/yuv/original_yuv/image_u_%d.bmp", i / 3);
+		time += create_ORIGINAL_texture(name, TEXTURE_INDEX_COMPRESS_TEST1 + 0 + i);
+		sprintf(name, "Data/yuv/original_yuv/image_v_%d.bmp", i / 3);
+		time += create_ORIGINAL_texture(name, TEXTURE_INDEX_COMPRESS_TEST1 + 1 + i);*/
 
 	}
 	printf("upload time for YUV+BPTC compress : %f ms\n", time);

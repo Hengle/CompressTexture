@@ -149,18 +149,17 @@ void draw_original_texture() {
 	glm::mat4 ModelMatrix;
 
 	glUseProgram(h_ShaderProgram_TXPS);
-
 	glUniform1i(loc_drawtype, 0);
 
 	glUniform1i(loc_typeof_original_image, type_of_original_image);
 	glUniform1i(loc_typeof_compressed_image, 0);
 
 	glUniform1i(loc_flag_texture_reverse, true);
-	glUniform1i(loc_base_texture, texnum_ori);
-	glUniform1i(loc_original_texture, texnum_ori);
+	//glUniform1i(loc_base_texture, texnum_ori);
+	//glUniform1i(loc_original_texture, texnum_ori);
 
 	if (type_of_original_image == 0) {//RGB image
-		glUniform1i(loc_base_texture, texnum_ori);			//랜더링할 텍스쳐
+		glUniform1i(loc_original_texture, texnum_ori);			//랜더링할 텍스쳐
 		//printf("ori : %d texnum : %d\n", texnum_ori, texnum_comp);
 	}
 	else {//yuv image
@@ -196,11 +195,12 @@ void draw_compressed_texture() {
 	glUseProgram(h_ShaderProgram_TXPS);
 	glUniform1i(loc_drawtype, 1);
 
+	glUniform1i(loc_typeof_original_image, type_of_original_image);
 	glUniform1i(loc_typeof_compressed_image, type_of_compressed_image);
 	//printf("type of com tex : %d\n", type_of_compressed_image);
 
 	glUniform1i(loc_flag_texture_reverse, false);//DDS 포맷은 상하가 반전되어 있다
-	glUniform1i(loc_original_texture, texnum_ori);		//비교 대상 텍스쳐(원본)
+	//glUniform1i(loc_original_texture, texnum_ori);		//비교 대상 텍스쳐(원본)
 
 	if (type_of_compressed_image == 0) {//RGB image
 		glUniform1i(loc_base_texture, texnum_comp);			//랜더링할 텍스쳐
@@ -377,24 +377,24 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'b':
 		depth_version++;
 
-		if (depth_version >4) {
+		if (depth_version >3) {
 			depth_version = 0;
 		}
 		switch (depth_version) {
 		case 0:printf("depth_uncomp_16bit\n");
 			glutSetWindowTitle("depth_uncomp_16bit"); break;
-		case 1:printf("depth_uncomp upper/ depth_uncomp lower\n");
-			glutSetWindowTitle("depth_uncomp upper/ depth_uncomp lower"); break;
-		case 2:printf("depth_uncomp upper/ BPTC lower\n");
+		case 1:printf("depth_uncomp upper/ BPTC lower\n");
 			glutSetWindowTitle("depth_uncomp upper/ BPTC lower"); break;
-		case 3:printf("depth_BPTC upper/ uncomp lower\n");
+		case 2:printf("depth_BPTC upper/ uncomp lower\n");
 			glutSetWindowTitle("depth_BPTC upper/ uncomp lower"); break;
-		case 4:printf("depth_BPTC upper/ BPTC lower\n");
+		case 3:printf("depth_BPTC upper/ BPTC lower\n");
 			glutSetWindowTitle("depth_BPTC upper/ BPTC lower"); break;
-		case 5:printf("depth_DXT1_High Fill\n");
+		case 4:printf("depth_DXT1_High Fill\n");
 			glutSetWindowTitle("depth_DXT1_High Fill"); break;
-		case 6:printf("depth_BPTC_high Fill\n");
+		case 5:printf("depth_BPTC_high Fill\n");
 			glutSetWindowTitle("depth_BPTC_high Fill"); break;
+		case 99:printf("depth_uncomp upper/ uncomp lower\n");
+			glutSetWindowTitle("depth_uncomp upper/ uncomp lower"); break;
 		}
 		glUseProgram(h_ShaderProgram_TXPS);
 		glUniform1i(loc_depth_version, depth_version);
@@ -587,17 +587,16 @@ void depthMapWrite() {
 		for (int j = 0; j < 4; j++) {
 			printf("%s\n",name[i*4+j]);
 		}
-
-
-		sprintf(filename, "output/Depth/upperDepth_rgba_%d.png", i);
+		
+		sprintf(filename, "output/depth_1frame/upperDepth_rgba_%d.png", i);
 		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, upperBuf[0], upperBuf[1], upperBuf[2], upperBuf[3], filename);
 		printf("create image %s\n", filename);
 
-		sprintf(filename, "output/Depth/lowerDepth_rgba_%d.png", i);
+		sprintf(filename, "output/depth_1frame/lowerDepth_rgba_%d.png", i);
 		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0], lowerBuf[1], lowerBuf[2], lowerBuf[3], filename);
 		printf("create image %s\n", filename);
 
-		sprintf(filename, "output/Depth/Depth_rgba_%d.png", i );
+		sprintf(filename, "output/depth_1frame/Depth_rgba_%d.png", i );
 		FreeImageSaveFile_16bit_RGBA_4Image(2048, 2048, usBuf[0], usBuf[1], usBuf[2], usBuf[3], filename);
 		printf("create image %s\n", filename);
 
@@ -619,6 +618,13 @@ void depthMapWrite() {
 	}
 
 
+	for (int i = 0; i < 4; i++) {
+		delete readbuf[i];
+		delete upperBuf[i];
+		delete lowerBuf[i];
+		delete usBuf[i];
+	}
+
 
 
 	printf("load depth map.\n");
@@ -630,9 +636,7 @@ void depthMapWrite_multiframe() {
 	char name[24][100];
 
 	for (int frame = 0; frame < 5; frame++) {
-
-
-
+			   
 		for (int i = 0; i < 24; i++)
 			sprintf(name[i], "Data/DepthRawData/5frame/v%d_depth_2048x2048_yuv420p16le_%d.data", i, frame);
 		char filename[100];
@@ -684,15 +688,15 @@ void depthMapWrite_multiframe() {
 			}
 
 
-			sprintf(filename, "output/Depth/upperDepth_rgba_%d_%d.png", i,frame);
+			sprintf(filename, "output/depth_5frame/upperDepth_rgba_%d_%d.png", i,frame);
 			FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, upperBuf[0], upperBuf[1], upperBuf[2], upperBuf[3], filename);
 			printf("create image %s\n", filename);
 
-			sprintf(filename, "output/Depth/lowerDepth_rgba_%d_%d.png", i, frame);
+			sprintf(filename, "output/depth_5frame/lowerDepth_rgba_%d_%d.png", i, frame);
 			FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0], lowerBuf[1], lowerBuf[2], lowerBuf[3], filename);
 			printf("create image %s\n", filename);
 
-			sprintf(filename, "output/Depth/Depth_rgba_%d_%d.png", i, frame);
+			sprintf(filename, "output/depth_5frame/Depth_rgba_%d_%d.png", i, frame);
 			FreeImageSaveFile_16bit_RGBA_4Image(2048, 2048, usBuf[0], usBuf[1], usBuf[2], usBuf[3], filename);
 			printf("create image %s\n", filename);
 
@@ -713,13 +717,17 @@ void depthMapWrite_multiframe() {
 			//}
 		}
 
-
+		for (int i = 0; i < 4; i++) {
+			delete readbuf[i];
+			delete upperBuf[i];
+			delete lowerBuf[i];
+			delete usBuf[i];
+		}
 	}
 
 	printf("create depth map.\n");
 
 }
-
 
 void depthMapWrite_test() {
 	//한번에 다수의 png를 생성하는데 이게 멀티스레딩 방식인지 뭔지, 제대로 진행되지 않고 끊기는 경우가 있음. 로그를 볼 것.
@@ -841,10 +849,56 @@ void createTestBitmap() {
 	printf("create image %s\n", filename);
 }
 
+
+void createTestBitmap_compress() {
+	char filename[100];
+
+	int imageSize = 2048 * 2048;
+	BYTE* buf[2];//r,g,b,0
+	
+	for (int i = 0; i < 2; i++) {
+		buf[i] = new BYTE[imageSize];
+	}
+	for (int i = 0; i < imageSize; i++) {
+		buf[0][i] = 255;
+		buf[1][i] = 0;
+	}
+	   
+	sprintf(filename, "TestImg_R.png");
+	FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, buf[0], buf[1], buf[1], buf[0], filename);
+	printf("create image %s\n", filename);
+
+	sprintf(filename, "TestImg_G.png");
+	FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, buf[1], buf[0], buf[1], buf[0], filename);
+	printf("create image %s\n", filename);
+
+	sprintf(filename, "TestImg_B.png");
+	FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, buf[1], buf[1], buf[0], buf[0], filename);
+	printf("create image %s\n", filename);
+
+}
+
+
 void prepare_scene(void) {
 	prepare_quad();
 	//create_ORIGINAL_texture("Data/4kimg.jpg", TEXTURE_INDEX_ORIGINAL);
 	//create_ORIGINAL_texture("Data/grass_tex.jpg", TEXTURE_INDEX_TEST);
+
+	//createTestBitmap_compress();
+	//create_ORIGINAL_texture("TestImg_R.png", TEXTURE_INDEX_COMPRESS_TEST1);
+	//create_ORIGINAL_texture("TestImg_R.png", TEXTURE_INDEX_COMPRESS_TEST1);
+	//create_ORIGINAL_texture("TestImg_G.png", TEXTURE_INDEX_COMPRESS_TEST2);
+	//create_ORIGINAL_texture("TestImg_B.png", TEXTURE_INDEX_COMPRESS_TEST3);
+	//type_of_compressed_image = 1;
+	//type_of_original_image = 1;
+
+
+	//create_DDS_Texture("test_rgba/image_a.DDS", TEXTURE_INDEX_ORIGINAL_TEST2);
+	//create_DDS_Texture("test_rgb/image_rgb.DDS", TEXTURE_INDEX_ORIGINAL_TEST1);
+	//create_DDS_Texture("test_rgb/image_r.DDS", TEXTURE_INDEX_COMPRESS_TEST1);
+	//create_DDS_Texture("test_rgb/image_g.DDS", TEXTURE_INDEX_COMPRESS_TEST2);
+	//create_DDS_Texture("test_rgb/image_b.DDS", TEXTURE_INDEX_COMPRESS_TEST3);
+	//create_DDS_Texture("image_a.DDS", TEXTURE_INDEX_COMPRESS_TEST3);
 
 	//create_ORIGINAL_RGBA_16_texture("TestImg_16bit.png", TEXTURE_INDEX_ORIGINAL);
 	//create_ORIGINAL_texture("TestImg_8bit_upper.png", TEXTURE_INDEX_TEST);
@@ -853,20 +907,24 @@ void prepare_scene(void) {
 	//test_loadimg("Data/Depth/original/Depth_rgba_0.png", "Data/Depth/original/upperDepth_rgba_0.png", "Data/Depth/original/lowerDepth_rgba_0.png");
 	//test_loadimg("TestImg_16bit.png", "TestImg_8bit_upper.png", "TestImg_8bit_lower.png");
 
-
+	//test_loadimg_diff("output/old_tex/upperDepth_rgba_0.png", "output/new_tex_1/upperDepth_rgba_0.png", "output/new_tex_2/upperDepth_rgba_0_0.png");
+	//test_loadimg_diff_bptc("output/comp/old_tex/upperDepth_rgba_0.dds", "output/comp/new_tex_1/upperDepth_rgba_0.dds", "output/comp/new_tex_2/upperDepth_rgba_0_0.dds");
 	//create_ORIGINAL_RGBA_16_texture("Depth_16bit_0.png", TEXTURE_INDEX_ORIGINAL);
 	//create_ORIGINAL_texture("upperDepth_8bit_0.png", TEXTURE_INDEX_TEST);
 	//create_ORIGINAL_texture("lowerDepth_8bit_0.png", TEXTURE_INDEX_TEST + 1);
-	//test_loadimg("Depth_16bit_0.png", "upperDepth_8bit_0.png", "lowerDepth_8bit_0.png");
+	//test_loadimg("Data/depth/original/Depth_rgba_0.png", "data/depth/original/upperDepth_rgba_0.png", "data/depth/original/lowerDepth_rgba_0.png");
+	//depthMapWrite();
 	//depthMapWrite_multiframe();
 	//createTestBitmap();
 	//depthMapWrite_test();
-	//upload_TEST_Texture_Original();
-	upload_TEST_Texture_Original_YUV();
+
+
+	upload_TEST_Texture_Original();
+	//upload_TEST_Texture_Original_YUV();
 	//upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);
-	//upload_TEST_Texture_BPTC();
+	upload_TEST_Texture_BPTC();
 	//upload_TEST_Texture_ASTC(4);
 	//upload_TEST_Texture_ASTC(5);
 	//upload_TEST_Texture_ASTC(6);
@@ -874,7 +932,7 @@ void prepare_scene(void) {
 	//upload_TEST_Texture_ASTC(10);
 	//upload_TEST_Texture_ASTC(12);
 	//upload_TEST_Texture_ASTC(112);
-	upload_TEST_Texture_YUV_DXT1();
+	//upload_TEST_Texture_YUV_DXT1();
 	//upload_TEST_Texture_YUV_BPTC();
 	upload_TEST_Texture_Depth();
 	//compare_PSNR();

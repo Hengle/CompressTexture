@@ -78,35 +78,14 @@ vec4 getDepthColor(int depth_version) {
 		result_color = float(gray_color) / 65535;
 		break;
 
-	case 1://uncomp up - uncomp low
-		upper_color = texture(u_depth_uncomp_upper, coord);
-		lower_color = texture(u_depth_uncomp_lower, coord);
-
-		switch (color_num) {
-		case 0: //r
-			gray_color = (upper_color.r * 256 + lower_color.r) ;
-			break;
-		case 1: //g
-			gray_color = (upper_color.g * 256 + lower_color.g) ;
-			break;
-		case 2: //b
-			gray_color = (upper_color.b * 256 + lower_color.b) ;
-			break;
-		case 3: //a
-			gray_color =( upper_color.a * 256 + lower_color.a);
-			break;
-		}
-		result_color = float(gray_color) / 65535;
-		break;
-
-	case 2://uncomp up - BPTC low
+	case 1://uncomp up - BPTC low
 		upper_color = texture(u_depth_uncomp_upper, coord);
 		lower_comp_color = texture(u_depth_comp_lower, v_tex_coord);
 
 		switch (color_num) {
 		case 0: //r
 			tmp = lower_comp_color.r * 255;
-			gray_color = (upper_color.r * 256 + unsigned int(tmp));
+			gray_color = (upper_color.b * 256 + unsigned int(tmp));
 			break;
 		case 1: //g
 			tmp = lower_comp_color.g * 255;
@@ -114,7 +93,7 @@ vec4 getDepthColor(int depth_version) {
 			break;
 		case 2: //b
 			tmp = lower_comp_color.b * 255;
-			gray_color = (upper_color.b * 256 + unsigned int(tmp));
+			gray_color = (upper_color.r * 256 + unsigned int(tmp));
 			break;
 		case 3: //a
 			tmp = lower_comp_color.a * 255;
@@ -124,63 +103,60 @@ vec4 getDepthColor(int depth_version) {
 		result_color = float(gray_color) / 65535;
 		break;
 
-	case 3://BPTC up - uncomp low
-		//upper_color = texture(u_depth_comp_upper, v_tex_coord);
+	case 2://BPTC up - uncomp low
 		upper_comp_color = texture(u_depth_comp_upper, v_tex_coord);
 		lower_color = texture(u_depth_uncomp_lower, coord);
 		
 		switch (color_num) {
 		case 0: //r
-			tmp = upper_comp_color.r * 65535;
-			gray_color = unsigned int(tmp) + lower_color.r;
+			tmp = upper_comp_color.r * 255;
+			gray_color = unsigned int(tmp) * 256 + lower_color.b;
 			break;
 		case 1: //g
-			tmp = upper_comp_color.g * 65535;
-			gray_color = unsigned int(tmp) + lower_color.g;
+			tmp = upper_comp_color.g * 255;
+			gray_color = unsigned int(tmp) * 256 + lower_color.g;
 			break;
 		case 2: //b
-			tmp = upper_comp_color.b * 65535;
-			gray_color = unsigned int(tmp) + lower_color.b;
+			tmp = upper_comp_color.b * 255;
+			gray_color = unsigned int(tmp) * 256 + lower_color.r;
 			break;
 		case 3: //a
-			tmp = upper_comp_color.a * 65535;
-			gray_color = unsigned int(tmp) + lower_color.a;
+			tmp = upper_comp_color.a * 255;
+			gray_color = unsigned int(tmp) * 256 + lower_color.a;
 			break;
 		}
 		result_color = float(gray_color) / 65535;
 		break;
 
 
-	case 4://BPTC up - BPTC low
-		//upper_color = texture(u_depth_comp_upper, v_tex_coord);
-		//lower_color = texture(u_depth_comp_lower, v_tex_coord);
+	case 3://BPTC up - BPTC low
 		upper_comp_color = texture(u_depth_comp_upper, v_tex_coord);
 		lower_comp_color = texture(u_depth_comp_lower, v_tex_coord);
 
 
 		switch (color_num) {
 		case 0: //r
-			tmp = upper_comp_color.r * 65535;
-			gray_color = unsigned int(tmp) + unsigned int(lower_comp_color.r*255);
+			tmp = upper_comp_color.r * 255;
+			gray_color = unsigned int(tmp) * 256 + unsigned int(lower_comp_color.r*255);
 			break;
 		case 1: //g
-			tmp = upper_comp_color.g * 65535;
-			gray_color = unsigned int(tmp) + unsigned int(lower_comp_color.g * 255);
+			tmp = upper_comp_color.g * 255;
+			gray_color = unsigned int(tmp) * 256 + unsigned int(lower_comp_color.g * 255);
 			break;
 		case 2: //b
-			tmp = upper_comp_color.b * 65535;
-			gray_color = unsigned int(tmp) + unsigned int(lower_comp_color.b * 255);
+			tmp = upper_comp_color.b * 255;
+			gray_color = unsigned int(tmp) * 256 + unsigned int(lower_comp_color.b * 255);
 			break;
 		case 3: //a
-			tmp = upper_comp_color.a * 65535;
-			gray_color = unsigned int(tmp) + unsigned int(lower_comp_color.a * 255);
+			tmp = upper_comp_color.a * 255;
+			gray_color = unsigned int(tmp) * 256 + unsigned int(lower_comp_color.a * 255);
 			break;
 		}
 		result_color = float(gray_color) / 65535;
 		break;
 
 
-	case 5: //dxt1_high fill
+	case 4: //dxt1_high fill
 		depth_color = texture(u_depth_comp_split1, v_tex_coord);
 		color_r = (depth_color.r * 256);
 		color_g = (depth_color.g * 256);
@@ -189,7 +165,7 @@ vec4 getDepthColor(int depth_version) {
 		gray_color = color;
 		break;
 
-	case 6: //bptc_high fill
+	case 5: //bptc_high fill
 		depth_color = texture(u_depth_comp_split2, v_tex_coord);
 		color_r = (depth_color.r * 256);
 		color_g = (depth_color.g * 256);
@@ -197,100 +173,34 @@ vec4 getDepthColor(int depth_version) {
 		color_a = (depth_color.a * 256);
 		color = color_b / 16 + color_g + color_r * 16 + color_a * 256;
 		gray_color = color;
-
-		//depth_color = texture(u_depth_comp_split2, v_tex_coord);
 		break;
 
-	case 99:
+
+	case 99://uncomp up - uncomp low
 		upper_color = texture(u_depth_uncomp_upper, coord);
 		lower_color = texture(u_depth_uncomp_lower, coord);
 
 		switch (color_num) {
 		case 0: //r
-			gray_color = upper_color.r * 256 + lower_color.r;
+			gray_color = (upper_color.b * 256 + lower_color.b);
 			break;
 		case 1: //g
-			gray_color = upper_color.g * 256 + lower_color.g;
+			gray_color = (upper_color.g * 256 + lower_color.g);
 			break;
 		case 2: //b
-			gray_color = upper_color.b * 256 + lower_color.b;
+			gray_color = (upper_color.r * 256 + lower_color.r);
 			break;
 		case 3: //a
-			gray_color = upper_color.a * 256 + lower_color.a;
+			gray_color = (upper_color.a * 256 + lower_color.a);
 			break;
 		}
-
+		result_color = float(gray_color) / 65535;
 		break;
 
 
-	//case 25:
-	//	depth_color = texture(u_depth_uncomp_split, coord);
-	//	color_r = int(depth_color.r * 255);
-	//	color_g = int(depth_color.g * 255);
-	//	color_b = int(depth_color.b * 255);
-	//	color = color_b + color_g * 32 + color_r * 2048;
-	//	gray_color = float(color) / 65536;
-	//	depth_color.r = gray_color;
-	//	depth_color.g = gray_color;
-	//	depth_color.b = gray_color;
-	//	depth_color.a = 1.0;
-	//	break;
 	}
 
-	//depth_color.r = gray_color;
-	//depth_color.g = gray_color;
-	//depth_color.b = gray_color;
-	//depth_color.a = 4294967295;
-
-
-	//gray_color = 10;
-	//return depth_color;
-
-	//gray_color /= 65536;
 	vec4 res_color;
-	//if (gray_color >= 4294967295) {
-	//	res_color.r = 0.3;
-	//	res_color.g = 0.3;
-	//	res_color.b = 0.0;
-	//	res_color.a = 1.0;
-	//}
-	//else if (gray_color >= 16777216) {
-	//	res_color.r = 0.3;
-	//	res_color.g = 0.0;
-	//	res_color.b = 0.3;
-	//	res_color.a = 1.0;
-	//}
-	//else if (gray_color >= 65536) {
-	//	res_color.r = 0.8;
-	//	res_color.g = 0.0;
-	//	res_color.b = 0.0;
-	//	res_color.a = 1.0;
-	//}
-	//else if (gray_color >= 256) {
-	//	res_color.r = 0.0;
-	//	res_color.g = 0.8;
-	//	res_color.b = 0.0;
-	//	res_color.a = 1.0;
-	//}
-	//else if (gray_color > 1) {
-	//	res_color.r = 0.0;
-	//	res_color.g = 0.0;
-	//	res_color.b = 0.8;
-	//	res_color.a = 1.0;
-	//}
-	//else if (gray_color == 0 ){
-	//	res_color.r = 0.8;
-	//	res_color.g = 0.5;
-	//	res_color.b = 0.8;
-	//	res_color.a = 1.0;
-	//}
-	//else {
-	//	res_color.r = 0.2;
-	//	res_color.g = 0.2;
-	//	res_color.b = 0.2;
-	//	res_color.a = 1.0;
-	//}
-	//float color_f = float(gray_color)/65536;
 	res_color.r = result_color;
 	res_color.g = result_color;
 	res_color.b = result_color;
@@ -301,18 +211,25 @@ vec4 getDepthColor(int depth_version) {
 void printDepthMap() {
 
 	vec4 depth_color = getDepthColor(u_depth_version);
+	if (u_drawtype == 0) {
 
-	vec4 original_color = getDepthColor(0);
+		final_color = depth_color;
 
-	final_color = depth_color;
+	}
+	else {
 
-	if (u_flag_texture_diffrence == true) {
-		float diff = abs(depth_color.r - original_color.r) * 20;
-		if (diff > 1.0)
-			diff = 1.0;
-		final_color.r = 1.0 - diff;
-		final_color.g = 1.0 - diff;
-		final_color.b = 1.0 - diff;
+		vec4 original_color = getDepthColor(0);
+
+		final_color = depth_color;
+
+		if (u_flag_texture_diffrence == true) {
+			float diff = abs(depth_color.r - original_color.r) * 100;
+			if (diff > 1.0)
+				diff = 1.0;
+			final_color.r = 1.0 - diff;
+			final_color.g = 1.0 - diff;
+			final_color.b = 1.0 - diff;
+		}
 	}
 }
 
@@ -384,6 +301,11 @@ void main(void) {
 		}
 		else if (u_type_of_compressed_image == 1) {//yuv image
 
+
+
+
+
+
 			vec2 tex_coord;
 			if (u_flag_texture_reverse == true) {
 				tex_coord = vec2(v_tex_coord.x, 1 - v_tex_coord.y);
@@ -391,6 +313,43 @@ void main(void) {
 			else {
 				tex_coord = vec2(v_tex_coord.x, v_tex_coord.y);
 			}
+
+
+			//test code
+			//vec4 yr, ug, vb,ka;
+			//vec4 ori;
+			//ori = texture2D(u_original_texture_y, tex_coord);
+			//yr = texture2D(u_base_texture_y, tex_coord);
+			//ug = texture2D(u_base_texture_u, tex_coord);
+			//vb = texture2D(u_base_texture_v, tex_coord);
+			//ka = texture2D(u_original_texture_u, tex_coord);
+			//float c = ori.a;
+			//final_color = vec4(c, c, c, 1);
+			////final_color = ka;
+			////return;
+			//if (ori.r != yr.r) {
+			//	final_color = vec4(0.8, 0.5, 0.5, 1.0);
+			//	return;
+			//}
+			//else if (ori.g != ug.g) {
+			//	final_color = vec4(0.5, 0.8, 0.5, 1.0);
+			//	return;
+			//}
+			//else if (ori.b != vb.b) {
+			//	final_color = vec4(0.5, 0.5, 0.8, 1.0);
+			//	return;
+			//}
+			//else if (ori.a != ka.a) {
+			//	final_color = vec4(0.1, 0.1, 0.1, 1.0);
+			//	return;
+			//}
+			//else {
+			//	final_color = vec4(0.5, 0.5, 0.5, 1.0);
+			//	return;
+
+			//}
+
+
 
 			float y, u, v;
 			if (u_base_textureIndex == 1) {
@@ -427,7 +386,7 @@ void main(void) {
 			vec2 tex_coord2;
 			tex_coord2 = vec2(v_tex_coord.x, 1 - v_tex_coord.y);
 			if (u_type_of_original_image == 0) {//rgb image
-				original_color = texture(u_original_texture, tex_coord2);
+				original_color = texture(u_original_texture, tex_coord2);				
 			}
 			else if (u_type_of_original_image == 1) {//yuv image
 
@@ -455,9 +414,24 @@ void main(void) {
 				original_color = vec4(r, g, b, 1.0);
 			}
 
-			final_color.x = 1.0 - abs(original_color.x - base_color.x);
-			final_color.y = 1.0 - abs(original_color.y - base_color.y);
-			final_color.z = 1.0 - abs(original_color.z - base_color.z);
+			final_color.x = 1.0 - abs(original_color.x - base_color.x)*20;
+			final_color.y = 1.0 - abs(original_color.y - base_color.y)*20;
+			final_color.z = 1.0 - abs(original_color.z - base_color.z)*20;
+
+			float a;
+
+			final_color.x = original_color.x / 2;
+			final_color.y = original_color.y / 2;
+			final_color.z = original_color.z / 2;
+
+			final_color.x = base_color.x / 2;
+			final_color.y = base_color.y / 2;
+			final_color.z = base_color.z / 2;
+
+			final_color.x = 1.0 - abs(original_color.x - base_color.x) * 20;
+			final_color.y = 1.0 - abs(original_color.y - base_color.y) * 20;
+			final_color.z = 1.0 - abs(original_color.z - base_color.z) * 20;
+
 		}
 	}
 }
