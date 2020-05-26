@@ -92,11 +92,11 @@
 
 
 #define TEXTURE_INDEX_DEPTH_LOWERCOMP_GRAY_TEST1 81
-#define TEXTURE_INDEX_DEPTH_LOWERCOMP_4FRAME_TEST1 105
-#define TEXTURE_INDEX_DEPTH_LOWERCOMP_A_TEST1 129
-#define TEXTURE_INDEX_DEPTH_LOWERCOMP_RGBA_TEST1 153
-#define TEXTURE_INDEX_DEPTH_LOWERCOMP_RXXX_TEST1 177
-#define TEXTURE_INDEX_DEPTH_LOWERCOMP_4CAM_TEST1 201
+#define TEXTURE_INDEX_DEPTH_LOWERCOMP_4FRAME_TEST1 93
+#define TEXTURE_INDEX_DEPTH_LOWERCOMP_A_TEST1 105
+#define TEXTURE_INDEX_DEPTH_LOWERCOMP_RGBA_TEST1 117
+#define TEXTURE_INDEX_DEPTH_LOWERCOMP_RXXX_TEST1 129
+#define TEXTURE_INDEX_DEPTH_LOWERCOMP_4CAM_TEST1 142
 
 
 
@@ -396,7 +396,7 @@ void upload_TEST_Texture_Depth() {
 	time = 0.0f;
 	for (int i = 0; i < 6; i++) {
 		sprintf(name, "Data/Depth/original/lowerDepth_rgba_%d.png", i);
-		//time += create_ORIGINAL_RGBA8_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER_TEST1 + i);
+		time += create_ORIGINAL_RGBA8_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER_TEST1 + i);
 	}
 	//printf("upload time for Uncompressed 8bit Lower Depth Image : %f ms\n", time);
 	time_comp_up_un_low += time;
@@ -465,9 +465,11 @@ void upload_TEST_Texture_Depth_MultiType(int type) {
 	float time_split_dxt1 = 0.0f;
 	float time_split_bptc = 0.0f;
 
+	int imageSize = 12;
+
 	if (type == 0) {//gray(BC4)		
 		time = 0.0f;
-		for (int i = 0; i < 24; i++) {
+		for (int i = 0; i < imageSize; i++) {
 			sprintf(name, "Data/Depth/test/lowerDepth_8bit_gray_%d.DDS", i);
 			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_LOWERCOMP_GRAY_TEST1 + i);
 		}
@@ -476,7 +478,7 @@ void upload_TEST_Texture_Depth_MultiType(int type) {
 	}
 	else if (type == 1) {//4frame
 		time = 0.0f;
-		for (int i = 0; i < 24; i++) {
+		for (int i = 0; i < imageSize; i++) {
 			sprintf(name, "Data/Depth/test/lowerDepth_8bit_4frame_%d.DDS", i);
 			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_LOWERCOMP_4FRAME_TEST1 + i);
 		}
@@ -485,7 +487,7 @@ void upload_TEST_Texture_Depth_MultiType(int type) {
 	}
 	else if (type == 2) {//a
 		time = 0.0f;
-		for (int i = 0; i < 24; i++) {
+		for (int i = 0; i < imageSize; i++) {
 			sprintf(name, "Data/Depth/test/lowerDepth_8bit_a_%d.DDS", i);
 			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_LOWERCOMP_A_TEST1 + i);
 		}
@@ -494,7 +496,7 @@ void upload_TEST_Texture_Depth_MultiType(int type) {
 	}
 	else if (type == 3) {//rgba
 		time = 0.0f;
-		for (int i = 0; i < 24; i++) {
+		for (int i = 0; i < imageSize; i++) {
 			sprintf(name, "Data/Depth/test/lowerDepth_8bit_rgba_%d.DDS", i);
 			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_LOWERCOMP_RGBA_TEST1 + i);
 		}
@@ -503,7 +505,7 @@ void upload_TEST_Texture_Depth_MultiType(int type) {
 	}
 	else if (type == 4) {//rxxx
 		time = 0.0f;
-		for (int i = 0; i < 24; i++) {
+		for (int i = 0; i < imageSize; i++) {
 			sprintf(name, "Data/Depth/test/lowerDepth_8bit_rxxx_%d.DDS", i);
 			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_LOWERCOMP_RXXX_TEST1 + i);
 		}
@@ -511,7 +513,7 @@ void upload_TEST_Texture_Depth_MultiType(int type) {
 	}
 	else if (type == 5) {//4cam
 		time = 0.0f;
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < imageSize/4; i++) {
 			sprintf(name, "Data/Depth/bptc/lowerDepth_rgba_%d.DDS", i);
 			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_LOWERCOMP_4CAM_TEST1 + i);
 		}

@@ -49,11 +49,16 @@ in vec2 v_tex_coord;
 
 layout (location = 0) out vec4 final_color;
 
-vec4 Depth_test() {
+vec4 Depth_test(int depth_type) {
 
-	vec4 upper_comp_color, lower_comp_color;
+	uvec4 upper_color, lower_color;
+	vec4 lower_comp_color;
+	vec2 coord = vec2(v_tex_coord.x, 1 - v_tex_coord.y);
 	float lower_onecolor;
-	switch (u_depth_type) {
+
+	upper_color = texture(u_depth_uncomp_upper, coord);
+
+	switch (depth_type) {
 	case 0:
 		lower_comp_color = texture(u_depth_comp_lower_gray, v_tex_coord);
 		lower_onecolor = lower_comp_color.r;
@@ -78,9 +83,16 @@ vec4 Depth_test() {
 		lower_comp_color = texture(u_depth_comp_lower_4cam, v_tex_coord);
 		lower_onecolor = lower_comp_color.r;
 		break;
+	case 6:
+		lower_color = texture(u_depth_uncomp_lower, coord);
+		lower_onecolor = float(lower_color.r)/255;
 
+		break;
 	}
-	return lower_comp_color;
+
+	vec4 res = vec4(lower_onecolor, lower_onecolor, lower_onecolor,1);
+
+	return res;
 }
 
 vec4 getDepthColor(int depth_version) {
@@ -283,7 +295,9 @@ vec4 getDepthColor(int depth_version) {
 void printDepthMap() {
 
 	vec4 depth_color = getDepthColor(u_depth_version);
-	depth_color = Depth_test();
+
+	depth_color = Depth_test(u_depth_type);
+
 	if (u_drawtype == 0) {
 
 		final_color = depth_color;
@@ -292,11 +306,12 @@ void printDepthMap() {
 	else {
 
 		vec4 original_color = getDepthColor(0);
+		original_color = Depth_test(6);
 
 		final_color = depth_color;
 
 		if (u_flag_texture_diffrence == true) {
-			float diff = abs(depth_color.r - original_color.r) * 100;
+			float diff = abs(depth_color.r - original_color.r) * 20;
 			if (diff > 1.0)
 				diff = 1.0;
 			final_color.r = 1.0 - diff;

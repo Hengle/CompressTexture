@@ -393,7 +393,7 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'h':
 		depth_type++;
 
-		if (depth_type > 5) {
+		if (depth_type > 6) {
 			depth_type = 0;
 		}
 		switch (depth_type) {
@@ -409,6 +409,8 @@ void keyboard(unsigned char key, int x, int y) {
 			glutSetWindowTitle("RXXX Lower"); break;
 		case 5:printf("4cam Lower\n");
 			glutSetWindowTitle("4cam Lower"); break;
+		case 6:printf("uncomp Lower\n");
+			glutSetWindowTitle("uncomp Lower"); break;
 		}
 
 		glUseProgram(h_ShaderProgram_TXPS);
@@ -1132,10 +1134,13 @@ void prepare_scene(void) {
 	upload_TEST_Texture_Depth_MultiType(0);
 	upload_TEST_Texture_Depth_MultiType(1);
 	upload_TEST_Texture_Depth_MultiType(2);
-	//upload_TEST_Texture_Depth_MultiType(3);
-	//upload_TEST_Texture_Depth_MultiType(4);
+	upload_TEST_Texture_Depth_MultiType(3);
+	upload_TEST_Texture_Depth_MultiType(4);
 	upload_TEST_Texture_Depth_MultiType(5);
+	int result;
 
+	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &result);
+	printf("max tex : %d\n",result);
 
 	//create_DDS_Texture("Data/depth/bc7/upperDepth_rgba.DDS", TEXTURE_TEST_R);
 	//create_ORIGINAL_RGBA_texture("Data/depth/original/upperDepth_rgba.png", TEXTURE_TEST_G);
