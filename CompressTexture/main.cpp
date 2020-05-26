@@ -635,10 +635,10 @@ void depthMapWrite_multiframe() {
 	//한번에 다수의 png를 생성하는데 이게 멀티스레딩 방식인지 뭔지, 제대로 진행되지 않고 끊기는 경우가 있음. 로그를 볼 것.
 	char name[24][100];
 
-	for (int frame = 0; frame < 5; frame++) {
+	for (int frame = 0; frame < 25; frame+=5) {
 			   
 		for (int i = 0; i < 24; i++)
-			sprintf(name[i], "Data/DepthRawData/5frame/v%d_depth_2048x2048_yuv420p16le_%d.data", i, frame);
+			sprintf(name[i], "Data/DepthRawData/test5frame/v%d_depth_2048x2048_yuv420p16le_%d.data", i, frame);
 		char filename[100];
 
 		int readsize = 2048 * 2048 * 2;
@@ -729,84 +729,238 @@ void depthMapWrite_multiframe() {
 
 }
 
-void depthMapWrite_test() {
-	//한번에 다수의 png를 생성하는데 이게 멀티스레딩 방식인지 뭔지, 제대로 진행되지 않고 끊기는 경우가 있음. 로그를 볼 것.
-	char name[24][100];
+float load_rgb_Image(const char *filename, BYTE* depthBuf, int index, int imagesize) {
+	FREE_IMAGE_FORMAT tx_file_format;
+	int tx_bits_per_pixel;
+	FIBITMAP *tx_pixmap, *tx_pixmap_32;
 
-	for (int i = 0; i < 24; i++)
-		sprintf(name[i], "Data/DepthRawData/v%d_depth_2048x2048_yuv420p16le.data", i);
+	int width, height;
+	BYTE *data;
+
+	tx_file_format = FreeImage_GetFileType(filename, 0);
+	// assume everything is fine with reading texture from file: no error checking
+	tx_pixmap = FreeImage_Load(tx_file_format, filename);
+	tx_bits_per_pixel = FreeImage_GetBPP(tx_pixmap);
+
+	//fprintf(stdout, " * A %d-bit texture was read from %s.\n", tx_bits_per_pixel, filename);
+	if (tx_bits_per_pixel == 32)
+		tx_pixmap_32 = tx_pixmap;
+	else {
+		//fprintf(stdout, " * Converting texture from %d bits to 32 bits...\n", tx_bits_per_pixel);
+		tx_pixmap_32 = FreeImage_ConvertTo32Bits(tx_pixmap);
+	}
+
+	width = FreeImage_GetWidth(tx_pixmap_32);
+	height = FreeImage_GetHeight(tx_pixmap_32);
+	data = FreeImage_GetBits(tx_pixmap_32);
+
+	//generate and bind texture
+	GLuint texname;
+	glGenTextures(1, &texname);
+	glBindTexture(GL_TEXTURE_2D, texname);
+
+	float compute_time;
+	BYTE* rgbBuf[4];
+
+	for (int j = 0; j < 4; j++) {
+		rgbBuf[j] = new BYTE[imagesize];
+	}
+
+	//TODO : 이거 색상별로 나누기!
+
+	for (int i = 0; i < imagesize; i++) {
+		rgbBuf[0][i] = (BYTE)(data[i * 4 + 0]);//B
+		rgbBuf[1][i] = (BYTE)(data[i * 4 + 1]);//G
+		rgbBuf[2][i] = (BYTE)(data[i * 4 + 2]);//R
+		rgbBuf[3][i] = (BYTE)(data[i * 4 + 3]);//A (255)
+		if (i < 10 && index == 0)
+			printf("[%d] %x %x %x %x\n", i, (int)rgbBuf[0][i], (int)rgbBuf[1][i], (int)rgbBuf[2][i], (int)rgbBuf[3][i]);
+	}
+
+	//return 0;
+
+	char savename[100];
+	sprintf(savename, "output/lowerDepth_8bit_a_%d.png", index);
+	FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, rgbBuf[2], rgbBuf[1], rgbBuf[0], depthBuf, savename);
+	printf("create image %s\n", savename);
+
+	//fprintf(stdout, " * Loaded %dx%d RGBA texture into graphics memory.\n\n", width, height);
+
+	FreeImage_Unload(tx_pixmap_32);
+	if (tx_bits_per_pixel != 32)
+		FreeImage_Unload(tx_pixmap);
+
+	return 0;
+}
+
+void depthMapWrite_test() {
+	char name[4][24][100];
+
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 24; j++)
+		sprintf(name[i][j], "Data/DepthRawData/5frame/v%d_depth_2048x2048_yuv420p16le_%d.data", j,i);
 	char filename[100];
 
 	int readsize = 2048 * 2048 * 2;
-	BYTE* readbuf[4];
+	BYTE* readbuf[4][24];
 
 	int imageSize = 2048 * 2048;
-	BYTE* upperBuf[4];
-	BYTE* lowerBuf[4];
-	unsigned short* usBuf[4];
+	BYTE* lowerBuf[4][24];
+	BYTE* blank;
 
 	for (int i = 0; i < 4; i++) {
-		readbuf[i] = new BYTE[readsize];
-		upperBuf[i] = new BYTE[imageSize];
-		lowerBuf[i] = new BYTE[imageSize];
-		usBuf[i] = new unsigned short[imageSize];
+		for (int j = 0; j < 24; j++) {
+			readbuf[i][j] = new BYTE[readsize];
+			lowerBuf[i][j] = new BYTE[imageSize];
+		}
 	}
+	blank = new  BYTE[imageSize];
+	memset(blank, 0, sizeof(blank));
 
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 24; j++) {
 
-		for (int j = 0; j < 4; j++) {
-
-			FILE* fp = fopen(name[i * 4 + j], "rb");
-			fread(readbuf[j], sizeof(BYTE), readsize, fp);
-
-			unsigned short *test_ptr = reinterpret_cast<unsigned short*>(readbuf[j]);
-
-			for (int k = 0; k < readsize; k++) {
-				if (k % 2 == 1) {
-					upperBuf[j][k / 2] = readbuf[j][k];
-				}
-				else if (k % 2 == 0) {
-					lowerBuf[j][k / 2] = readbuf[j][k];
-				}
-			}
-
+			FILE* fp = fopen(name[i][j], "rb");
+			fread(readbuf[i][j], sizeof(BYTE), readsize, fp);
 
 			for (int k = 0; k < readsize; k++) {
-				if (k % 2 == 0) {
-					usBuf[j][k / 2] = (unsigned short)upperBuf[j][k / 2] * 256 + (unsigned short)lowerBuf[j][k / 2];
+					if (k % 2 == 0) {
+					lowerBuf[i][j][k / 2] = readbuf[i][j][k];
 				}
 			}
 
 			fclose(fp);
 		}
+	}
 
-		printf("load 4 image.\n");
-		for (int j = 0; j < 4; j++) {
-			printf("%s\n", name[i * 4 + j]);
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 24; j++) {
+			delete readbuf[i][j];
 		}
+	}
 
+	printf("load all image.\n");
 
-		sprintf(filename, "upperDepth_8bit_%d.png", i);
-		FreeImageSaveFile_8bit_RGBA_4Image(16, 16, upperBuf[0], upperBuf[1], upperBuf[2], upperBuf[3], filename);
+	//bc4
+
+	for (int i = 0; i < 24; i++) {
+		sprintf(filename, "output/lowerDepth_8bit_gray_%d.png", i);
+		FreeImageSaveFile_8bit_grayscale(2048, 2048, lowerBuf[0][i], filename);
 		printf("create image %s\n", filename);
 
-		sprintf(filename, "lowerDepth_8bit_%d.png", i);
-		FreeImageSaveFile_8bit_RGBA_4Image(16, 16, lowerBuf[0], lowerBuf[1], lowerBuf[2], lowerBuf[3], filename);
-		printf("create image %s\n", filename);
+	}
 
-		sprintf(filename, "Depth_16bit_%d.png", i);
-		FreeImageSaveFile_16bit_RGBA_4Image(16, 16, usBuf[0], usBuf[1], usBuf[2], usBuf[3], filename);
+	return;
+	//rxxx, 0 frame
+
+	for (int i = 0; i < 24; i++) {
+		sprintf(filename, "output/lowerDepth_8bit_rxxx_%d.png", i);
+		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0][i], blank, blank, blank, filename);
 		printf("create image %s\n", filename);
 
 	}
 
 
+	//r-g-b-a, 0 frame
+
+	for (int i = 0; i < 24; i++) {
+		sprintf(filename, "output/lowerDepth_8bit_rgba_%d.png", i);
+		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0][i], lowerBuf[0][i], lowerBuf[0][i], lowerBuf[0][i], filename);
+		printf("create image %s\n", filename);
+
+	}
+
+	//4 frame
+	for (int i = 0; i < 24; i++) {
+		sprintf(filename, "output/lowerDepth_8bit_4frame_%d.png", i);
+		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0][i], lowerBuf[1][i], lowerBuf[2][i], lowerBuf[3][i], filename);
+		printf("create image %s\n", filename);
+
+	}
 
 
-	printf("load depth map.\n");
+	//rgb + a
+	for (int i = 0; i < 24; i++) {
 
+		sprintf(filename, "data/yuv/original_rgb/image_rgb_%d.bmp", i);
+		load_rgb_Image(filename, lowerBuf[0][i], i, imageSize);
+
+		//sprintf(filename, "output/lowerDepth_8bit_rxxx_%d.png", i);
+		//FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0][i], blank, blank, blank, filename);
+		//printf("create image %s\n", filename);
+
+	}
+
+
+
+	printf("load test depth map.\n");
+	exit(0);
 }
 
+void depth_color_CombineTest() {
+
+	char name[24][100];
+
+	for (int j = 0; j < 24; j++)
+		sprintf(name[j], "Data/DepthRawData/v%d_depth_2048x2048_yuv420p16le.data", j);
+	char filename[100];
+
+	int readsize = 2048 * 2048 * 2;
+	BYTE* readbuf[24];
+
+	int imageSize = 2048 * 2048;
+	BYTE* lowerBuf[24];
+	BYTE* blank;
+
+	for (int j = 0; j < 24; j++) {
+		readbuf[j] = new BYTE[readsize];
+		lowerBuf[j] = new BYTE[imageSize];
+	}
+
+	blank = new  BYTE[imageSize];
+	memset(blank, 0, sizeof(blank));
+
+	for (int j = 0; j < 24; j++) {
+
+		FILE* fp = fopen(name[j], "rb");
+		fread(readbuf[j], sizeof(BYTE), readsize, fp);
+
+		for (int k = 0; k < readsize; k++) {
+			if (k % 2 == 0) {
+				lowerBuf[j][k / 2] = readbuf[j][k];
+			}
+		}
+
+
+		fclose(fp);
+	}
+
+
+
+	for (int j = 0; j < 24; j++) {
+		delete readbuf[j];
+	}
+
+
+	printf("load all image.\n");
+
+
+
+	for (int i = 0; i < 24; i++) {
+
+		sprintf(filename, "data/yuv/original_rgb/image_rgb_%d.bmp", i);
+		load_rgb_Image(filename, lowerBuf[i], i, imageSize);
+
+		//sprintf(filename, "output/lowerDepth_8bit_rxxx_%d.png", i);
+		//FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0][i], blank, blank, blank, filename);
+		//printf("create image %s\n", filename);
+
+	}
+
+
+
+}
 
 void createTestBitmap() {
 	char filename[100];
@@ -916,15 +1070,15 @@ void prepare_scene(void) {
 	//depthMapWrite();
 	//depthMapWrite_multiframe();
 	//createTestBitmap();
-	//depthMapWrite_test();
-
+	depthMapWrite_test();
+	//depth_color_CombineTest();
 
 	upload_TEST_Texture_Original();
 	//upload_TEST_Texture_Original_YUV();
 	//upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);
-	upload_TEST_Texture_BPTC();
+	//upload_TEST_Texture_BPTC();
 	//upload_TEST_Texture_ASTC(4);
 	//upload_TEST_Texture_ASTC(5);
 	//upload_TEST_Texture_ASTC(6);

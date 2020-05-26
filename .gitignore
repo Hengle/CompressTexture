@@ -22,6 +22,8 @@ log.txt
 x64/
 x86/
 bld/
+Data/
+output/
 [Bb]in/
 [Oo]bj/
 [Ll]og/

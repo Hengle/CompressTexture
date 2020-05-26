@@ -275,23 +275,23 @@ void test_loadimg(const char *filename_ori, const char *filename_upper, const ch
 
 	printf("\n\n float type\n");
 	printf("  original-16bit\n");
-	for (int i = 0; i < 4  * 4; i += 4) {
+	for (int i = 0; i < 4  ; i += 4) {
 		printf("  [%3d] - %.10f %.10f %.10f %.10f\n", i / 4, ori_float[i], ori_float[i + 1], ori_float[i + 2], ori_float[i + 3]);
 	}
 	printf("  upper-8bit\n");
-	for (int i = 0; i < 4  * 4; i += 4) {
+	for (int i = 0; i < 4 ; i += 4) {
 		printf("  [%3d] - %.10f %.10f %.10f %.10f\n", i / 4, upper_float[i] , upper_float[i + 1] , upper_float[i + 2] , upper_float[i + 3]);
 	}
 	printf("  lower-8bit\n");
-	for (int i = 0; i < 4  * 4; i += 4) {
+	for (int i = 0; i < 4 ; i += 4) {
 		printf("  [%3d] - %.10f %.10f %.10f %.10f\n", i / 4, lower_float[i], lower_float[i + 1], lower_float[i + 2], lower_float[i + 3]);
 	}
 	printf("  combine-16bit\n");
-	for (int i = 0; i < 4 * 4; i += 4) {
+	for (int i = 0; i < 4 ; i += 4) {
 		printf("  [%3d] - %.10f %.10f %.10f %.10f\n", i / 4, (upper_float[i] * 255 + lower_float[i]) / 255, (upper_float[i + 1] * 255 + lower_float[i + 1]) / 255, (upper_float[i + 2] * 255 + lower_float[i + 2]) / 255, (upper_float[i + 3] * 255 + lower_float[i + 3]) / 255);
 	}
 	printf("  diffrence-16bit\n");
-	for (int i = 0; i < 4 * 4; i += 4) {
+	for (int i = 0; i < 4 ; i += 4) {
 		float d1 = -ori_float[i] + ((upper_float[i] * 255 + lower_float[i])) / 255;
 		float d2= -ori_float[i + 1] + ((upper_float[i + 1] * 255 + lower_float[i + 1]) / 255);
 		float d3= -ori_float[i + 2] + ((upper_float[i + 2] * 255 + lower_float[i + 2]) / 255);
@@ -302,19 +302,19 @@ void test_loadimg(const char *filename_ori, const char *filename_upper, const ch
 
 	printf("\n\n float type_2\n");
 	printf("  original-16bit\n");
-	for (int i = 0; i < 4 * 4; i += 4) {
+	for (int i = 0; i < 4 ; i += 4) {
 		printf("  [%3d] - 0x%x 0x%x 0x%x 0x%x\n", i / 4, (unsigned int)(ori_float[i] * 65535), (unsigned int)(ori_float[i + 1] * 65535), (unsigned int)(ori_float[i + 2] * 65535), (unsigned int)(ori_float[i + 3] * 65535));
 	}
 	printf("  upper-8bit\n");
-	for (int i = 0; i < 4 * 4; i += 4) {
+	for (int i = 0; i < 4 ; i += 4) {
 		printf("  [%3d] - 0x%x 0x%x 0x%x 0x%x\n", i / 4, (unsigned int)(upper_float[i] * 255), (unsigned int)(upper_float[i + 1] * 255), (unsigned int)(upper_float[i + 2] * 255), (unsigned int)(upper_float[i + 3] * 255));
 	}
 	printf("  lower-8bit\n");
-	for (int i = 0; i < 4 * 4; i += 4) {
+	for (int i = 0; i < 4 ; i += 4) {
 		printf("  [%3d] - 0x%x 0x%x 0x%x 0x%x\n", i / 4, (unsigned int)(lower_float[i] * 255), (unsigned int)(lower_float[i + 1] * 255), (unsigned int)(lower_float[i + 2] * 255), (unsigned int)(lower_float[i + 3] * 255));
 	}
 	printf("  combine-16bit\n");
-	for (int i = 0; i < 4 * 4; i += 4) {
+	for (int i = 0; i < 4 ; i += 4) {
 		//unsigned int d1 = ((unsigned int)(upper_float[i] * 255) * 256 + unsigned int(lower_float[i] * 255));
 		//unsigned int d2 = ((unsigned int)(upper_float[i+1] * 255) * 256 + unsigned int(lower_float[i + 1] * 255));
 		//unsigned int d3 = ((unsigned int)(upper_float[i+2] * 255) * 256 + unsigned int(lower_float[i + 2] * 255));
@@ -330,7 +330,7 @@ void test_loadimg(const char *filename_ori, const char *filename_upper, const ch
 
 	}
 	printf("  diffrence-16bit\n");
-	for (int i = 0; i < 4 * 4; i += 4) {
+	for (int i = 0; i < 4 ; i += 4) {
 		unsigned int d1 = (unsigned int)((upper_float[i] * 255 + lower_float[i]) / 255 * 65535) - (unsigned int)(ori_float[i] * 65535);
 		unsigned int d2 = (unsigned int)((upper_float[i + 1] * 255 + lower_float[i + 1]) / 255 * 65535) - (unsigned int)(ori_float[i + 1] * 65535);
 		unsigned int d3 = (unsigned int)((upper_float[i + 2] * 255 + lower_float[i + 2]) / 255 * 65535) - (unsigned int)(ori_float[i + 2] * 65535);
