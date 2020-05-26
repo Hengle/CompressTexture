@@ -90,55 +90,14 @@
 #define TEXTURE_INDEX_DEPTH_COMP_LOWER_TEST5 79
 #define TEXTURE_INDEX_DEPTH_COMP_LOWER_TEST6 80
 
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST1 81
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST2 82
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST3 83
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST4 84
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST5 85
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST6 86
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST7 87
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST8 89
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST9 90
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST10 91
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST11 92
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST12 93
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST13 94
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST14 95
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST15 96
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST16 97
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST17 98
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST18 99
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST19 100
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST20 101
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST21 102
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST22 103
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST23 104
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST24 105
 
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST1 106
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST2 107
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST3 108
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST4 109
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST5 110
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST6 111
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST7 112
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST8 113
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST9 114
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST10 115
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST11 116
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST12 117
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST13 118
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST14 119
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST15 120
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST16 121
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST17 122
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST18 123
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST19 124
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST20 125
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST21 126
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST22 127
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST23 128
-#define TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST24 129
+#define TEXTURE_INDEX_DEPTH_LOWERCOMP_GRAY_TEST1 81
+#define TEXTURE_INDEX_DEPTH_LOWERCOMP_4FRAME_TEST1 105
+#define TEXTURE_INDEX_DEPTH_LOWERCOMP_A_TEST1 129
+#define TEXTURE_INDEX_DEPTH_LOWERCOMP_RGBA_TEST1 153
+#define TEXTURE_INDEX_DEPTH_LOWERCOMP_RXXX_TEST1 177
+#define TEXTURE_INDEX_DEPTH_LOWERCOMP_4CAM_TEST1 201
+
 
 
 // floor object
@@ -213,7 +172,7 @@ float create_ORIGINAL_RGBA8_Depth_texture(const char* filename, GLuint textureID
 	//glBindTexture(GL_TEXTURE_2D, texture_names[textureID]);
 
 	time = load_unpack_image_checktime(filename, GL_RGBA8UI);
-
+	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -437,7 +396,7 @@ void upload_TEST_Texture_Depth() {
 	time = 0.0f;
 	for (int i = 0; i < 6; i++) {
 		sprintf(name, "Data/Depth/original/lowerDepth_rgba_%d.png", i);
-		time += create_ORIGINAL_RGBA8_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER_TEST1 + i);
+		//time += create_ORIGINAL_RGBA8_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER_TEST1 + i);
 	}
 	//printf("upload time for Uncompressed 8bit Lower Depth Image : %f ms\n", time);
 	time_comp_up_un_low += time;
@@ -463,22 +422,6 @@ void upload_TEST_Texture_Depth() {
 	printf("upload time for Upper uncompressed image and Lower BPTC Depth Image : %f ms\n", time_un_up_comp_low);
 	printf("upload time for Upper BPTC image and Lower uncompressed Depth Image : %f ms\n", time_comp_up_un_low);
 	printf("upload time for Upper BPTC image and Lower BPTC Depth Image : %f ms\n", time_comp_up_comp_low);
-
-
-
-	time_split_dxt1 = 0.0f;
-	for (int i = 0; i < 24; i++) {
-		sprintf(name, "Data/Depth/split/dxt1/splitDepth_dxt1_max_%d.DDS", i);
-		time_split_dxt1 += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST1 + i);
-	}
-	printf("upload time for DXT1 compressed 8bit Split Depth Image : %f ms\n", time_split_dxt1);
-
-	time_split_bptc = 0.0f;
-	for (int i = 0; i < 24; i++) {
-		sprintf(name, "Data/Depth/split/bptc/splitDepth_bptc_max_%d.DDS", i);
-		time_split_bptc += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST1 + i);
-	}
-	printf("upload time for BPTC compressed 8bit Split Depth Image : %f ms\n", time_split_bptc);
 
 
 	//print log
@@ -508,7 +451,7 @@ void upload_TEST_Texture_Depth() {
 
 }
 
-
+//0~5, gray(bc4) / 4frame / a / rgba / rxxx / 4cam(old)
 void upload_TEST_Texture_Depth_MultiType(int type) {
 
 	//4frame, a, rgba, rxxx, gray
@@ -522,92 +465,146 @@ void upload_TEST_Texture_Depth_MultiType(int type) {
 	float time_split_dxt1 = 0.0f;
 	float time_split_bptc = 0.0f;
 
+	if (type == 0) {//gray(BC4)		
+		time = 0.0f;
+		for (int i = 0; i < 24; i++) {
+			sprintf(name, "Data/Depth/test/lowerDepth_8bit_gray_%d.DDS", i);
+			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_LOWERCOMP_GRAY_TEST1 + i);
+		}
+		printf("upload time for Lower compress - BC4 Image : %f ms\n", time);
 
-	for (int i = 0; i < 6; i++) {
-		sprintf(name, "Data/Depth/original/Depth_rgba_%d.png", i);
-		time_original += create_ORIGINAL_RGBA16_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_16BIT_TEST1 + i);
 	}
-	printf("upload time for Original 16bit Depth Image : %f ms\n", time_original);
+	else if (type == 1) {//4frame
+		time = 0.0f;
+		for (int i = 0; i < 24; i++) {
+			sprintf(name, "Data/Depth/test/lowerDepth_8bit_4frame_%d.DDS", i);
+			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_LOWERCOMP_4FRAME_TEST1 + i);
+		}
+		printf("upload time for Lower compress - 4frame Image : %f ms\n", time);
 
-	time = 0.0f;
-	for (int i = 0; i < 6; i++) {
-		sprintf(name, "Data/Depth/original/upperDepth_rgba_%d.png", i);
-		time += create_ORIGINAL_RGBA8_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_UPPER_TEST1 + i);
 	}
-	//printf("upload time for Uncompressed 8bit Upper Depth Image : %f ms\n", time);
-	time_un_up_comp_low += time;
+	else if (type == 2) {//a
+		time = 0.0f;
+		for (int i = 0; i < 24; i++) {
+			sprintf(name, "Data/Depth/test/lowerDepth_8bit_a_%d.DDS", i);
+			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_LOWERCOMP_A_TEST1 + i);
+		}
+		printf("upload time for Lower compress - alpha channel Image : %f ms\n", time);
 
-	time = 0.0f;
-	for (int i = 0; i < 6; i++) {
-		sprintf(name, "Data/Depth/original/lowerDepth_rgba_%d.png", i);
-		time += create_ORIGINAL_RGBA8_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER_TEST1 + i);
 	}
-	//printf("upload time for Uncompressed 8bit Lower Depth Image : %f ms\n", time);
-	time_comp_up_un_low += time;
+	else if (type == 3) {//rgba
+		time = 0.0f;
+		for (int i = 0; i < 24; i++) {
+			sprintf(name, "Data/Depth/test/lowerDepth_8bit_rgba_%d.DDS", i);
+			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_LOWERCOMP_RGBA_TEST1 + i);
+		}
+		printf("upload time for Lower compress - rgba channel equal Image : %f ms\n", time);
 
-	time = 0.0f;
-	for (int i = 0; i < 6; i++) {
-		sprintf(name, "Data/Depth/bptc/upperDepth_rgba_%d.DDS", i);
-		time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_COMP_UPPER_TEST1 + i);
 	}
-	//printf("upload time for BPTC compressed 8bit Upper Depth Image : %f ms\n", time);
-	time_comp_up_un_low += time;
-	time_comp_up_comp_low += time;
-
-	time = 0.0f;
-	for (int i = 0; i < 6; i++) {
-		sprintf(name, "Data/Depth/bptc/lowerDepth_rgba_%d.DDS", i);
-		time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_COMP_LOWER_TEST1 + i);
+	else if (type == 4) {//rxxx
+		time = 0.0f;
+		for (int i = 0; i < 24; i++) {
+			sprintf(name, "Data/Depth/test/lowerDepth_8bit_rxxx_%d.DDS", i);
+			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_LOWERCOMP_RXXX_TEST1 + i);
+		}
+		printf("upload time for Lower compress - r channel Image : %f ms\n", time);			   
 	}
-	//printf("upload time for BPTC compressed 8bit Lower Depth Image : %f ms\n", time);
-	time_un_up_comp_low += time;
-	time_comp_up_comp_low += time;
-
-	printf("upload time for Upper uncompressed image and Lower BPTC Depth Image : %f ms\n", time_un_up_comp_low);
-	printf("upload time for Upper BPTC image and Lower uncompressed Depth Image : %f ms\n", time_comp_up_un_low);
-	printf("upload time for Upper BPTC image and Lower BPTC Depth Image : %f ms\n", time_comp_up_comp_low);
-
-
-
-	time_split_dxt1 = 0.0f;
-	for (int i = 0; i < 24; i++) {
-		sprintf(name, "Data/Depth/split/dxt1/splitDepth_dxt1_max_%d.DDS", i);
-		time_split_dxt1 += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST1 + i);
+	else if (type == 5) {//4cam
+		time = 0.0f;
+		for (int i = 0; i < 6; i++) {
+			sprintf(name, "Data/Depth/bptc/lowerDepth_rgba_%d.DDS", i);
+			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_LOWERCOMP_4CAM_TEST1 + i);
+		}
+		printf("upload time for Lower compress - 4 camera Image : %f ms\n", time);
 	}
-	printf("upload time for DXT1 compressed 8bit Split Depth Image : %f ms\n", time_split_dxt1);
+	else {
+		for (int i = 0; i < 6; i++) {
+			sprintf(name, "Data/Depth/original/Depth_rgba_%d.png", i);
+			time_original += create_ORIGINAL_RGBA16_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_16BIT_TEST1 + i);
+		}
+		printf("upload time for Original 16bit Depth Image : %f ms\n", time_original);
 
-	time_split_bptc = 0.0f;
-	for (int i = 0; i < 24; i++) {
-		sprintf(name, "Data/Depth/split/bptc/splitDepth_bptc_max_%d.DDS", i);
-		time_split_bptc += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST1 + i);
+		time = 0.0f;
+		for (int i = 0; i < 6; i++) {
+			sprintf(name, "Data/Depth/original/upperDepth_rgba_%d.png", i);
+			time += create_ORIGINAL_RGBA8_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_UPPER_TEST1 + i);
+		}
+		//printf("upload time for Uncompressed 8bit Upper Depth Image : %f ms\n", time);
+		time_un_up_comp_low += time;
+
+		time = 0.0f;
+		for (int i = 0; i < 6; i++) {
+			sprintf(name, "Data/Depth/original/lowerDepth_rgba_%d.png", i);
+			time += create_ORIGINAL_RGBA8_Depth_texture(name, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER_TEST1 + i);
+		}
+		//printf("upload time for Uncompressed 8bit Lower Depth Image : %f ms\n", time);
+		time_comp_up_un_low += time;
+
+		time = 0.0f;
+		for (int i = 0; i < 6; i++) {
+			sprintf(name, "Data/Depth/bptc/upperDepth_rgba_%d.DDS", i);
+			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_COMP_UPPER_TEST1 + i);
+		}
+		//printf("upload time for BPTC compressed 8bit Upper Depth Image : %f ms\n", time);
+		time_comp_up_un_low += time;
+		time_comp_up_comp_low += time;
+
+		time = 0.0f;
+		for (int i = 0; i < 6; i++) {
+			sprintf(name, "Data/Depth/bptc/lowerDepth_rgba_%d.DDS", i);
+			time += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_COMP_LOWER_TEST1 + i);
+		}
+		//printf("upload time for BPTC compressed 8bit Lower Depth Image : %f ms\n", time);
+		time_un_up_comp_low += time;
+		time_comp_up_comp_low += time;
+
+		printf("upload time for Upper uncompressed image and Lower BPTC Depth Image : %f ms\n", time_un_up_comp_low);
+		printf("upload time for Upper BPTC image and Lower uncompressed Depth Image : %f ms\n", time_comp_up_un_low);
+		printf("upload time for Upper BPTC image and Lower BPTC Depth Image : %f ms\n", time_comp_up_comp_low);
+
+
+
+		//time_split_dxt1 = 0.0f;
+		//for (int i = 0; i < 24; i++) {
+		//	sprintf(name, "Data/Depth/split/dxt1/splitDepth_dxt1_max_%d.DDS", i);
+		//	time_split_dxt1 += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST1 + i);
+		//}
+		//printf("upload time for DXT1 compressed 8bit Split Depth Image : %f ms\n", time_split_dxt1);
+
+		//time_split_bptc = 0.0f;
+		//for (int i = 0; i < 24; i++) {
+		//	sprintf(name, "Data/Depth/split/bptc/splitDepth_bptc_max_%d.DDS", i);
+		//	time_split_bptc += create_DDS_Texture(name, TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST1 + i);
+		//}
+		//printf("upload time for BPTC compressed 8bit Split Depth Image : %f ms\n", time_split_bptc);
+
+
+		//print log
+		FILE* fp = fopen("log.txt", "a");
+
+		fprintf(fp, "upload time for Original 16bit Depth Image : %f\n", time_original);
+		fprintf(fp, "upload time for Upper uncompressed image and Lower BPTC Depth Image : %f\n", time_un_up_comp_low);
+		fprintf(fp, "upload time for Upper BPTC image and Lower uncompressed Depth Image : %f\n", time_comp_up_un_low);
+		fprintf(fp, "upload time for Upper BPTC image and Lower BPTC Depth Image : %f\n", time_comp_up_comp_low);
+		fprintf(fp, "upload time for DXT1 compressed 8bit Split Depth Image : %f\n", time_split_dxt1);
+		fprintf(fp, "upload time for BPTC compressed 8bit Split Depth Image : %f\n", time_split_bptc);
+
+		fclose(fp);
+
+		//time += create_ORIGINAL_RGBA_16_texture("Data/Depth/original/Depth_rgba_0.png", TEXTURE_INDEX_DEPTH_UNCOMP_16BIT);
+		//time += create_ORIGINAL_RGBA_texture("Data/Depth/original/upperDepth_rgba_0.png", TEXTURE_INDEX_DEPTH_UNCOMP_UPPER);
+		//time += create_ORIGINAL_RGBA_texture("Data/Depth/original/lowerDepth_rgba_0.png", TEXTURE_INDEX_DEPTH_UNCOMP_LOWER);
+		//time += create_DDS_Texture("Data/Depth/bptc/upperDepth_rgba_0.DDS", TEXTURE_INDEX_DEPTH_COMP_UPPER);
+		//time += create_DDS_Texture("Data/Depth/bptc/lowerDepth_rgba_0.DDS", TEXTURE_INDEX_DEPTH_COMP_LOWER);
+		//time += create_DDS_Texture("Data/Depth/split/dxt1/splitDepth_dxt1_max_0.DDS", TEXTURE_INDEX_DEPTH_COMP_SPLIT1);
+		//time += create_DDS_Texture("Data/Depth/split/bptc/splitDepth_bptc_max_0.DDS", TEXTURE_INDEX_DEPTH_COMP_SPLIT2);
+
+		//printf("upload time for 8 kind of Depth Image : %f\n", time);
+
+
+
 	}
-	printf("upload time for BPTC compressed 8bit Split Depth Image : %f ms\n", time_split_bptc);
-
-
-	//print log
-	FILE* fp = fopen("log.txt", "a");
-
-	fprintf(fp, "upload time for Original 16bit Depth Image : %f\n", time_original);
-	fprintf(fp, "upload time for Upper uncompressed image and Lower BPTC Depth Image : %f\n", time_un_up_comp_low);
-	fprintf(fp, "upload time for Upper BPTC image and Lower uncompressed Depth Image : %f\n", time_comp_up_un_low);
-	fprintf(fp, "upload time for Upper BPTC image and Lower BPTC Depth Image : %f\n", time_comp_up_comp_low);
-	fprintf(fp, "upload time for DXT1 compressed 8bit Split Depth Image : %f\n", time_split_dxt1);
-	fprintf(fp, "upload time for BPTC compressed 8bit Split Depth Image : %f\n", time_split_bptc);
-
-	fclose(fp);
-
-	//time += create_ORIGINAL_RGBA_16_texture("Data/Depth/original/Depth_rgba_0.png", TEXTURE_INDEX_DEPTH_UNCOMP_16BIT);
-	//time += create_ORIGINAL_RGBA_texture("Data/Depth/original/upperDepth_rgba_0.png", TEXTURE_INDEX_DEPTH_UNCOMP_UPPER);
-	//time += create_ORIGINAL_RGBA_texture("Data/Depth/original/lowerDepth_rgba_0.png", TEXTURE_INDEX_DEPTH_UNCOMP_LOWER);
-	//time += create_DDS_Texture("Data/Depth/bptc/upperDepth_rgba_0.DDS", TEXTURE_INDEX_DEPTH_COMP_UPPER);
-	//time += create_DDS_Texture("Data/Depth/bptc/lowerDepth_rgba_0.DDS", TEXTURE_INDEX_DEPTH_COMP_LOWER);
-	//time += create_DDS_Texture("Data/Depth/split/dxt1/splitDepth_dxt1_max_0.DDS", TEXTURE_INDEX_DEPTH_COMP_SPLIT1);
-	//time += create_DDS_Texture("Data/Depth/split/bptc/splitDepth_bptc_max_0.DDS", TEXTURE_INDEX_DEPTH_COMP_SPLIT2);
-
-	//printf("upload time for 8 kind of Depth Image : %f\n", time);
-
-
-
+	
 
 }
 

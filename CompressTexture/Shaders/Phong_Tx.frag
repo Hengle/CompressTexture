@@ -29,6 +29,15 @@ uniform sampler2D u_depth_comp_lower;
 uniform usampler2D u_depth_comp_split1;
 uniform usampler2D u_depth_comp_split2;
 
+uniform int u_depth_type;
+uniform sampler2D u_depth_comp_lower_gray;
+uniform sampler2D u_depth_comp_lower_4frame;
+uniform sampler2D u_depth_comp_lower_a;
+uniform sampler2D u_depth_comp_lower_rgba;
+uniform sampler2D u_depth_comp_lower_rxxx;
+uniform sampler2D u_depth_comp_lower_4cam;
+
+
 uniform bool u_flag_texture_Depth_of_color = false;
 uniform bool u_flag_texture_reverse = false;
 uniform bool u_flag_texture_mapping = true;
@@ -39,6 +48,40 @@ in vec3 v_normal_EC;
 in vec2 v_tex_coord;
 
 layout (location = 0) out vec4 final_color;
+
+vec4 Depth_test() {
+
+	vec4 upper_comp_color, lower_comp_color;
+	float lower_onecolor;
+	switch (u_depth_type) {
+	case 0:
+		lower_comp_color = texture(u_depth_comp_lower_gray, v_tex_coord);
+		lower_onecolor = lower_comp_color.r;
+		break;
+	case 1:
+		lower_comp_color = texture(u_depth_comp_lower_4frame, v_tex_coord);
+		lower_onecolor = lower_comp_color.r;
+		break;
+	case 2:
+		lower_comp_color = texture(u_depth_comp_lower_a, v_tex_coord);
+		lower_onecolor = lower_comp_color.a;
+		break;
+	case 3:
+		lower_comp_color = texture(u_depth_comp_lower_rgba, v_tex_coord);
+		lower_onecolor = lower_comp_color.r;
+		break;
+	case 4:
+		lower_comp_color = texture(u_depth_comp_lower_rxxx, v_tex_coord);
+		lower_onecolor = lower_comp_color.r;
+		break;
+	case 5:
+		lower_comp_color = texture(u_depth_comp_lower_4cam, v_tex_coord);
+		lower_onecolor = lower_comp_color.r;
+		break;
+
+	}
+	return lower_comp_color;
+}
 
 vec4 getDepthColor(int depth_version) {
 
@@ -82,21 +125,50 @@ vec4 getDepthColor(int depth_version) {
 		upper_color = texture(u_depth_uncomp_upper, coord);
 		lower_comp_color = texture(u_depth_comp_lower, v_tex_coord);
 
+		float lower_onecolor;
+		switch (u_depth_type) {
+		case 0:
+			lower_comp_color = texture(u_depth_comp_lower_gray, v_tex_coord);
+			lower_onecolor = lower_comp_color.r;
+			break;
+		case 1:
+			lower_comp_color = texture(u_depth_comp_lower_4frame, v_tex_coord);
+			lower_onecolor = lower_comp_color.r;
+			break;
+		case 2:
+			lower_comp_color = texture(u_depth_comp_lower_a, v_tex_coord);
+			lower_onecolor = lower_comp_color.a;
+			break;
+		case 3:
+			lower_comp_color = texture(u_depth_comp_lower_rgba, v_tex_coord);
+			lower_onecolor = lower_comp_color.r;
+			break;
+		case 4:
+			lower_comp_color = texture(u_depth_comp_lower_rxxx, v_tex_coord);
+			lower_onecolor = lower_comp_color.r;
+			break;
+		case 5:
+			lower_comp_color = texture(u_depth_comp_lower_4cam, v_tex_coord);
+			lower_onecolor = lower_comp_color.r;
+			break;
+
+		}
+
 		switch (color_num) {
 		case 0: //r
-			tmp = lower_comp_color.r * 255;
+			tmp = lower_onecolor * 255;
 			gray_color = (upper_color.b * 256 + unsigned int(tmp));
 			break;
 		case 1: //g
-			tmp = lower_comp_color.g * 255;
+			tmp = lower_onecolor * 255;
 			gray_color = (upper_color.g * 256 + unsigned int(tmp));
 			break;
 		case 2: //b
-			tmp = lower_comp_color.b * 255;
+			tmp = lower_onecolor * 255;
 			gray_color = (upper_color.r * 256 + unsigned int(tmp));
 			break;
 		case 3: //a
-			tmp = lower_comp_color.a * 255;
+			tmp = lower_onecolor * 255;
 			gray_color = (upper_color.a * 256 + unsigned int(tmp));
 			break;
 		}
@@ -156,24 +228,24 @@ vec4 getDepthColor(int depth_version) {
 		break;
 
 
-	case 4: //dxt1_high fill
-		depth_color = texture(u_depth_comp_split1, v_tex_coord);
-		color_r = (depth_color.r * 256);
-		color_g = (depth_color.g * 256);
-		color_b = (depth_color.b * 256);
-		color = color_b / 8 + color_g * 8 + color_r * 256;
-		gray_color = color;
-		break;
+	//case 4: //dxt1_high fill
+	//	depth_color = texture(u_depth_comp_split1, v_tex_coord);
+	//	color_r = (depth_color.r * 256);
+	//	color_g = (depth_color.g * 256);
+	//	color_b = (depth_color.b * 256);
+	//	color = color_b / 8 + color_g * 8 + color_r * 256;
+	//	gray_color = color;
+	//	break;
 
-	case 5: //bptc_high fill
-		depth_color = texture(u_depth_comp_split2, v_tex_coord);
-		color_r = (depth_color.r * 256);
-		color_g = (depth_color.g * 256);
-		color_b = (depth_color.b * 256);
-		color_a = (depth_color.a * 256);
-		color = color_b / 16 + color_g + color_r * 16 + color_a * 256;
-		gray_color = color;
-		break;
+	//case 5: //bptc_high fill
+	//	depth_color = texture(u_depth_comp_split2, v_tex_coord);
+	//	color_r = (depth_color.r * 256);
+	//	color_g = (depth_color.g * 256);
+	//	color_b = (depth_color.b * 256);
+	//	color_a = (depth_color.a * 256);
+	//	color = color_b / 16 + color_g + color_r * 16 + color_a * 256;
+	//	gray_color = color;
+	//	break;
 
 
 	case 99://uncomp up - uncomp low
@@ -211,6 +283,7 @@ vec4 getDepthColor(int depth_version) {
 void printDepthMap() {
 
 	vec4 depth_color = getDepthColor(u_depth_version);
+	depth_color = Depth_test();
 	if (u_drawtype == 0) {
 
 		final_color = depth_color;

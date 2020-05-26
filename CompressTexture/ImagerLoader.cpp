@@ -994,6 +994,7 @@ float load_astc_image_checktime(const char *filename)
 #define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
 #define FOURCC_DXT5 0x35545844 // Equivalent to "DXT5" in ASCII
 #define FOURCC_BPTC 0x30315844
+#define FOURCC_BC4 0x53344342
 GLuint load_dds_image(const char * imagepath) {
 
 	unsigned char header[124];
@@ -1046,19 +1047,28 @@ GLuint load_dds_image(const char * imagepath) {
 
 	unsigned int components = (fourCC == FOURCC_DXT1) ? 3 : 4;
 	unsigned int format;
+	unsigned int blockSize;
 	switch (fourCC)
 	{
 	case FOURCC_DXT1:
 		format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+		blockSize = 8;
 		break;
 	case FOURCC_DXT3:
 		format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+		blockSize = 16;
 		break;
 	case FOURCC_DXT5:
 		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		blockSize = 16;
+		break;
+	case FOURCC_BC4:
+		format = GL_COMPRESSED_RED_RGTC1;
+		blockSize = 8;
 		break;
 	case FOURCC_BPTC:
 		format = GL_COMPRESSED_RGBA_BPTC_UNORM;
+		blockSize = 16;
 		break;
 	default:
 		free(buffer);
@@ -1067,7 +1077,6 @@ GLuint load_dds_image(const char * imagepath) {
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16;
 	unsigned int offset = 0;
 
 	/* load the mipmaps */
@@ -1146,21 +1155,29 @@ float load_dds_image_checktime(const char * imagepath) {
 
 	unsigned int components = (fourCC == FOURCC_DXT1) ? 3 : 4;
 	unsigned int format;
+	unsigned int blockSize;
 	switch (fourCC)
 	{
 	case FOURCC_DXT1:
 		format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+		blockSize = 8;
 		break;
 	case FOURCC_DXT3:
 		format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+		blockSize = 16;
 		break;
 	case FOURCC_DXT5:
 		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		blockSize = 16;
+		break;
+	case FOURCC_BC4:
+		format = GL_COMPRESSED_RED_RGTC1;
+		blockSize = 8;
 		break;
 	case FOURCC_BPTC:
 		format = GL_COMPRESSED_RGBA_BPTC_UNORM;
+		blockSize = 16;
 		break;
-		GL_COMPRESSED_RED_RGTC1;
 	default:
 		free(buffer);
 		return 0;
@@ -1168,7 +1185,6 @@ float load_dds_image_checktime(const char * imagepath) {
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16;
 	unsigned int offset = 0;
 
 	float compute_time;

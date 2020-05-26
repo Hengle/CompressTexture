@@ -23,7 +23,8 @@ GLint loc_base_texture, loc_base_texture_y, loc_base_texture_u, loc_base_texture
 GLint loc_original_texture, loc_original_texture_y, loc_original_texture_u, loc_original_texture_v, loc_original_texture_index;
 
 
-GLint loc_depth_num, loc_depth_version, loc_depth_uncomp_16bit, loc_depth_uncomp_upper, loc_depth_uncomp_lower, loc_depth_comp_upper, loc_depth_comp_lower,  loc_depth_comp_split1, loc_depth_comp_split2;
+GLint loc_depth_num, loc_depth_version, loc_depth_uncomp_16bit, loc_depth_uncomp_upper, loc_depth_uncomp_lower, loc_depth_comp_upper, loc_depth_comp_lower, loc_depth_comp_split1, loc_depth_comp_split2;
+GLint loc_depth_type, loc_depth_lower_gray, loc_depth_lower_4frame, loc_depth_lower_a, loc_depth_lower_rgba, loc_depth_lower_rxxx, loc_depth_lower_4cam;
 
 // include glm/*.hpp only if necessary
 //#include <glm/glm.hpp> 
@@ -120,6 +121,7 @@ char titleTex[N_NORMAL_TEXTURES_USED][30] = {
 GLuint texnum_ori = TEXTURE_INDEX_ORIGINAL_TEST1;		//original (unpack) texture name
 GLuint texnum_comp = TEXTURE_INDEX_COMPRESS_TEST1;		//compressed texture name
 GLuint depth_version = 0;
+GLuint depth_type = 0;
 GLuint texnum_depth = 0;
 
 int draw_mode = 0;
@@ -136,11 +138,19 @@ void setDepthTex() {
 	glUniform1i(loc_depth_comp_upper, TEXTURE_INDEX_DEPTH_COMP_UPPER_TEST1 + texchannal);
 	glUniform1i(loc_depth_comp_lower, TEXTURE_INDEX_DEPTH_COMP_LOWER_TEST1 + texchannal);
 
+
+	glUniform1i(loc_depth_lower_gray, TEXTURE_INDEX_DEPTH_LOWERCOMP_GRAY_TEST1 + texnum_depth);
+	glUniform1i(loc_depth_lower_4frame, TEXTURE_INDEX_DEPTH_LOWERCOMP_4FRAME_TEST1 + texnum_depth);
+	glUniform1i(loc_depth_lower_a, TEXTURE_INDEX_DEPTH_LOWERCOMP_A_TEST1 + texnum_depth);
+	glUniform1i(loc_depth_lower_rgba, TEXTURE_INDEX_DEPTH_LOWERCOMP_RGBA_TEST1 + texnum_depth);
+	glUniform1i(loc_depth_lower_rxxx, TEXTURE_INDEX_DEPTH_LOWERCOMP_RXXX_TEST1 + texnum_depth);
+	glUniform1i(loc_depth_lower_4cam, TEXTURE_INDEX_DEPTH_LOWERCOMP_4CAM_TEST1 + texchannal);
+
 	//printf("image num : %d %d %d %d %d\n", TEXTURE_INDEX_DEPTH_UNCOMP_16BIT_TEST1 + texchannal, TEXTURE_INDEX_DEPTH_UNCOMP_UPPER_TEST1 + texchannal, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER_TEST1 + texchannal, TEXTURE_INDEX_DEPTH_COMP_UPPER_TEST1 + texchannal, TEXTURE_INDEX_DEPTH_COMP_LOWER_TEST1 + texchannal);
 
 
-	glUniform1i(loc_depth_comp_split1, TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST1 + texnum_depth);
-	glUniform1i(loc_depth_comp_split2, TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST1 + texnum_depth);
+	//glUniform1i(loc_depth_comp_split1, TEXTURE_INDEX_DEPTH_COMP_SPLIT1_TEST1 + texnum_depth);
+	//glUniform1i(loc_depth_comp_split2, TEXTURE_INDEX_DEPTH_COMP_SPLIT2_TEST1 + texnum_depth);
 
 	glUseProgram(0);
 }
@@ -371,9 +381,41 @@ void keyboard(unsigned char key, int x, int y) {
 		glUseProgram(h_ShaderProgram_TXPS);
 		glUniform1i(loc_flag_depth_or_color, flag.depth_ot_color);
 		glUseProgram(0);
+		switch (flag.depth_ot_color) {
+		case 0:printf("color mod\n");
+			break;
+		case 1:printf("depth mod\n");
+			break;
+		}
+
 		glutPostRedisplay();
 		break;
+	case 'h':
+		depth_type++;
 
+		if (depth_type > 5) {
+			depth_type = 0;
+		}
+		switch (depth_type) {
+		case 0:printf("gray lower\n");
+			glutSetWindowTitle("gray lower"); break;
+		case 1:printf("4frame lower\n");
+			glutSetWindowTitle("4frame lower"); break;
+		case 2:printf("A lower\n");
+			glutSetWindowTitle("A lower"); break;
+		case 3:printf("RGBA Lower\n");
+			glutSetWindowTitle("RGBA Lower"); break;
+		case 4:printf("RXXX Lower\n");
+			glutSetWindowTitle("RXXX Lower"); break;
+		case 5:printf("4cam Lower\n");
+			glutSetWindowTitle("4cam Lower"); break;
+		}
+
+		glUseProgram(h_ShaderProgram_TXPS);
+		glUniform1i(loc_depth_type, depth_type);
+		glUseProgram(0);
+
+		break;
 	case 'b':
 		depth_version++;
 
@@ -513,6 +555,14 @@ void prepare_shader_program(void) {
 	loc_depth_comp_split1 = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_split1");
 	loc_depth_comp_split2 = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_split2");
 
+
+	loc_depth_type = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_type");
+	loc_depth_lower_gray = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower_gray");
+	loc_depth_lower_4frame = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower_4frame");
+	loc_depth_lower_a = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower_a");
+	loc_depth_lower_rgba = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower_rgba");
+	loc_depth_lower_rxxx = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower_rxxx");
+	loc_depth_lower_4cam = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower_4cam");
 }
 
 
@@ -531,8 +581,6 @@ void initialize_OpenGL(void) {
 
 	//glGenTextures(N_NORMAL_TEXTURES_USED, texture_names);//미리 텍스쳐 생성
 }
-
-
 
 void depthMapWrite() {
 	//한번에 다수의 png를 생성하는데 이게 멀티스레딩 방식인지 뭔지, 제대로 진행되지 않고 끊기는 경우가 있음. 로그를 볼 것.
@@ -815,7 +863,7 @@ void depthMapWrite_test() {
 		}
 	}
 	blank = new  BYTE[imageSize];
-	memset(blank, 0, sizeof(blank));
+	memset(blank, 0, sizeof(BYTE)*imageSize);
 
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 24; j++) {
@@ -842,8 +890,7 @@ void depthMapWrite_test() {
 
 	printf("load all image.\n");
 
-	//bc4
-
+	//bc4(grayscale)
 	for (int i = 0; i < 24; i++) {
 		sprintf(filename, "output/lowerDepth_8bit_gray_%d.png", i);
 		FreeImageSaveFile_8bit_grayscale(2048, 2048, lowerBuf[0][i], filename);
@@ -851,9 +898,7 @@ void depthMapWrite_test() {
 
 	}
 
-	return;
 	//rxxx, 0 frame
-
 	for (int i = 0; i < 24; i++) {
 		sprintf(filename, "output/lowerDepth_8bit_rxxx_%d.png", i);
 		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0][i], blank, blank, blank, filename);
@@ -863,7 +908,6 @@ void depthMapWrite_test() {
 
 
 	//r-g-b-a, 0 frame
-
 	for (int i = 0; i < 24; i++) {
 		sprintf(filename, "output/lowerDepth_8bit_rgba_%d.png", i);
 		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0][i], lowerBuf[0][i], lowerBuf[0][i], lowerBuf[0][i], filename);
@@ -882,14 +926,8 @@ void depthMapWrite_test() {
 
 	//rgb + a
 	for (int i = 0; i < 24; i++) {
-
 		sprintf(filename, "data/yuv/original_rgb/image_rgb_%d.bmp", i);
 		load_rgb_Image(filename, lowerBuf[0][i], i, imageSize);
-
-		//sprintf(filename, "output/lowerDepth_8bit_rxxx_%d.png", i);
-		//FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0][i], blank, blank, blank, filename);
-		//printf("create image %s\n", filename);
-
 	}
 
 
@@ -1070,10 +1108,10 @@ void prepare_scene(void) {
 	//depthMapWrite();
 	//depthMapWrite_multiframe();
 	//createTestBitmap();
-	depthMapWrite_test();
+	//depthMapWrite_test();
 	//depth_color_CombineTest();
 
-	upload_TEST_Texture_Original();
+	//upload_TEST_Texture_Original();
 	//upload_TEST_Texture_Original_YUV();
 	//upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
@@ -1090,6 +1128,13 @@ void prepare_scene(void) {
 	//upload_TEST_Texture_YUV_BPTC();
 	upload_TEST_Texture_Depth();
 	//compare_PSNR();
+
+	upload_TEST_Texture_Depth_MultiType(0);
+	upload_TEST_Texture_Depth_MultiType(1);
+	upload_TEST_Texture_Depth_MultiType(2);
+	//upload_TEST_Texture_Depth_MultiType(3);
+	//upload_TEST_Texture_Depth_MultiType(4);
+	upload_TEST_Texture_Depth_MultiType(5);
 
 
 	//create_DDS_Texture("Data/depth/bc7/upperDepth_rgba.DDS", TEXTURE_TEST_R);
