@@ -620,7 +620,6 @@ void test_loadimg_diff_bptc(const char *filename_ori, const char *filename_comp1
 	unsigned char header[124];
 
 	FILE *fp;
-
 	/* try to open the file */
 	fp = fopen(filename_ori, "rb");
 	if (fp == NULL) {

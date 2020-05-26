@@ -24,7 +24,7 @@ GLint loc_original_texture, loc_original_texture_y, loc_original_texture_u, loc_
 
 
 GLint loc_depth_num, loc_depth_version, loc_depth_uncomp_16bit, loc_depth_uncomp_upper, loc_depth_uncomp_lower, loc_depth_comp_upper, loc_depth_comp_lower, loc_depth_comp_split1, loc_depth_comp_split2;
-GLint loc_depth_type, loc_depth_lower_gray, loc_depth_lower_4frame, loc_depth_lower_a, loc_depth_lower_rgba, loc_depth_lower_rxxx, loc_depth_lower_4cam;
+GLint loc_depth_type, loc_depth_lower_gray, loc_depth_lower_4frame, loc_depth_lower_a, loc_depth_lower_rgba, loc_depth_lower_4cam;
 
 // include glm/*.hpp only if necessary
 //#include <glm/glm.hpp> 
@@ -143,7 +143,6 @@ void setDepthTex() {
 	glUniform1i(loc_depth_lower_4frame, TEXTURE_INDEX_DEPTH_LOWERCOMP_4FRAME_TEST1 + texnum_depth);
 	glUniform1i(loc_depth_lower_a, TEXTURE_INDEX_DEPTH_LOWERCOMP_A_TEST1 + texnum_depth);
 	glUniform1i(loc_depth_lower_rgba, TEXTURE_INDEX_DEPTH_LOWERCOMP_RGBA_TEST1 + texnum_depth);
-	glUniform1i(loc_depth_lower_rxxx, TEXTURE_INDEX_DEPTH_LOWERCOMP_RXXX_TEST1 + texnum_depth);
 	glUniform1i(loc_depth_lower_4cam, TEXTURE_INDEX_DEPTH_LOWERCOMP_4CAM_TEST1 + texchannal);
 
 	//printf("image num : %d %d %d %d %d\n", TEXTURE_INDEX_DEPTH_UNCOMP_16BIT_TEST1 + texchannal, TEXTURE_INDEX_DEPTH_UNCOMP_UPPER_TEST1 + texchannal, TEXTURE_INDEX_DEPTH_UNCOMP_LOWER_TEST1 + texchannal, TEXTURE_INDEX_DEPTH_COMP_UPPER_TEST1 + texchannal, TEXTURE_INDEX_DEPTH_COMP_LOWER_TEST1 + texchannal);
@@ -393,7 +392,7 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'h':
 		depth_type++;
 
-		if (depth_type > 6) {
+		if (depth_type > 5) {
 			depth_type = 0;
 		}
 		switch (depth_type) {
@@ -401,15 +400,13 @@ void keyboard(unsigned char key, int x, int y) {
 			glutSetWindowTitle("gray lower"); break;
 		case 1:printf("4frame lower\n");
 			glutSetWindowTitle("4frame lower"); break;
-		case 2:printf("A lower\n");
+		case 4:printf("A lower\n");
 			glutSetWindowTitle("A lower"); break;
 		case 3:printf("RGBA Lower\n");
 			glutSetWindowTitle("RGBA Lower"); break;
-		case 4:printf("RXXX Lower\n");
-			glutSetWindowTitle("RXXX Lower"); break;
-		case 5:printf("4cam Lower\n");
+		case 2:printf("4cam Lower\n");
 			glutSetWindowTitle("4cam Lower"); break;
-		case 6:printf("uncomp Lower\n");
+		case 5:printf("uncomp Lower\n");
 			glutSetWindowTitle("uncomp Lower"); break;
 		}
 
@@ -563,7 +560,6 @@ void prepare_shader_program(void) {
 	loc_depth_lower_4frame = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower_4frame");
 	loc_depth_lower_a = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower_a");
 	loc_depth_lower_rgba = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower_rgba");
-	loc_depth_lower_rxxx = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower_rxxx");
 	loc_depth_lower_4cam = glGetUniformLocation(h_ShaderProgram_TXPS, "u_depth_comp_lower_4cam");
 }
 
@@ -1113,9 +1109,9 @@ void prepare_scene(void) {
 	//depthMapWrite_test();
 	//depth_color_CombineTest();
 
-	//upload_TEST_Texture_Original();
+	upload_TEST_Texture_Original();
 	//upload_TEST_Texture_Original_YUV();
-	//upload_TEST_Texture_DXT(1);
+	upload_TEST_Texture_DXT(1);
 	//upload_TEST_Texture_DXT(3);
 	//upload_TEST_Texture_DXT(5);
 	//upload_TEST_Texture_BPTC();

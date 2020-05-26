@@ -34,7 +34,6 @@ uniform sampler2D u_depth_comp_lower_gray;
 uniform sampler2D u_depth_comp_lower_4frame;
 uniform sampler2D u_depth_comp_lower_a;
 uniform sampler2D u_depth_comp_lower_rgba;
-uniform sampler2D u_depth_comp_lower_rxxx;
 uniform sampler2D u_depth_comp_lower_4cam;
 
 
@@ -51,46 +50,90 @@ layout (location = 0) out vec4 final_color;
 
 vec4 Depth_test(int depth_type) {
 
+	unsigned int color_num = u_depth_number % 4;
+
 	uvec4 upper_color, lower_color;
 	vec4 lower_comp_color;
 	vec2 coord = vec2(v_tex_coord.x, 1 - v_tex_coord.y);
 	float lower_onecolor;
-
-	upper_color = texture(u_depth_uncomp_upper, coord);
-
+	
 	switch (depth_type) {
 	case 0:
 		lower_comp_color = texture(u_depth_comp_lower_gray, v_tex_coord);
-		lower_onecolor = lower_comp_color.r;
+		lower_onecolor = lower_comp_color.r * 255;
 		break;
 	case 1:
 		lower_comp_color = texture(u_depth_comp_lower_4frame, v_tex_coord);
-		lower_onecolor = lower_comp_color.r;
+		lower_onecolor = lower_comp_color.r * 255;
 		break;
-	case 2:
+	case 4:
 		lower_comp_color = texture(u_depth_comp_lower_a, v_tex_coord);
-		lower_onecolor = lower_comp_color.a;
+		lower_onecolor = lower_comp_color.a * 255;
 		break;
 	case 3:
 		lower_comp_color = texture(u_depth_comp_lower_rgba, v_tex_coord);
-		lower_onecolor = lower_comp_color.r;
+		lower_onecolor = lower_comp_color.r * 255;
 		break;
-	case 4:
-		lower_comp_color = texture(u_depth_comp_lower_rxxx, v_tex_coord);
-		lower_onecolor = lower_comp_color.r;
+	case 2:
+		lower_comp_color = texture(u_depth_comp_lower_4cam, v_tex_coord);
+		switch (color_num) {
+		case 0: //r
+			lower_onecolor = lower_comp_color.r * 255;
+			break;
+		case 1: //g
+			lower_onecolor = lower_comp_color.g * 255;
+			break;
+		case 2: //b
+			lower_onecolor = lower_comp_color.b * 255;
+			break;
+		case 3: //a
+			lower_onecolor = lower_comp_color.a * 255;
+			break;
+		}
+
 		break;
 	case 5:
-		lower_comp_color = texture(u_depth_comp_lower_4cam, v_tex_coord);
-		lower_onecolor = lower_comp_color.r;
-		break;
-	case 6:
 		lower_color = texture(u_depth_uncomp_lower, coord);
-		lower_onecolor = float(lower_color.r)/255;
+		lower_onecolor = float(lower_color.r);
+
+		switch (color_num) {
+		case 0: //r
+			lower_onecolor = float(lower_color.r);
+			break;
+		case 1: //g
+			lower_onecolor = float(lower_color.g);
+			break;
+		case 2: //b
+			lower_onecolor = float(lower_color.b);
+			break;
+		case 3: //a
+			lower_onecolor = float(lower_color.a);
+			break;
+		}
 
 		break;
 	}
 
-	vec4 res = vec4(lower_onecolor, lower_onecolor, lower_onecolor,1);
+	upper_color = texture(u_depth_uncomp_upper, coord);
+
+	float gray_color;
+	switch (color_num) {
+	case 0: //r
+		gray_color = (upper_color.r * 256 + unsigned int(lower_onecolor));
+		break;
+	case 1: //g
+		gray_color = (upper_color.g * 256 + unsigned int(lower_onecolor));
+		break;
+	case 2: //b
+		gray_color = (upper_color.b * 256 + unsigned int(lower_onecolor));
+		break;
+	case 3: //a
+		gray_color = (upper_color.a * 256 + unsigned int(lower_onecolor));
+		break;
+	}
+	gray_color /= 65535;
+	vec4 res = vec4(lower_onecolor, lower_onecolor, lower_onecolor, 1);
+	res = vec4(gray_color, gray_color, gray_color,1);
 
 	return res;
 }
@@ -156,10 +199,6 @@ vec4 getDepthColor(int depth_version) {
 			lower_onecolor = lower_comp_color.r;
 			break;
 		case 4:
-			lower_comp_color = texture(u_depth_comp_lower_rxxx, v_tex_coord);
-			lower_onecolor = lower_comp_color.r;
-			break;
-		case 5:
 			lower_comp_color = texture(u_depth_comp_lower_4cam, v_tex_coord);
 			lower_onecolor = lower_comp_color.r;
 			break;
@@ -294,24 +333,21 @@ vec4 getDepthColor(int depth_version) {
 
 void printDepthMap() {
 
-	vec4 depth_color = getDepthColor(u_depth_version);
-
-	depth_color = Depth_test(u_depth_type);
+	//vec4 depth_color = getDepthColor(u_depth_version);
+	vec4 depth_color = Depth_test(u_depth_type);
 
 	if (u_drawtype == 0) {
-
 		final_color = depth_color;
-
 	}
 	else {
 
-		vec4 original_color = getDepthColor(0);
-		original_color = Depth_test(6);
+		//vec4 original_color = getDepthColor(0);
+		vec4 original_color = Depth_test(5);
 
 		final_color = depth_color;
 
 		if (u_flag_texture_diffrence == true) {
-			float diff = abs(depth_color.r - original_color.r) * 20;
+			float diff = abs(depth_color.r - original_color.r) * 100;
 			if (diff > 1.0)
 				diff = 1.0;
 			final_color.r = 1.0 - diff;
