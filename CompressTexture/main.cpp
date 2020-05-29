@@ -851,13 +851,16 @@ void depthMapWrite_test() {
 	BYTE* readbuf[4][24];
 
 	int imageSize = 2048 * 2048;
+	BYTE* upperBuf[4][24];
 	BYTE* lowerBuf[4][24];
+	unsigned short* usBuf[4][24];
 	BYTE* blank;
 
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 24; j++) {
 			readbuf[i][j] = new BYTE[readsize];
 			lowerBuf[i][j] = new BYTE[imageSize];
+			upperBuf[i][j] = new BYTE[imageSize];
 		}
 	}
 	blank = new  BYTE[imageSize];
@@ -870,11 +873,14 @@ void depthMapWrite_test() {
 			fread(readbuf[i][j], sizeof(BYTE), readsize, fp);
 
 			for (int k = 0; k < readsize; k++) {
-					if (k % 2 == 0) {
+				if (k % 2 == 1) {
+					upperBuf[i][j][k / 2] = readbuf[i][j][k];
+				}
+				else if (k % 2 == 0) {
 					lowerBuf[i][j][k / 2] = readbuf[i][j][k];
 				}
 			}
-
+					   
 			fclose(fp);
 		}
 	}
@@ -883,17 +889,34 @@ void depthMapWrite_test() {
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 24; j++) {
 			delete readbuf[i][j];
+			usBuf[i][j] = new unsigned short[imageSize];
+		}
+	}
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 24; j++) {
+			for (int k = 0; k < readsize; k++) {
+				if (k % 2 == 0) {
+					usBuf[i][j][k / 2] = (unsigned short)upperBuf[i][j][k / 2] * 256 + (unsigned short)lowerBuf[i][j][k / 2];
+				}
+			}
 		}
 	}
 
 	printf("load all image.\n");
+
+	//original
+	for (int i = 0; i < 24; i++) {
+		sprintf(filename, "output/Depth_Original_%d.png", i);
+		FreeImageSaveFile_16bit_RGBA_4Image(2048, 2048, usBuf[0][i], usBuf[1][i], usBuf[2][i], usBuf[3][i], filename);
+		printf("create image %s\n", filename);
+	}
 
 	//bc4(grayscale)
 	for (int i = 0; i < 24; i++) {
 		sprintf(filename, "output/lowerDepth_8bit_gray_%d.png", i);
 		FreeImageSaveFile_8bit_grayscale(2048, 2048, lowerBuf[0][i], filename);
 		printf("create image %s\n", filename);
-
 	}
 
 	//rxxx, 0 frame
@@ -901,7 +924,6 @@ void depthMapWrite_test() {
 		sprintf(filename, "output/lowerDepth_8bit_rxxx_%d.png", i);
 		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0][i], blank, blank, blank, filename);
 		printf("create image %s\n", filename);
-
 	}
 
 
@@ -910,7 +932,6 @@ void depthMapWrite_test() {
 		sprintf(filename, "output/lowerDepth_8bit_rgba_%d.png", i);
 		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0][i], lowerBuf[0][i], lowerBuf[0][i], lowerBuf[0][i], filename);
 		printf("create image %s\n", filename);
-
 	}
 
 	//4 frame
@@ -918,7 +939,6 @@ void depthMapWrite_test() {
 		sprintf(filename, "output/lowerDepth_8bit_4frame_%d.png", i);
 		FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, lowerBuf[0][i], lowerBuf[1][i], lowerBuf[2][i], lowerBuf[3][i], filename);
 		printf("create image %s\n", filename);
-
 	}
 
 
@@ -929,6 +949,13 @@ void depthMapWrite_test() {
 	}
 
 
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 24; j++) {
+			delete usBuf[i][j];
+			delete lowerBuf[i][j];
+			delete upperBuf[i][j];
+		}
+	}
 
 	printf("load test depth map.\n");
 	exit(0);
@@ -1106,7 +1133,7 @@ void prepare_scene(void) {
 	//depthMapWrite();
 	//depthMapWrite_multiframe();
 	//createTestBitmap();
-	//depthMapWrite_test();
+	depthMapWrite_test();
 	//depth_color_CombineTest();
 
 	upload_TEST_Texture_Original();
