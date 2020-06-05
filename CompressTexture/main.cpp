@@ -910,7 +910,24 @@ void depthMapWrite_test() {
 		sprintf(filename, "output/Depth_Original_%d.png", i);
 		FreeImageSaveFile_16bit_RGBA_4Image(2048, 2048, usBuf[0][i], usBuf[1][i], usBuf[2][i], usBuf[3][i], filename);
 		printf("create image %s\n", filename);
+
+
+		printf("==DEBUG=== %d, %d\n", i, 0);
+		for (int k = 0; k < 10; k++) {
+			printf("%d ", usBuf[0][i][k]);
+		}
+		printf("\n");
+		for (int k = 0; k < 10; k++) {
+			printf("%d ", upperBuf[0][i][k]);
+		}
+		printf("\n");
+		for (int k = 0; k < 10; k++) {
+			printf("%d ", lowerBuf[0][i][k]);
+		}
+		printf("\n");
+
 	}
+	//return;
 
 	//bc4(grayscale)
 	for (int i = 0; i < 24; i++) {
@@ -1133,7 +1150,7 @@ void prepare_scene(void) {
 	//depthMapWrite();
 	//depthMapWrite_multiframe();
 	//createTestBitmap();
-	depthMapWrite_test();
+	//depthMapWrite_test();
 	//depth_color_CombineTest();
 
 	upload_TEST_Texture_Original();

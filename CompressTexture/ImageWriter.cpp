@@ -95,7 +95,8 @@ void FreeImageSaveFile_8bit_grayscale(int width, int height, BYTE* plane, const 
 	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
 	FreeImage_Save(FIF_PNG, Image, name);
 	FreeImage_Unload(Image);
-	delete src;
+	FreeImage_Unload(bitmap);
+	delete[] src;
 }
 
 //BYTE(8bit) array 로 된 image raw data(grayscale)을 받아 RGBA 이미지로 출력한다.
@@ -115,7 +116,8 @@ void FreeImageSaveFile_8bit_RGBA(int width, int height, BYTE* plane, const char*
 	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
 	FreeImage_Save(FIF_PNG, Image, name);
 	FreeImage_Unload(Image);
-	delete src;
+	FreeImage_Unload(bitmap);
+	delete[] src;
 }
 
 //BYTE(8bit) array 로 된 image raw data(grayscale) 4개를 받아 각각을 한 채널씩 RGBA 이미지로 출력한다.
@@ -135,7 +137,8 @@ void FreeImageSaveFile_8bit_RGBA_4Image(int width, int height, BYTE* plane_R, BY
 	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
 	FreeImage_Save(FIF_PNG, Image, name);
 	FreeImage_Unload(Image);
-	delete src;
+	FreeImage_Unload(bitmap);
+	delete[] src;
 }
 
 
@@ -164,7 +167,8 @@ void FreeImageSetupRGB_SPLIT_min(int width, int height, unsigned short* plane, c
 	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
 	FreeImage_Save(FIF_PNG, Image, name);
 	FreeImage_Unload(Image);
-	delete src;
+	FreeImage_Unload(bitmap);
+	delete[] src;
 
 }
 void FreeImageSetupRGB_SPLIT_max(int width, int height, unsigned short* plane, const char* name)
@@ -196,7 +200,8 @@ void FreeImageSetupRGB_SPLIT_max(int width, int height, unsigned short* plane, c
 	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
 	FreeImage_Save(FIF_PNG, Image, name);
 	FreeImage_Unload(Image);
-	delete src;
+	FreeImage_Unload(bitmap);
+	delete[] src;
 
 }
 
@@ -229,7 +234,8 @@ void FreeImageSetupRGBA_SPLIT_min(int width, int height, unsigned short* plane, 
 	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
 	FreeImage_Save(FIF_PNG, Image, name);
 	FreeImage_Unload(Image);
-	delete src;
+	FreeImage_Unload(bitmap);
+	delete[] src;
 
 }
 void FreeImageSetupRGBA_SPLIT_max(int width, int height, unsigned short* plane, const char* name)
@@ -267,6 +273,7 @@ void FreeImageSetupRGBA_SPLIT_max(int width, int height, unsigned short* plane, 
 	FIBITMAP* Image = FreeImage_ConvertFromRawBits(src, w, h, w*c, 8 * c, 0, 0, 0, false);
 	FreeImage_Save(FIF_PNG, Image, name);
 	FreeImage_Unload(Image);
-	delete src;
+	FreeImage_Unload(bitmap);
+	delete[] src;
 
 }
