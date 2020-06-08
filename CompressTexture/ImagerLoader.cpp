@@ -527,14 +527,45 @@ void test_loadimg(const char *filename_ori, const char *filename_upper, const ch
 
 }
 
+void combine_2File(const char *filename_comp1, const char *filename_comp2) {
+	FILE* fp1, *fp2;
 
-void test_loadimg_diff(const char *filename_ori, const char *filename_comp1, const char *filename_comp2) {
+	fp1 = fopen(filename_comp1, "rb");
+	fp2 = fopen(filename_comp2, "rb");
+
+	int readsize = 2048 * 2048 * 2;
+
+	BYTE* buf1, *buf2;
+	buf1 = new BYTE[readsize];
+	buf2 = new BYTE[readsize];
+	fread(buf1, 1, readsize, fp1);
+	fread(buf2, 1, readsize, fp2);
+
+	fclose(fp1);
+	fclose(fp2);
+
+	for (int i = 0; i < readsize; i++) {
+		if (buf1[i] != buf2[i]) {
+			printf("this is shit\n");
+			delete[] buf1;
+			delete[] buf2;
+			return;
+		}
+	}
+
+	printf("no diff\n");
+	delete[] buf1;
+	delete[] buf2;
+
+}
+
+void test_loadimg_diff(const char *filename_ori, const char *filename_comp1) {
 	FREE_IMAGE_FORMAT tx_file_format;
 	int tx_bits_per_pixel;
-	FIBITMAP *tx_pixmap, *tx_pixmap_32[3];
+	FIBITMAP *tx_pixmap, *tx_pixmap_32[2];
 
 	int width, height;
-	BYTE *data_ori, *data_comp1, *data_comp2;
+	BYTE *data_ori, *data_comp1;
 
 	tx_file_format = FreeImage_GetFileType(filename_ori, 0);
 	// assume everything is fine with reading texture from file: no error checking
@@ -572,35 +603,12 @@ void test_loadimg_diff(const char *filename_ori, const char *filename_comp1, con
 	data_comp1 = FreeImage_GetBits(tx_pixmap_32[1]);
 
 
-	tx_file_format = FreeImage_GetFileType(filename_comp2, 0);
-	// assume everything is fine with reading texture from file: no error checking
-	tx_pixmap = FreeImage_Load(tx_file_format, filename_comp2);
-	tx_bits_per_pixel = FreeImage_GetBPP(tx_pixmap);
-
-	//fprintf(stdout, " * A %d-bit texture was read from %s.\n", tx_bits_per_pixel, filename);
-	if (tx_bits_per_pixel == 32)
-		tx_pixmap_32[2] = tx_pixmap;
-	else {
-		//fprintf(stdout, " * Converting texture from %d bits to 32 bits...\n", tx_bits_per_pixel);
-		tx_pixmap_32[2] = FreeImage_ConvertTo32Bits(tx_pixmap);
-	}
-
-	width = FreeImage_GetWidth(tx_pixmap_32[2]);
-	height = FreeImage_GetHeight(tx_pixmap_32[2]);
-	data_comp2 = FreeImage_GetBits(tx_pixmap_32[2]);
-
-
 
 
 	for (int i = 0; i < width * height * 4; i++) {
 		if (data_ori[i] != data_comp1[i]) {
 			printf("err! not same ori, comp1\n");
-		}
-		if (data_ori[i] != data_comp2[i]) {
-			printf("err! not same ori, comp2\n");
-		}
-		if (data_comp1[i] != data_comp2[i]) {
-			printf("err! not same comp1 , comp2\n");
+			return;
 		}
 	}
 
@@ -608,7 +616,6 @@ void test_loadimg_diff(const char *filename_ori, const char *filename_comp1, con
 
 	FreeImage_Unload(tx_pixmap_32[0]);
 	FreeImage_Unload(tx_pixmap_32[1]);
-	FreeImage_Unload(tx_pixmap_32[2]);
 
 }
 

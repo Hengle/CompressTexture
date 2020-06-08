@@ -906,35 +906,38 @@ void depthMapWrite_test() {
 	printf("load all image.\n");
 
 	//original
-	for (int i = 0; i < 24; i++) {
-		sprintf(filename, "output/Depth_Original_%d.png", i);
-		FreeImageSaveFile_16bit_RGBA_4Image(2048, 2048, usBuf[0][i], usBuf[1][i], usBuf[2][i], usBuf[3][i], filename);
-		printf("create image %s\n", filename);
+	//for (int i = 0; i < 24; i++) {
+	//	sprintf(filename, "output/Depth_Original_%d.png", i);
+	//	FreeImageSaveFile_16bit_RGBA_4Image(2048, 2048, usBuf[0][i], usBuf[1][i], usBuf[2][i], usBuf[3][i], filename);
+	//	printf("create image %s\n", filename);
 
 
-		printf("==DEBUG=== %d, %d\n", i, 0);
-		for (int k = 0; k < 10; k++) {
-			printf("%d ", usBuf[0][i][k]);
-		}
-		printf("\n");
-		for (int k = 0; k < 10; k++) {
-			printf("%d ", upperBuf[0][i][k]);
-		}
-		printf("\n");
-		for (int k = 0; k < 10; k++) {
-			printf("%d ", lowerBuf[0][i][k]);
-		}
-		printf("\n");
+	//	printf("==DEBUG=== %d, %d\n", i, 0);
+	//	for (int k = 0; k < 10; k++) {
+	//		printf("%d ", usBuf[0][i][k]);
+	//	}
+	//	printf("\n");
+	//	for (int k = 0; k < 10; k++) {
+	//		printf("%d ", upperBuf[0][i][k]);
+	//	}
+	//	printf("\n");
+	//	for (int k = 0; k < 10; k++) {
+	//		printf("%d ", lowerBuf[0][i][k]);
+	//	}
+	//	printf("\n");
 
-	}
+	//}
 	//return;
 
 	//bc4(grayscale)
-	for (int i = 0; i < 24; i++) {
-		sprintf(filename, "output/lowerDepth_8bit_gray_%d.png", i);
-		FreeImageSaveFile_8bit_grayscale(2048, 2048, lowerBuf[0][i], filename);
-		printf("create image %s\n", filename);
+	for (int frame = 0; frame < 4; frame++) {
+		for (int i = 0; i < 24; i++) {
+			sprintf(filename, "output_ori/lowerDepth_8bit_gray_%d_%d.png", i,frame);
+			FreeImageSaveFile_8bit_grayscale(2048, 2048, lowerBuf[frame][i], filename);
+			printf("create image %s\n", filename);
+		}
 	}
+	return;
 
 	//rxxx, 0 frame
 	for (int i = 0; i < 24; i++) {
@@ -977,6 +980,134 @@ void depthMapWrite_test() {
 	printf("load test depth map.\n");
 	exit(0);
 }
+
+
+void depthMapWrite_test_2() {
+
+	int readsize = 2048 * 2048 * 2;
+	BYTE* readbuf[24];
+
+	int imageSize = 2048 * 2048;
+	BYTE* lowerBuf[24];
+	BYTE* blank;
+
+	for (int j = 0; j < 24; j++) {
+		readbuf[j] = new BYTE[readsize];
+		lowerBuf[j] = new BYTE[imageSize];
+	}
+
+	for (int frame = 0; frame < 12; frame++) {
+
+		char name[24][100];
+
+		for (int j = 0; j < 24; j++)
+			sprintf(name[j], "Data/DepthRawData/12frame/v%d_depth_2048x2048_yuv420p16le_%d.data", j, frame);
+		char filename[100];
+
+		blank = new  BYTE[imageSize];
+		memset(blank, 0, sizeof(BYTE)*imageSize);
+
+		for (int j = 0; j < 24; j++) {
+
+			FILE* fp = fopen(name[j], "rb");
+			fread(readbuf[j], sizeof(BYTE), readsize, fp);
+
+			for (int k = 0; k < readsize; k++) {
+				if (k % 2 == 1) {
+					//upperBuf[i][j][k / 2] = readbuf[i][j][k];
+				}
+				else if (k % 2 == 0) {
+					lowerBuf[j][k / 2] = readbuf[j][k];
+				}
+			}
+
+			fclose(fp);
+		}
+
+		printf("load all image.\n");
+
+		//bc4(grayscale)
+		for (int i = 0; i < 24; i++) {
+			sprintf(filename, "output/depthTex_lower_%d_%d.png", i, frame);
+			FreeImageSaveFile_8bit_grayscale(2048, 2048, lowerBuf[i], filename);
+			printf("create image %s\n", filename);
+		}
+	}
+
+		for (int j = 0; j < 24; j++) {
+			delete lowerBuf[j];
+		}
+	
+
+	printf("load test depth map.\n");
+
+}
+
+
+void depthMapWrite_test_3() {
+
+	int readsize = 2048 * 2048 * 2;
+	BYTE* readbuf[4];
+
+	int imageSize = 2048 * 2048;
+	BYTE* upperBuf[4];
+	BYTE* lowerBuf[4];
+
+	char name[4][100];
+	char filename[100];
+
+	for (int j = 0; j < 24; j++) {
+		readbuf[j] = new BYTE[readsize];
+		upperBuf[j] = new BYTE[imageSize];
+		lowerBuf[j] = new BYTE[imageSize];
+	}
+
+	for (int cam = 0; cam < 24; cam++) {
+		for (int frame = 0; frame < 300; frame+=4) {
+
+			for (int j = 0; j < 4; j++) {
+				sprintf(name[j], "D:/texout/debugraw/v%d_depth_2048x2048_yuv420p16le_%d.data", cam, frame + j);
+
+				FILE* fp = fopen(name[j], "rb");
+				fread(readbuf[j], sizeof(BYTE), readsize, fp);
+
+				for (int k = 0; k < readsize; k++) {
+					if (k % 2 == 1) {
+						upperBuf[j][k / 2] = readbuf[j][k];
+					}
+					else if (k % 2 == 0) {
+						lowerBuf[j][k / 2] = readbuf[j][k];
+					}
+				}
+
+				fclose(fp);
+
+			}
+
+			for (int i = 0; i < 4; i++) {
+				sprintf(filename, "D:/texout/newdepth/depthTex_lower_%d_%d.png", cam, frame+i);
+				FreeImageSaveFile_8bit_grayscale(2048, 2048, lowerBuf[i], filename);
+				printf("create image %s\n", filename);
+			}
+
+			sprintf(filename, "D:/texout/newdepth/depthTex_upper_%d_%d.png", cam, frame/4);
+			FreeImageSaveFile_8bit_RGBA_4Image(2048, 2048, upperBuf[0], upperBuf[1], upperBuf[2], upperBuf[3], filename);
+			printf("create image %s\n", filename);			
+
+		}
+	}
+
+
+	for (int j = 0; j < 4; j++) {
+		delete[] lowerBuf[j];
+		delete[] upperBuf[j];
+	}
+
+
+	printf("load test depth map.\n");
+
+}
+
 
 void depth_color_CombineTest() {
 
@@ -1141,6 +1272,33 @@ void prepare_scene(void) {
 	//test_loadimg("Data/Depth/original/Depth_rgba_0.png", "Data/Depth/original/upperDepth_rgba_0.png", "Data/Depth/original/lowerDepth_rgba_0.png");
 	//test_loadimg("TestImg_16bit.png", "TestImg_8bit_upper.png", "TestImg_8bit_lower.png");
 
+	//depthMapWrite_test_2();
+	//for (int i = 0; i < 24; i++) {
+
+	//	for (int j = 0; j < 5; j++) {
+	//		char name[2][100];
+	//		sprintf(name[0], "Data/DepthRawData/5frame/v%d_depth_2048x2048_yuv420p16le_%d.data", i, j);
+	//		sprintf(name[1], "Data/DepthRawData/12frame/v%d_depth_2048x2048_yuv420p16le_%d.data", i, j);
+	//		printf("%d %d - ", i, j);
+	//		combine_2File(name[0], name[1]);
+	//	}
+	//}
+
+
+	//for (int i = 0; i < 24; i++) {
+	//	for (int j = 0; j < 12; j++) {
+	//		char name[2][100];
+	//		sprintf(name[0], "output/lowerDepth_8bit_gray_%d_%d.png", i, j);
+	//		//sprintf(name[1], "output_ori/lowerDepth_8bit_gray_%d_%d.png", i, j);
+	//		sprintf(name[1],"D:/texout/newdepth/depthTex_lower_%d_%d.png",i,j);
+	//		printf("%d %d - " , i,j);
+	//		test_loadimg_diff(name[0], name[1]);
+	//	}
+	//}
+
+	//depthMapWrite_test_3();
+
+	//test_loadimg_diff("output/lowerDepth_8bit_gray_0_0.png", "debugtex/depthTex_lower_0_0.png");
 	//test_loadimg_diff("output/old_tex/upperDepth_rgba_0.png", "output/new_tex_1/upperDepth_rgba_0.png", "output/new_tex_2/upperDepth_rgba_0_0.png");
 	//test_loadimg_diff_bptc("output/comp/old_tex/upperDepth_rgba_0.dds", "output/comp/new_tex_1/upperDepth_rgba_0.dds", "output/comp/new_tex_2/upperDepth_rgba_0_0.dds");
 	//create_ORIGINAL_RGBA_16_texture("Depth_16bit_0.png", TEXTURE_INDEX_ORIGINAL);
@@ -1171,12 +1329,12 @@ void prepare_scene(void) {
 	upload_TEST_Texture_Depth();
 	//compare_PSNR();
 
-	upload_TEST_Texture_Depth_MultiType(0);
-	upload_TEST_Texture_Depth_MultiType(1);
-	upload_TEST_Texture_Depth_MultiType(2);
-	upload_TEST_Texture_Depth_MultiType(3);
-	upload_TEST_Texture_Depth_MultiType(4);
-	upload_TEST_Texture_Depth_MultiType(5);
+	//upload_TEST_Texture_Depth_MultiType(0);
+	//upload_TEST_Texture_Depth_MultiType(1);
+	//upload_TEST_Texture_Depth_MultiType(2);
+	//upload_TEST_Texture_Depth_MultiType(3);
+	//upload_TEST_Texture_Depth_MultiType(4);
+	//upload_TEST_Texture_Depth_MultiType(5);
 	int result;
 
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &result);

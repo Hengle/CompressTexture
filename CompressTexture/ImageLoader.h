@@ -27,5 +27,6 @@ float load_dds_image_checktime(const char * imagepath);
 
 double getPSNR(const char* fileName1, const char* fileName2);
 void test_loadimg(const char *filename_ori, const char *filename_upper, const char *filename_lower); 
-void test_loadimg_diff(const char *filename_ori, const char *filename_comp1, const char *filename_comp2);
+void test_loadimg_diff(const char *filename_ori, const char *filename_comp1);
 void test_loadimg_diff_bptc(const char *filename_ori, const char *filename_comp1, const char *filename_comp2);
+void combine_2File(const char *filename_comp1, const char *filename_comp2);
